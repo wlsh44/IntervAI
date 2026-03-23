@@ -2,20 +2,17 @@ package wlsh.project.intervai.auth.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import wlsh.project.intervai.auth.domain.TokenPair;
-import wlsh.project.intervai.auth.infra.RefreshTokenRepository;
+import wlsh.project.intervai.auth.infra.RefreshTokenRedisRepository;
 
 @Component
 @RequiredArgsConstructor
 public class RefreshTokenRotator {
 
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final TokenPairGenerator tokenPairGenerator;
 
-    @Transactional
-    public TokenPair rotate(String oldToken, Long userId) {
-        refreshTokenRepository.deleteByToken(oldToken);
+    public TokenPair rotate(Long userId, String oldToken) {
         return tokenPairGenerator.createTokenPair(userId);
     }
 }

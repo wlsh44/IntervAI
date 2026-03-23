@@ -13,7 +13,7 @@ public class TokenPairGenerator {
 
     public TokenPair createTokenPair(Long userId) {
         String accessToken = accessTokenProvider.createToken(userId);
-        String refreshToken = refreshTokenProvider.createToken(userId);
+        String refreshToken = refreshTokenProvider.createAndSaveToken(userId);
 
         return new TokenPair(accessToken, refreshToken);
     }

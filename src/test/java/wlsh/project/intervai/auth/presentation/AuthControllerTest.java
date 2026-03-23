@@ -79,7 +79,7 @@ class AuthControllerTest extends AcceptanceTest {
     @DisplayName("만료된 리프레시 토큰이면 401이 반환된다")
     void refreshWithExpiredToken() {
         given(authService.refresh("expired-token"))
-                .willThrow(new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN));
+                .willThrow(new CustomException(ErrorCode.INVALID_REFRESH_TOKEN));
 
         RestAssuredMockMvc.given()
                 .cookie(new Cookie.Builder("refresh_token", "expired-token").build())
