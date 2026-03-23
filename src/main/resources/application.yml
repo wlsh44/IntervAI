@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: intervai
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+jwt:
+  access:
+    secret: ${JWT_ACCESS_SECRET:defaultAccessSecretKeyForLocalDevelopmentOnlyDoNotUse1234567890}
+    expiration: 86400000
+  refresh:
+    secret: ${JWT_REFRESH_SECRET:defaultRefreshSecretKeyForLocalDevelopmentOnlyDoNotUse123456789}
+    expiration: 604800000

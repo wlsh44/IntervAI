@@ -1,0 +1,35 @@
+package wlsh.project.intervai.auth.presentation;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import wlsh.project.intervai.auth.application.AuthService;
+import wlsh.project.intervai.auth.domain.TokenPair;
+import wlsh.project.intervai.auth.presentation.cookie.RefreshTokenCookieHandler;
+import wlsh.project.intervai.auth.presentation.dto.TokenRefreshResponse;
+
+import static wlsh.project.intervai.auth.presentation.cookie.RefreshTokenCookieHandler.REFRESH_TOKEN_COOKIE_NAME;
+
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final AuthService authService;
+    private final RefreshTokenCookieHandler cookieHandler;
+
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenRefreshResponse> refresh(
+            @CookieValue(name = REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken
+    ) {
+        TokenPair result = authService.refresh(refreshToken);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookieHandler.createRefreshTokenCookie(result.refreshToken()).toString())
+                .body(new TokenRefreshResponse(result.accessToken()));
+    }
+}
