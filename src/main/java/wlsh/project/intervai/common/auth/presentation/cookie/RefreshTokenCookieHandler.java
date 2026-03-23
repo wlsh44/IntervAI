@@ -25,7 +25,7 @@ public class RefreshTokenCookieHandler {
                 .build();
     }
 
-    public ResponseCookie createExpiredRefreshTokenCookie() {
+    public ResponseCookie removeRefreshTokenCookie() {
         return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, "")
                 .httpOnly(true)
                 .secure(true)

@@ -28,10 +28,16 @@ public class AuthController {
     public ResponseEntity<TokenRefreshResponse> refresh(
             @CookieValue(name = REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken
     ) {
-        TokenPair result = authService.refresh(refreshToken);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookieHandler.createRefreshTokenCookie(result.refreshToken()).toString())
-                .body(new TokenRefreshResponse(result.accessToken()));
+        try {
+            TokenPair result = authService.refresh(refreshToken);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, cookieHandler.createRefreshTokenCookie(result.refreshToken()).toString())
+                    .body(new TokenRefreshResponse(result.accessToken()));
+        } catch (CustomException e) {
+            ErrorCode errorCode = e.getErrorCode();
+            return ResponseEntity.status(errorCode.getHttpStatus())
+                    .header(HttpHeaders.SET_COOKIE, cookieHandler.removeRefreshTokenCookie().toString())
+                    .body(null);
+        }
     }
 }

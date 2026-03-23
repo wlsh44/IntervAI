@@ -54,6 +54,8 @@ class AuthControllerTest extends AcceptanceTest {
     void refreshWithoutCookie() {
         given(authService.refresh(null))
                 .willThrow(new CustomException(ErrorCode.INVALID_REFRESH_TOKEN));
+        given(cookieHandler.removeRefreshTokenCookie())
+                .willReturn(ResponseCookie.from("refresh_token", "").maxAge(0).build());
 
         RestAssuredMockMvc.given()
         .when()
@@ -67,6 +69,8 @@ class AuthControllerTest extends AcceptanceTest {
     void refreshWithInvalidToken() {
         given(authService.refresh("invalid-token"))
                 .willThrow(new CustomException(ErrorCode.INVALID_REFRESH_TOKEN));
+        given(cookieHandler.removeRefreshTokenCookie())
+                .willReturn(ResponseCookie.from("refresh_token", "").maxAge(0).build());
 
         RestAssuredMockMvc.given()
                 .cookie(new Cookie.Builder("refresh_token", "invalid-token").build())
@@ -81,6 +85,8 @@ class AuthControllerTest extends AcceptanceTest {
     void refreshWithExpiredToken() {
         given(authService.refresh("expired-token"))
                 .willThrow(new CustomException(ErrorCode.INVALID_REFRESH_TOKEN));
+        given(cookieHandler.removeRefreshTokenCookie())
+                .willReturn(ResponseCookie.from("refresh_token", "").maxAge(0).build());
 
         RestAssuredMockMvc.given()
                 .cookie(new Cookie.Builder("refresh_token", "expired-token").build())
