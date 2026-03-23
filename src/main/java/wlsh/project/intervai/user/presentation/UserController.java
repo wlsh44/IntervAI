@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wlsh.project.intervai.auth.presentation.cookie.RefreshTokenCookieHandler;
+import wlsh.project.intervai.common.auth.presentation.cookie.RefreshTokenCookieHandler;
 import wlsh.project.intervai.user.application.UserService;
 import wlsh.project.intervai.user.domain.CreateUserCommand;
 import wlsh.project.intervai.user.domain.CreateUserResult;

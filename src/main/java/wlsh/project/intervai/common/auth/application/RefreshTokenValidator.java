@@ -1,8 +1,8 @@
-package wlsh.project.intervai.auth.application;
+package wlsh.project.intervai.common.auth.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import wlsh.project.intervai.auth.infra.RefreshTokenRedisRepository;
+import wlsh.project.intervai.common.auth.infra.RefreshTokenRedisRepository;
 import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
 

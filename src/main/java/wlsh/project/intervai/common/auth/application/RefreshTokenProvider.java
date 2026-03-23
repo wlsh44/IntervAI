@@ -1,9 +1,9 @@
-package wlsh.project.intervai.auth.application;
+package wlsh.project.intervai.common.auth.application;
 
 import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import wlsh.project.intervai.auth.infra.RefreshTokenRedisRepository;
+import wlsh.project.intervai.common.auth.infra.RefreshTokenRedisRepository;
 
 @Component
 public class RefreshTokenProvider {

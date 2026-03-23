@@ -11,7 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseCookie;
-import wlsh.project.intervai.auth.presentation.cookie.RefreshTokenCookieHandler;
+import wlsh.project.intervai.common.auth.presentation.cookie.RefreshTokenCookieHandler;
 import wlsh.project.intervai.common.AcceptanceTest;
 import wlsh.project.intervai.common.config.SecurityConfig;
 import wlsh.project.intervai.user.application.UserService;

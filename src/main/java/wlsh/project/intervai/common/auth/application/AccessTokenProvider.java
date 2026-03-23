@@ -1,4 +1,4 @@
-package wlsh.project.intervai.auth.application;
+package wlsh.project.intervai.common.auth.application;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

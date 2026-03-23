@@ -1,8 +1,8 @@
-package wlsh.project.intervai.auth.application;
+package wlsh.project.intervai.common.auth.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import wlsh.project.intervai.auth.domain.TokenPair;
+import wlsh.project.intervai.common.auth.domain.TokenPair;
 
 @Component
 @RequiredArgsConstructor

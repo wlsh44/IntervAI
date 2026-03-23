@@ -1,4 +1,4 @@
-package wlsh.project.intervai.auth.presentation.cookie;
+package wlsh.project.intervai.common.auth.presentation.cookie;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;

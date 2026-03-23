@@ -1,4 +1,4 @@
-package wlsh.project.intervai.auth.domain;
+package wlsh.project.intervai.common.auth.domain;
 
 public record TokenPair(
         String accessToken,

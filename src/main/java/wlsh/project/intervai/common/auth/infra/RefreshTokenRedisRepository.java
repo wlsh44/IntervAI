@@ -1,4 +1,4 @@
-package wlsh.project.intervai.auth.infra;
+package wlsh.project.intervai.common.auth.infra;
 
 import java.time.Duration;
 import java.util.Optional;

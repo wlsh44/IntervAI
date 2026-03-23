@@ -1,4 +1,4 @@
-package wlsh.project.intervai.auth.application;
+package wlsh.project.intervai.common.auth.application;
 
 import java.util.Date;
 import javax.crypto.SecretKey;

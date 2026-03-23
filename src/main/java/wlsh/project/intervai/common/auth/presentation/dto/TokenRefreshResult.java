@@ -1,4 +1,4 @@
-package wlsh.project.intervai.auth.presentation.dto;
+package wlsh.project.intervai.common.auth.presentation.dto;
 
 public record TokenRefreshResult(
         String accessToken,
