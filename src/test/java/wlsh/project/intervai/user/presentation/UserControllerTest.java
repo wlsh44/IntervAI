@@ -17,8 +17,11 @@ import wlsh.project.intervai.common.config.SecurityConfig;
 import wlsh.project.intervai.user.application.UserService;
 import wlsh.project.intervai.user.domain.CreateUserCommand;
 import wlsh.project.intervai.user.domain.CreateUserResult;
+import wlsh.project.intervai.user.domain.LoginCommand;
+import wlsh.project.intervai.user.domain.LoginResult;
 import wlsh.project.intervai.user.domain.User;
 import wlsh.project.intervai.user.presentation.dto.CreateUserRequest;
+import wlsh.project.intervai.user.presentation.dto.LoginRequest;
 
 import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
@@ -27,6 +30,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static wlsh.project.intervai.common.exception.ErrorCode.LOGIN_FAILED;
 
 @WebMvcTest(UserController.class)
 @Import(SecurityConfig.class)
@@ -165,6 +169,85 @@ class UserControllerTest extends AcceptanceTest {
                 .body(mapper.writeValueAsString(new CreateUserRequest("testuser", password)))
         .when()
                 .post("/api/users/sign-up")
+        .then()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("로그인 성공 시 200과 유저 정보, 토큰이 반환된다")
+    void login() throws Exception {
+        User user = User.of(1L, "test", "encodedPassword");
+        LoginResult result = new LoginResult(user, "access-token", "refresh-token");
+        given(userService.login(any(LoginCommand.class))).willReturn(result);
+        given(refreshTokenCookieHandler.createRefreshTokenCookie("refresh-token"))
+                .willReturn(ResponseCookie.from("refresh_token", "refresh-token").build());
+
+        LoginRequest request = new LoginRequest("test", "test1234");
+
+        RestAssuredMockMvc.given()
+                .contentType(ContentType.JSON)
+                .body(mapper.writeValueAsString(request))
+        .when()
+                .post("/api/users/login")
+        .then()
+                .statusCode(200)
+                .body("id", equalTo(1))
+                .body("nickname", equalTo("test"))
+                .body("accessToken", equalTo("access-token"))
+                .header("Set-Cookie", notNullValue());
+    }
+
+    @Test
+    @DisplayName("로그인 실패 시 401과 에러 메시지가 반환된다")
+    void loginFailed() throws Exception {
+        given(userService.login(any(LoginCommand.class)))
+                .willThrow(new CustomException(LOGIN_FAILED));
+
+        LoginRequest request = new LoginRequest("test", "wrongpass");
+
+        RestAssuredMockMvc.given()
+                .contentType(ContentType.JSON)
+                .body(mapper.writeValueAsString(request))
+        .when()
+                .post("/api/users/login")
+        .then()
+                .statusCode(401)
+                .body("code", equalTo(LOGIN_FAILED.name()))
+                .body("message", equalTo(LOGIN_FAILED.getMessage()));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" "})
+    @DisplayName("로그인 시 닉네임이 비어있으면 400이 반환된다")
+    void loginBlankNickname(String nickname) throws Exception {
+        String body = nickname == null
+                ? "{\"password\":\"pass1234\"}"
+                : mapper.writeValueAsString(new LoginRequest(nickname, "pass1234"));
+
+        RestAssuredMockMvc.given()
+                .contentType(ContentType.JSON)
+                .body(body)
+        .when()
+                .post("/api/users/login")
+        .then()
+                .statusCode(400);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" "})
+    @DisplayName("로그인 시 비밀번호가 비어있으면 400이 반환된다")
+    void loginBlankPassword(String password) throws Exception {
+        String body = password == null
+                ? "{\"nickname\":\"testuser\"}"
+                : mapper.writeValueAsString(new LoginRequest("testuser", password));
+
+        RestAssuredMockMvc.given()
+                .contentType(ContentType.JSON)
+                .body(body)
+        .when()
+                .post("/api/users/login")
         .then()
                 .statusCode(400);
     }
