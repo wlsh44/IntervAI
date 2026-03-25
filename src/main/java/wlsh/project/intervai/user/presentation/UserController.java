@@ -13,8 +13,12 @@ import wlsh.project.intervai.common.auth.presentation.cookie.RefreshTokenCookieH
 import wlsh.project.intervai.user.application.UserService;
 import wlsh.project.intervai.user.domain.CreateUserCommand;
 import wlsh.project.intervai.user.domain.CreateUserResult;
+import wlsh.project.intervai.user.domain.LoginCommand;
+import wlsh.project.intervai.user.domain.LoginResult;
 import wlsh.project.intervai.user.presentation.dto.CreateUserRequest;
 import wlsh.project.intervai.user.presentation.dto.CreateUserResponse;
+import wlsh.project.intervai.user.presentation.dto.LoginRequest;
+import wlsh.project.intervai.user.presentation.dto.LoginResponse;
 
 @RestController
 @RequestMapping("/api/users")
@@ -32,5 +36,15 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookieHandler.createRefreshTokenCookie(result.refreshToken()).toString())
                 .body(CreateUserResponse.of(result.user(), result.accessToken()));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
+        LoginCommand command = request.toCommand();
+        LoginResult result = userService.login(command);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookieHandler.createRefreshTokenCookie(result.refreshToken()).toString())
+                .body(LoginResponse.of(result.user(), result.accessToken()));
     }
 }
