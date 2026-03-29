@@ -14,6 +14,6 @@ public class AuthService {
     public TokenPair refresh(String oldToken) {
         Long userId = refreshTokenValidator.validate(oldToken);
 
-        return refreshTokenRotator.rotate(userId, oldToken);
+        return refreshTokenRotator.rotate(userId);
     }
 }
