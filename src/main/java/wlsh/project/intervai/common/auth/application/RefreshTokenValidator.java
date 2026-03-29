@@ -20,6 +20,7 @@ public class RefreshTokenValidator {
 
         Long userId = refreshTokenProvider.parseUserId(token);
         refreshTokenRedisRepository.findTokenByUserId(userId)
+                .filter(storedToken -> storedToken.equals(token))
                 .orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
         return userId;
     }
