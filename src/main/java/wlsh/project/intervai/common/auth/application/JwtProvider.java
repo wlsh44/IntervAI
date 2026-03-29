@@ -2,8 +2,12 @@ package wlsh.project.intervai.common.auth.application;
 
 import java.util.Date;
 import javax.crypto.SecretKey;
+
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import wlsh.project.intervai.common.exception.CustomException;
+import wlsh.project.intervai.common.exception.ErrorCode;
 
 public class JwtProvider {
 
@@ -28,13 +32,19 @@ public class JwtProvider {
     }
 
     public Long parseUserId(String token) {
-        String subject = Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+        try {
+            String subject = Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();
 
-        return Long.parseLong(subject);
+            return Long.parseLong(subject);
+        } catch (ExpiredJwtException e) {
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
     }
 }
