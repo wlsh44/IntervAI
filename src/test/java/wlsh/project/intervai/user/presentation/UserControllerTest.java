@@ -8,13 +8,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseCookie;
-import wlsh.project.intervai.common.auth.presentation.cookie.RefreshTokenCookieHandler;
-import wlsh.project.intervai.common.auth.presentation.filter.JwtAuthenticationFilter;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import wlsh.project.intervai.common.AcceptanceTest;
-import wlsh.project.intervai.common.config.SecurityConfig;
+import wlsh.project.intervai.common.auth.presentation.cookie.RefreshTokenCookieHandler;
+import wlsh.project.intervai.common.exception.CustomException;
+import wlsh.project.intervai.common.exception.ErrorCode;
 import wlsh.project.intervai.user.application.UserService;
 import wlsh.project.intervai.user.domain.CreateUserCommand;
 import wlsh.project.intervai.user.domain.CreateUserResult;
@@ -23,9 +22,6 @@ import wlsh.project.intervai.user.domain.LoginResult;
 import wlsh.project.intervai.user.domain.User;
 import wlsh.project.intervai.user.presentation.dto.CreateUserRequest;
 import wlsh.project.intervai.user.presentation.dto.LoginRequest;
-
-import wlsh.project.intervai.common.exception.CustomException;
-import wlsh.project.intervai.common.exception.ErrorCode;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
