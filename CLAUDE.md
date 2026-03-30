@@ -66,15 +66,17 @@ presentation/   # Controller
 ### Business Layer (Service)
 - `@Service` + `@RequiredArgsConstructor`
 - **`@Transactional` 사용하지 않음** — 트랜잭션은 Logic Layer에서 관리
-- Logic Layer 컴포넌트를 조합하여 비즈니스 흐름이 잘 보이도록 구현
-- 외부 서비스(JwtHandler 등)를 Service에서 의존성 주입 가능
+- Logic Layer 컴포넌트를 조합하여 **비즈니스 흐름만 한눈에 보이도록** 구현
+- Service 메서드를 읽으면 세부 구현 없이도 비즈니스 플로우를 이해할 수 있어야 함
+- 조건 분기, 예외 처리 등 세부 로직은 Logic Layer로 위임
+- 외부 서비스를 Service에서 의존성 주입 가능
 
 ### Logic Layer
 - `@Component` + `@RequiredArgsConstructor`
 - `@Transactional`은 이 계층에서만 사용
   - 읽기 전용이거나 단일 `save()`는 `@Transactional` 불필요
   - 여러 Entity를 다루거나 복잡한 로직에서 사용
-- 네이밍: `*Manager`(쓰기), `*Finder`(조회), `*Handler`(로직 처리), `*Reader`(읽기), `*Calculator`(계산), `*Validator`(검증)
+- 네이밍: `*Manager`(단순 CUD), `*Finder`(조회), `*Reader`(읽기), `*Calculator`(계산), `*Validator`(검증), `*Handler`(복합 로직 처리 또는 명확한 이름이 어려운 경우)
 - 메서드명은 간결하게: `create()`, `update()`, `delete()`, `find()` (불필요한 접미사 생략)
 - **Entity를 반환하지 않음** — 도메인 객체로 변환하여 반환
 - 타 도메인 조회 시 Repository 직접 의존보다 해당 도메인의 Logic 클래스 우선 활용
@@ -96,7 +98,7 @@ presentation/   # Controller
   - 예: `throw new CustomException(ErrorCode.NOT_FOUND)`
 
 ## 인증
-- `auth` 패키지는 `common` 패키지에 위치 (전역 사용)
+- `auth` 도메인 패키지에서 토큰 관련 기능 관리
 - `UserInfo` 클래스에 인증된 유저 정보를 담아 Controller에 전달
 
 ## 코드 컨벤션

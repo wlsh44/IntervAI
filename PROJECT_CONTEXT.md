@@ -11,19 +11,22 @@ ChatGPT처럼 면접 대화 기록을 저장하고 이어볼 수 있다.
 
 ## 기술 스택
 
-| 레이어 | 기술                                          |
-|--------|---------------------------------------------|
-| 백엔드 | Spring Boot                                 |
-| LLM 연동 | SpringAI + Anthropic Claude API, etc (스트리밍) |
-| 캐시 / 임시 저장 | Redis                                       |
-| 영구 저장 | MySQL                                       |
-| 파일 처리 | S3 (업로드)              |
-| GitHub 연동 | GitHub REST API                             |
-| 프론트엔드 | React + TypeScript + Vite                   |
-| 상태 관리 | Zustand                                     |
-| 서버 상태 | TanStack Query                              |
-| UI | Tailwind CSS + shadcn/ui                    |
-| PWA | vite-plugin-pwa                             |
+| 레이어 | 기술                                                |
+|--------|---------------------------------------------------|
+| 백엔드 | Spring Boot 3.5, Java 21, Gradle 8.14              |
+| LLM 연동 | SpringAI + Anthropic Claude API (스트리밍)            |
+| 인증 | Spring Security, jjwt 0.12.6                        |
+| 캐시 / 임시 저장 | Redis (Refresh Token 저장)                     |
+| 영구 저장 | MySQL (+ H2 테스트용)                               |
+| 파일 처리 | AWS S3                                             |
+| GitHub 연동 | GitHub REST API                                   |
+| 주요 라이브러리 | Lombok, Bean Validation                       |
+| 테스트 | JUnit 5, REST Assured (MockMvc), Embedded Redis     |
+| 프론트엔드 | React + TypeScript + Vite                         |
+| 상태 관리 | Zustand                                           |
+| 서버 상태 | TanStack Query                                    |
+| UI | Tailwind CSS + shadcn/ui                            |
+| PWA | vite-plugin-pwa                                    |
 
 ---
 
@@ -94,6 +97,53 @@ ChatGPT처럼 면접 대화 기록을 저장하고 이어볼 수 있다.
 
 ---
 
+## 현재 구현 상태 (Stage 1 완료)
+
+### user 도메인
+- 회원가입: 닉네임/비밀번호 검증, BCrypt 암호화
+- `UserService` → `UserValidator` (중복 닉네임 검증) + `UserManager` (생성/저장)
+
+### common/auth
+- JWT 토큰 발급/갱신: Access Token (24h), Refresh Token (7d, Redis 저장)
+- `AuthService` → `RefreshTokenValidator` + `RefreshTokenRotator` + `TokenPairGenerator`
+- Refresh Token은 HttpOnly 쿠키로 관리 (`RefreshTokenCookieHandler`)
+- `AccessTokenProvider`, `RefreshTokenProvider`, `JwtProvider`로 토큰 생성/파싱 분리
+
+### common 인프라
+- `BaseEntity` (soft delete, `EntityStatus` 기반 상태 전이)
+- `SecurityConfig` (Spring Security 설정)
+- `CustomException` + `ErrorCode` + `GlobalExceptionHandler` (전역 예외 처리)
+- `JpaAuditingConfig` (createdAt, modifiedAt 자동 관리)
+
+### 구현된 API 엔드포인트
+
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| POST | `/api/users/sign-up` | 회원가입 |
+| POST | `/api/auth/refresh` | Access Token 갱신 (Refresh Token 쿠키 기반) |
+
+### 현재 패키지 구조
+
+```
+wlsh.project.intervai
+├── common
+│   ├── auth
+│   │   ├── application/    # AuthService, JwtProvider, TokenPairGenerator, RefreshToken*
+│   │   ├── domain/         # TokenPair, UserInfo
+│   │   ├── infra/          # RefreshTokenRedisRepository
+│   │   └── presentation/   # AuthController, dto/, cookie/
+│   ├── config/             # SecurityConfig, JpaAuditingConfig
+│   ├── entity/             # BaseEntity, EntityStatus
+│   └── exception/          # CustomException, ErrorCode, ErrorResponse, GlobalExceptionHandler
+└── user
+    ├── application/        # UserService, UserManager, UserValidator
+    ├── domain/             # User, CreateUserCommand, CreateUserResult
+    ├── infra/              # UserEntity, UserRepository
+    └── presentation/       # UserController, dto/
+```
+
+---
+
 ## 주요 도메인 모델 (초안)
 
 ```
@@ -141,11 +191,11 @@ Message
 
 ## 개발 우선순위 (단계별)
 
-| 단계 | 내용                             |
-|------|--------------------------------|
-| Stage 1 | 사용자 인증                         |
-| Stage 2 | 기본 정보 및 포트폴리오 등록               |
-| Stage 3 | LLM 연동 기본 채팅 (CS 질문 생성 + 스트리밍) |
-| Stage 4 | 꼬리 질문 + 실시간 피드백                |
-| Stage 5 | 세션 기록 저장 및 히스토리 UI             |
-| Stage 6 | 종합 리포트 + 포트폴리오 기반 질문 고도화       |
+| 단계 | 내용 | 상태 |
+|------|------|------|
+| Stage 1 | 사용자 인증 (회원가입, JWT 토큰 발급/갱신) | ✅ 완료 |
+| Stage 2 | 기본 정보 및 포트폴리오 등록 | ⬜ 예정 |
+| Stage 3 | LLM 연동 기본 채팅 (CS 질문 생성 + 스트리밍) | ⬜ 예정 |
+| Stage 4 | 꼬리 질문 + 실시간 피드백 | ⬜ 예정 |
+| Stage 5 | 세션 기록 저장 및 히스토리 UI | ⬜ 예정 |
+| Stage 6 | 종합 리포트 + 포트폴리오 기반 질문 고도화 | ⬜ 예정 |
