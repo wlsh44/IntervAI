@@ -14,7 +14,7 @@ public class ProfileValidator {
     private final ProfileRepository profileRepository;
 
     public void validateProfileOwner(Long profileId, Long userId) {
-        ProfileEntity profileEntity = profileRepository.findById(profileId)
+        ProfileEntity profileEntity = profileRepository.findByIdAndStatus(profileId, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new CustomException(ErrorCode.PROFILE_NOT_FOUND));
         if (!profileEntity.isOwner(userId)) {
             throw new CustomException(ErrorCode.PROFILE_ACCESS_DENIED);
