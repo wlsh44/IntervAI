@@ -12,6 +12,7 @@ import wlsh.project.intervai.common.auth.domain.TokenPair;
 import wlsh.project.intervai.common.auth.presentation.cookie.RefreshTokenCookieHandler;
 import wlsh.project.intervai.common.auth.presentation.dto.TokenRefreshResponse;
 import wlsh.project.intervai.common.exception.CustomException;
+import wlsh.project.intervai.common.exception.ErrorResponse;
 
 import static wlsh.project.intervai.common.auth.presentation.cookie.RefreshTokenCookieHandler.REFRESH_TOKEN_COOKIE_NAME;
 
@@ -24,7 +25,7 @@ public class AuthController {
     private final RefreshTokenCookieHandler cookieHandler;
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenRefreshResponse> refresh(
+    public ResponseEntity<?> refresh(
             @CookieValue(name = REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken
     ) {
         try {
@@ -33,8 +34,10 @@ public class AuthController {
                     .header(HttpHeaders.SET_COOKIE, cookieHandler.createRefreshTokenCookie(result.refreshToken()).toString())
                     .body(new TokenRefreshResponse(result.accessToken()));
         } catch (CustomException e) {
-            cookieHandler.removeRefreshTokenCookie();
-            throw e;
+            return ResponseEntity
+                    .status(e.getErrorCode().getHttpStatus())
+                    .header(HttpHeaders.SET_COOKIE, cookieHandler.removeRefreshTokenCookie().toString())
+                    .body(ErrorResponse.of(e.getErrorCode()));
         }
     }
 }
