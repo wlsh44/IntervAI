@@ -4,15 +4,13 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseCookie;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import wlsh.project.intervai.common.AcceptanceTest;
 import wlsh.project.intervai.common.auth.application.AuthService;
 import wlsh.project.intervai.common.auth.domain.TokenPair;
 import wlsh.project.intervai.common.auth.presentation.AuthController;
 import wlsh.project.intervai.common.auth.presentation.cookie.RefreshTokenCookieHandler;
-import wlsh.project.intervai.common.AcceptanceTest;
-import wlsh.project.intervai.common.config.SecurityConfig;
 import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
 
@@ -21,7 +19,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(AuthController.class)
-@Import(SecurityConfig.class)
 class AuthControllerTest extends AcceptanceTest {
 
     @MockitoBean
