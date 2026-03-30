@@ -1,7 +1,6 @@
 package wlsh.project.intervai.auth.presentation;
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import io.restassured.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -35,12 +34,13 @@ class AuthControllerTest extends AcceptanceTest {
     @DisplayName("유효한 리프레시 토큰으로 재발급 시 200과 새 토큰이 반환된다")
     void refresh() {
         TokenPair tokenPair = new TokenPair("new-access-token", "new-refresh-token");
-        given(authService.refresh("old-refresh-token")).willReturn(tokenPair);
+        given(authService.refresh("old-refresh-token"))
+                .willReturn(tokenPair);
         given(cookieHandler.createRefreshTokenCookie("new-refresh-token"))
                 .willReturn(ResponseCookie.from("refresh_token", "new-refresh-token").build());
 
         RestAssuredMockMvc.given()
-                .cookie(new Cookie.Builder("refresh_token", "old-refresh-token").build())
+                .cookie("refresh_token", "old-refresh-token")
         .when()
                 .post("/api/auth/refresh")
         .then()
@@ -73,7 +73,7 @@ class AuthControllerTest extends AcceptanceTest {
                 .willReturn(ResponseCookie.from("refresh_token", "").maxAge(0).build());
 
         RestAssuredMockMvc.given()
-                .cookie(new Cookie.Builder("refresh_token", "invalid-token").build())
+                .cookie("refresh_token", "invalid-token")
         .when()
                 .post("/api/auth/refresh")
         .then()
@@ -89,7 +89,7 @@ class AuthControllerTest extends AcceptanceTest {
                 .willReturn(ResponseCookie.from("refresh_token", "").maxAge(0).build());
 
         RestAssuredMockMvc.given()
-                .cookie(new Cookie.Builder("refresh_token", "expired-token").build())
+                .cookie("refresh_token", "expired-token")
         .when()
                 .post("/api/auth/refresh")
         .then()

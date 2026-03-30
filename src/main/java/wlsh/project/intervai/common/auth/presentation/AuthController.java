@@ -34,10 +34,8 @@ public class AuthController {
                     .header(HttpHeaders.SET_COOKIE, cookieHandler.createRefreshTokenCookie(result.refreshToken()).toString())
                     .body(new TokenRefreshResponse(result.accessToken()));
         } catch (CustomException e) {
-            ErrorCode errorCode = e.getErrorCode();
-            return ResponseEntity.status(errorCode.getHttpStatus())
-                    .header(HttpHeaders.SET_COOKIE, cookieHandler.removeRefreshTokenCookie().toString())
-                    .body(null);
+            cookieHandler.removeRefreshTokenCookie();
+            throw e;
         }
     }
 }
