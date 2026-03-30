@@ -12,6 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseCookie;
 import wlsh.project.intervai.common.auth.presentation.cookie.RefreshTokenCookieHandler;
+import wlsh.project.intervai.common.auth.presentation.filter.JwtAuthenticationFilter;
 import wlsh.project.intervai.common.AcceptanceTest;
 import wlsh.project.intervai.common.config.SecurityConfig;
 import wlsh.project.intervai.user.application.UserService;
@@ -33,7 +34,6 @@ import static org.mockito.BDDMockito.given;
 import static wlsh.project.intervai.common.exception.ErrorCode.LOGIN_FAILED;
 
 @WebMvcTest(UserController.class)
-@Import(SecurityConfig.class)
 class UserControllerTest extends AcceptanceTest {
 
     @MockitoBean
