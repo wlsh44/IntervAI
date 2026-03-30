@@ -12,7 +12,6 @@ import wlsh.project.intervai.common.auth.domain.TokenPair;
 import wlsh.project.intervai.common.auth.presentation.cookie.RefreshTokenCookieHandler;
 import wlsh.project.intervai.common.auth.presentation.dto.TokenRefreshResponse;
 import wlsh.project.intervai.common.exception.CustomException;
-import wlsh.project.intervai.common.exception.ErrorCode;
 
 import static wlsh.project.intervai.common.auth.presentation.cookie.RefreshTokenCookieHandler.REFRESH_TOKEN_COOKIE_NAME;
 
