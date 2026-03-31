@@ -2,7 +2,7 @@ package wlsh.project.intervai.interview.domain;
 
 import java.util.List;
 
-public record CreateInterviewSessionCommand(
+public record CreateInterviewCommand(
         InterviewType interviewType,
         Difficulty difficulty,
         int questionCount,

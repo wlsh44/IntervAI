@@ -4,7 +4,7 @@ import java.util.List;
 import lombok.Getter;
 
 @Getter
-public class InterviewSession {
+public class Interview {
 
     private final Long id;
     private final Long userId;
@@ -15,9 +15,9 @@ public class InterviewSession {
     private final List<CsSubject> csSubjects;
     private final List<String> portfolioLinks;
 
-    private InterviewSession(Long id, Long userId, InterviewType interviewType, Difficulty difficulty,
-                             int questionCount, InterviewerPersonality interviewerPersonality,
-                             List<CsSubject> csSubjects, List<String> portfolioLinks) {
+    private Interview(Long id, Long userId, InterviewType interviewType, Difficulty difficulty,
+                      int questionCount, InterviewerPersonality interviewerPersonality,
+                      List<CsSubject> csSubjects, List<String> portfolioLinks) {
         this.id = id;
         this.userId = userId;
         this.interviewType = interviewType;
@@ -28,8 +28,8 @@ public class InterviewSession {
         this.portfolioLinks = portfolioLinks;
     }
 
-    public static InterviewSession create(Long userId, CreateInterviewSessionCommand command) {
-        return new InterviewSession(
+    public static Interview create(Long userId, CreateInterviewCommand command) {
+        return new Interview(
                 null, userId,
                 command.interviewType(), command.difficulty(),
                 command.questionCount(), command.interviewerPersonality(),
@@ -37,10 +37,10 @@ public class InterviewSession {
         );
     }
 
-    public static InterviewSession of(Long id, Long userId, InterviewType interviewType, Difficulty difficulty,
-                                       int questionCount, InterviewerPersonality interviewerPersonality,
-                                       List<CsSubject> csSubjects, List<String> portfolioLinks) {
-        return new InterviewSession(id, userId, interviewType, difficulty, questionCount,
+    public static Interview of(Long id, Long userId, InterviewType interviewType, Difficulty difficulty,
+                                int questionCount, InterviewerPersonality interviewerPersonality,
+                                List<CsSubject> csSubjects, List<String> portfolioLinks) {
+        return new Interview(id, userId, interviewType, difficulty, questionCount,
                 interviewerPersonality, csSubjects, portfolioLinks);
     }
 }

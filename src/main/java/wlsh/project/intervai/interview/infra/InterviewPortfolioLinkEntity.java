@@ -22,17 +22,17 @@ public class InterviewPortfolioLinkEntity extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Long sessionId;
+    private Long interviewId;
 
     @Column(nullable = false)
     private String url;
 
-    private InterviewPortfolioLinkEntity(Long sessionId, String url) {
-        this.sessionId = sessionId;
+    private InterviewPortfolioLinkEntity(Long interviewId, String url) {
+        this.interviewId = interviewId;
         this.url = url;
     }
 
-    public static InterviewPortfolioLinkEntity of(Long sessionId, String url) {
-        return new InterviewPortfolioLinkEntity(sessionId, url);
+    public static InterviewPortfolioLinkEntity of(Long interviewId, String url) {
+        return new InterviewPortfolioLinkEntity(interviewId, url);
     }
 }

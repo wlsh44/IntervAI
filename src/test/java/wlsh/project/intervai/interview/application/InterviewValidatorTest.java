@@ -11,7 +11,7 @@ import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
 import wlsh.project.intervai.interview.domain.CsCategory;
 import wlsh.project.intervai.interview.domain.CsSubject;
-import wlsh.project.intervai.interview.domain.CreateInterviewSessionCommand;
+import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.Difficulty;
 import wlsh.project.intervai.interview.domain.InterviewType;
 import wlsh.project.intervai.interview.domain.InterviewerPersonality;
@@ -19,114 +19,114 @@ import wlsh.project.intervai.interview.domain.InterviewerPersonality;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class InterviewSessionValidatorTest extends IntegrationTest {
+class InterviewValidatorTest extends IntegrationTest {
 
     @Autowired
-    private InterviewSessionValidator interviewSessionValidator;
+    private InterviewValidator interviewValidator;
 
     @ParameterizedTest
     @ValueSource(ints = {5, 7, 10})
     @DisplayName("질문 개수가 5~10이면 검증을 통과한다")
     void validQuestionCount(int questionCount) {
-        CreateInterviewSessionCommand command = new CreateInterviewSessionCommand(
+        CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.CS, Difficulty.JUNIOR, questionCount, InterviewerPersonality.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
 
         assertThatNoException()
-                .isThrownBy(() -> interviewSessionValidator.validate(command));
+                .isThrownBy(() -> interviewValidator.validate(command));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 4, 11, 20})
     @DisplayName("질문 개수가 5~10 범위 밖이면 예외가 발생한다")
     void invalidQuestionCount(int questionCount) {
-        CreateInterviewSessionCommand command = new CreateInterviewSessionCommand(
+        CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.CS, Difficulty.JUNIOR, questionCount, InterviewerPersonality.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
 
-        assertThatThrownBy(() -> interviewSessionValidator.validate(command))
+        assertThatThrownBy(() -> interviewValidator.validate(command))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorCode.INVALID_QUESTION_COUNT.getMessage());
     }
 
     @Test
     @DisplayName("CS 면접에 상세 분야가 있으면 검증을 통과한다")
-    void csSessionWithSubjects() {
-        CreateInterviewSessionCommand command = new CreateInterviewSessionCommand(
+    void csInterviewWithSubjects() {
+        CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.ALGORITHM, List.of("정렬"))), List.of());
 
         assertThatNoException()
-                .isThrownBy(() -> interviewSessionValidator.validate(command));
+                .isThrownBy(() -> interviewValidator.validate(command));
     }
 
     @Test
     @DisplayName("CS 면접에 상세 분야가 없으면 예외가 발생한다")
-    void csSessionWithoutSubjects() {
-        CreateInterviewSessionCommand command = new CreateInterviewSessionCommand(
+    void csInterviewWithoutSubjects() {
+        CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
                 List.of(), List.of());
 
-        assertThatThrownBy(() -> interviewSessionValidator.validate(command))
+        assertThatThrownBy(() -> interviewValidator.validate(command))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorCode.CS_SUBJECT_REQUIRED.getMessage());
     }
 
     @Test
     @DisplayName("포트폴리오 면접에 링크가 있으면 검증을 통과한다")
-    void portfolioSessionWithLinks() {
-        CreateInterviewSessionCommand command = new CreateInterviewSessionCommand(
+    void portfolioInterviewWithLinks() {
+        CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.PORTFOLIO, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
                 List.of(), List.of("https://github.com/user/project"));
 
         assertThatNoException()
-                .isThrownBy(() -> interviewSessionValidator.validate(command));
+                .isThrownBy(() -> interviewValidator.validate(command));
     }
 
     @Test
     @DisplayName("포트폴리오 면접에 링크가 없으면 예외가 발생한다")
-    void portfolioSessionWithoutLinks() {
-        CreateInterviewSessionCommand command = new CreateInterviewSessionCommand(
+    void portfolioInterviewWithoutLinks() {
+        CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.PORTFOLIO, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
                 List.of(), List.of());
 
-        assertThatThrownBy(() -> interviewSessionValidator.validate(command))
+        assertThatThrownBy(() -> interviewValidator.validate(command))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorCode.PORTFOLIO_LINK_REQUIRED.getMessage());
     }
 
     @Test
     @DisplayName("전체 면접에 상세 분야와 링크가 모두 있으면 검증을 통과한다")
-    void allSessionWithBoth() {
-        CreateInterviewSessionCommand command = new CreateInterviewSessionCommand(
+    void allInterviewWithBoth() {
+        CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATABASE, List.of("인덱스"))),
                 List.of("https://github.com/user/project"));
 
         assertThatNoException()
-                .isThrownBy(() -> interviewSessionValidator.validate(command));
+                .isThrownBy(() -> interviewValidator.validate(command));
     }
 
     @Test
     @DisplayName("전체 면접에 상세 분야가 없으면 예외가 발생한다")
-    void allSessionWithoutSubjects() {
-        CreateInterviewSessionCommand command = new CreateInterviewSessionCommand(
+    void allInterviewWithoutSubjects() {
+        CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
                 List.of(), List.of("https://github.com/user/project"));
 
-        assertThatThrownBy(() -> interviewSessionValidator.validate(command))
+        assertThatThrownBy(() -> interviewValidator.validate(command))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorCode.CS_SUBJECT_REQUIRED.getMessage());
     }
 
     @Test
     @DisplayName("전체 면접에 포트폴리오 링크가 없으면 예외가 발생한다")
-    void allSessionWithoutLinks() {
-        CreateInterviewSessionCommand command = new CreateInterviewSessionCommand(
+    void allInterviewWithoutLinks() {
+        CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
 
-        assertThatThrownBy(() -> interviewSessionValidator.validate(command))
+        assertThatThrownBy(() -> interviewValidator.validate(command))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorCode.PORTFOLIO_LINK_REQUIRED.getMessage());
     }

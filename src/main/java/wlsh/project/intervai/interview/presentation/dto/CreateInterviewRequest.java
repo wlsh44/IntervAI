@@ -4,12 +4,12 @@ import java.util.List;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import wlsh.project.intervai.interview.domain.CreateInterviewSessionCommand;
+import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.Difficulty;
 import wlsh.project.intervai.interview.domain.InterviewType;
 import wlsh.project.intervai.interview.domain.InterviewerPersonality;
 
-public record CreateInterviewSessionRequest(
+public record CreateInterviewRequest(
         @NotNull(message = "면접 유형은 필수입니다.")
         InterviewType interviewType,
 
@@ -26,8 +26,8 @@ public record CreateInterviewSessionRequest(
 
         List<@NotBlank(message = "포트폴리오 링크는 비어있을 수 없습니다.") String> portfolioLinks
 ) {
-    public CreateInterviewSessionCommand toCommand() {
-        return new CreateInterviewSessionCommand(
+    public CreateInterviewCommand toCommand() {
+        return new CreateInterviewCommand(
                 interviewType,
                 difficulty,
                 questionCount,

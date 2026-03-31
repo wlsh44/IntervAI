@@ -15,15 +15,15 @@ import lombok.NoArgsConstructor;
 import wlsh.project.intervai.common.entity.BaseEntity;
 import wlsh.project.intervai.interview.domain.CsSubject;
 import wlsh.project.intervai.interview.domain.Difficulty;
-import wlsh.project.intervai.interview.domain.InterviewSession;
+import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewType;
 import wlsh.project.intervai.interview.domain.InterviewerPersonality;
 
 @Getter
 @Entity
-@Table(name = "interview_sessions")
+@Table(name = "interviews")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class InterviewSessionEntity extends BaseEntity {
+public class InterviewEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,8 +47,8 @@ public class InterviewSessionEntity extends BaseEntity {
     @Column(nullable = false)
     private InterviewerPersonality interviewerPersonality;
 
-    private InterviewSessionEntity(Long userId, InterviewType interviewType, Difficulty difficulty,
-                                    int questionCount, InterviewerPersonality interviewerPersonality) {
+    private InterviewEntity(Long userId, InterviewType interviewType, Difficulty difficulty,
+                            int questionCount, InterviewerPersonality interviewerPersonality) {
         this.userId = userId;
         this.interviewType = interviewType;
         this.difficulty = difficulty;
@@ -56,15 +56,15 @@ public class InterviewSessionEntity extends BaseEntity {
         this.interviewerPersonality = interviewerPersonality;
     }
 
-    public static InterviewSessionEntity from(InterviewSession session) {
-        return new InterviewSessionEntity(
-                session.getUserId(), session.getInterviewType(), session.getDifficulty(),
-                session.getQuestionCount(), session.getInterviewerPersonality()
+    public static InterviewEntity from(Interview interview) {
+        return new InterviewEntity(
+                interview.getUserId(), interview.getInterviewType(), interview.getDifficulty(),
+                interview.getQuestionCount(), interview.getInterviewerPersonality()
         );
     }
 
-    public InterviewSession toDomain(List<CsSubject> csSubjects, List<String> portfolioLinks) {
-        return InterviewSession.of(id, userId, interviewType, difficulty, questionCount,
+    public Interview toDomain(List<CsSubject> csSubjects, List<String> portfolioLinks) {
+        return Interview.of(id, userId, interviewType, difficulty, questionCount,
                 interviewerPersonality, csSubjects, portfolioLinks);
     }
 }
