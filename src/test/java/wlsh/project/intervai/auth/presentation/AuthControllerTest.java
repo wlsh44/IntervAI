@@ -1,5 +1,6 @@
 package wlsh.project.intervai.auth.presentation;
 
+import jakarta.servlet.http.Cookie;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,10 @@ class AuthControllerTest extends AcceptanceTest {
                 .willReturn(ResponseCookie.from("refresh_token", "new-refresh-token").build());
 
         RestAssuredMockMvc.given()
-                .cookie("refresh_token", "old-refresh-token")
+                .postProcessors(request -> {
+                    request.setCookies(new Cookie("refresh_token", "old-refresh-token"));
+                    return request;
+                })
         .when()
                 .post("/api/auth/refresh")
         .then()
@@ -70,7 +74,10 @@ class AuthControllerTest extends AcceptanceTest {
                 .willReturn(ResponseCookie.from("refresh_token", "").maxAge(0).build());
 
         RestAssuredMockMvc.given()
-                .cookie("refresh_token", "invalid-token")
+                .postProcessors(request -> {
+                    request.setCookies(new Cookie("refresh_token", "invalid-token"));
+                    return request;
+                })
         .when()
                 .post("/api/auth/refresh")
         .then()
@@ -86,7 +93,10 @@ class AuthControllerTest extends AcceptanceTest {
                 .willReturn(ResponseCookie.from("refresh_token", "").maxAge(0).build());
 
         RestAssuredMockMvc.given()
-                .cookie("refresh_token", "expired-token")
+                .postProcessors(request -> {
+                    request.setCookies(new Cookie("refresh_token", "expired-token"));
+                    return request;
+                })
         .when()
                 .post("/api/auth/refresh")
         .then()
