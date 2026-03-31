@@ -28,6 +28,11 @@ public enum ErrorCode {
     PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "프로필을 찾을 수 없습니다."),
     PROFILE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 프로필이 존재합니다."),
     PROFILE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "본인의 프로필만 접근할 수 있습니다."),
+
+    // Interview
+    INVALID_QUESTION_COUNT(HttpStatus.BAD_REQUEST, "질문 개수는 5개 이상 10개 이하여야 합니다."),
+    CS_SUBJECT_REQUIRED(HttpStatus.BAD_REQUEST, "CS 면접에는 상세 분야 설정이 필요합니다."),
+    PORTFOLIO_LINK_REQUIRED(HttpStatus.BAD_REQUEST, "포트폴리오 면접에는 포트폴리오 링크가 필요합니다."),
     ;
 
     private final HttpStatus httpStatus;

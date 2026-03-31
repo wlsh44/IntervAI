@@ -2,6 +2,7 @@ package wlsh.project.intervai.profile.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import wlsh.project.intervai.common.entity.EntityStatus;
 import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
 import wlsh.project.intervai.profile.infra.ProfileEntity;
