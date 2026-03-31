@@ -10,24 +10,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wlsh.project.intervai.common.auth.domain.UserInfo;
-import wlsh.project.intervai.interview.application.InterviewSessionService;
-import wlsh.project.intervai.interview.domain.InterviewSession;
-import wlsh.project.intervai.interview.presentation.dto.CreateInterviewSessionRequest;
-import wlsh.project.intervai.interview.presentation.dto.CreateInterviewSessionResponse;
+import wlsh.project.intervai.interview.application.InterviewService;
+import wlsh.project.intervai.interview.domain.Interview;
+import wlsh.project.intervai.interview.presentation.dto.CreateInterviewRequest;
+import wlsh.project.intervai.interview.presentation.dto.CreateInterviewResponse;
 
 @RestController
-@RequestMapping("/api/interview-sessions")
+@RequestMapping("/api/interviews")
 @RequiredArgsConstructor
-public class InterviewSessionController {
+public class InterviewController {
 
-    private final InterviewSessionService interviewSessionService;
+    private final InterviewService interviewService;
 
     @PostMapping
-    public ResponseEntity<CreateInterviewSessionResponse> create(
+    public ResponseEntity<CreateInterviewResponse> create(
             @AuthenticationPrincipal UserInfo userInfo,
-            @Valid @RequestBody CreateInterviewSessionRequest request) {
-        InterviewSession session = interviewSessionService.create(userInfo.userId(), request.toCommand());
+            @Valid @RequestBody CreateInterviewRequest request) {
+        Interview interview = interviewService.create(userInfo.userId(), request.toCommand());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(CreateInterviewSessionResponse.of(session));
+                .body(CreateInterviewResponse.of(interview));
     }
 }

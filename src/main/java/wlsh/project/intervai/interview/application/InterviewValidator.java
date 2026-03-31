@@ -4,17 +4,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
-import wlsh.project.intervai.interview.domain.CreateInterviewSessionCommand;
+import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.InterviewType;
 
 @Component
 @RequiredArgsConstructor
-public class InterviewSessionValidator {
+public class InterviewValidator {
 
     private static final int MINIMUM_QUESTION = 5;
     private static final int MAXIMUM_QUESTION = 10;
 
-    public void validate(CreateInterviewSessionCommand command) {
+    public void validate(CreateInterviewCommand command) {
         validateQuestionCount(command.questionCount());
         validateCsSubjects(command);
         validatePortfolioLinks(command);
@@ -26,7 +26,7 @@ public class InterviewSessionValidator {
         }
     }
 
-    private void validateCsSubjects(CreateInterviewSessionCommand command) {
+    private void validateCsSubjects(CreateInterviewCommand command) {
         InterviewType type = command.interviewType();
         if (type == InterviewType.CS || type == InterviewType.ALL) {
             if (command.csSubjects() == null || command.csSubjects().isEmpty()) {
@@ -35,7 +35,7 @@ public class InterviewSessionValidator {
         }
     }
 
-    private void validatePortfolioLinks(CreateInterviewSessionCommand command) {
+    private void validatePortfolioLinks(CreateInterviewCommand command) {
         InterviewType type = command.interviewType();
         if (type == InterviewType.PORTFOLIO || type == InterviewType.ALL) {
             if (command.portfolioLinks() == null || command.portfolioLinks().isEmpty()) {

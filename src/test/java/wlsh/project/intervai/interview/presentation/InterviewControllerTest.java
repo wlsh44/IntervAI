@@ -8,15 +8,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import wlsh.project.intervai.common.AcceptanceTest;
-import wlsh.project.intervai.interview.application.InterviewSessionService;
+import wlsh.project.intervai.interview.application.InterviewService;
 import wlsh.project.intervai.interview.domain.CsCategory;
 import wlsh.project.intervai.interview.domain.CsSubject;
-import wlsh.project.intervai.interview.domain.CreateInterviewSessionCommand;
+import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.Difficulty;
-import wlsh.project.intervai.interview.domain.InterviewSession;
+import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewType;
 import wlsh.project.intervai.interview.domain.InterviewerPersonality;
-import wlsh.project.intervai.interview.presentation.dto.CreateInterviewSessionRequest;
+import wlsh.project.intervai.interview.presentation.dto.CreateInterviewRequest;
 import wlsh.project.intervai.interview.presentation.dto.CsSubjectRequest;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -25,27 +25,27 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
-@WebMvcTest(InterviewSessionController.class)
-class InterviewSessionControllerTest extends AcceptanceTest {
+@WebMvcTest(InterviewController.class)
+class InterviewControllerTest extends AcceptanceTest {
 
     @MockitoBean
-    private InterviewSessionService interviewSessionService;
+    private InterviewService interviewService;
 
     @Test
-    @DisplayName("CS 면접 세션 생성 성공 시 201과 세션 정보가 반환된다")
-    void createCsSession() throws Exception {
+    @DisplayName("CS 면접 생성 성공 시 201과 면접 정보가 반환된다")
+    void createCsInterview() throws Exception {
         Long userId = 1L;
         List<CsSubject> csSubjects = List.of(
                 CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map", "List")),
                 CsSubject.of(CsCategory.ALGORITHM, List.of("정렬", "dfs/bfs")));
-        InterviewSession session = InterviewSession.of(1L, userId, InterviewType.CS, Difficulty.JUNIOR,
+        Interview interview = Interview.of(1L, userId, InterviewType.CS, Difficulty.JUNIOR,
                 7, InterviewerPersonality.FRIENDLY, csSubjects, List.of());
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
-        given(interviewSessionService.create(eq(userId), any(CreateInterviewSessionCommand.class)))
-                .willReturn(session);
+        given(interviewService.create(eq(userId), any(CreateInterviewCommand.class)))
+                .willReturn(interview);
 
-        CreateInterviewSessionRequest request = new CreateInterviewSessionRequest(
+        CreateInterviewRequest request = new CreateInterviewRequest(
                 InterviewType.CS, Difficulty.JUNIOR, 7, InterviewerPersonality.FRIENDLY,
                 List.of(
                         new CsSubjectRequest(CsCategory.DATA_STRUCTURE, List.of("Map", "List")),
@@ -57,7 +57,7 @@ class InterviewSessionControllerTest extends AcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(mapper.writeValueAsString(request))
         .when()
-                .post("/api/interview-sessions")
+                .post("/api/interviews")
         .then()
                 .statusCode(201)
                 .body("id", equalTo(1))
@@ -73,18 +73,18 @@ class InterviewSessionControllerTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("포트폴리오 면접 세션 생성 성공 시 201과 세션 정보가 반환된다")
-    void createPortfolioSession() throws Exception {
+    @DisplayName("포트폴리오 면접 생성 성공 시 201과 면접 정보가 반환된다")
+    void createPortfolioInterview() throws Exception {
         Long userId = 1L;
         List<String> portfolioLinks = List.of("https://github.com/user/project");
-        InterviewSession session = InterviewSession.of(2L, userId, InterviewType.PORTFOLIO, Difficulty.SENIOR,
+        Interview interview = Interview.of(2L, userId, InterviewType.PORTFOLIO, Difficulty.SENIOR,
                 5, InterviewerPersonality.AGGRESSIVE, List.of(), portfolioLinks);
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
-        given(interviewSessionService.create(eq(userId), any(CreateInterviewSessionCommand.class)))
-                .willReturn(session);
+        given(interviewService.create(eq(userId), any(CreateInterviewCommand.class)))
+                .willReturn(interview);
 
-        CreateInterviewSessionRequest request = new CreateInterviewSessionRequest(
+        CreateInterviewRequest request = new CreateInterviewRequest(
                 InterviewType.PORTFOLIO, Difficulty.SENIOR, 5, InterviewerPersonality.AGGRESSIVE,
                 null, List.of("https://github.com/user/project"));
 
@@ -93,7 +93,7 @@ class InterviewSessionControllerTest extends AcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(mapper.writeValueAsString(request))
         .when()
-                .post("/api/interview-sessions")
+                .post("/api/interviews")
         .then()
                 .statusCode(201)
                 .body("id", equalTo(2))
@@ -106,19 +106,19 @@ class InterviewSessionControllerTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("전체 면접 세션 생성 성공 시 201과 세션 정보가 반환된다")
-    void createAllSession() throws Exception {
+    @DisplayName("전체 면접 생성 성공 시 201과 면접 정보가 반환된다")
+    void createAllInterview() throws Exception {
         Long userId = 1L;
         List<CsSubject> csSubjects = List.of(CsSubject.of(CsCategory.NETWORK, List.of("http/https")));
         List<String> portfolioLinks = List.of("https://github.com/user/project");
-        InterviewSession session = InterviewSession.of(3L, userId, InterviewType.ALL, Difficulty.ENTRY,
+        Interview interview = Interview.of(3L, userId, InterviewType.ALL, Difficulty.ENTRY,
                 10, InterviewerPersonality.NORMAL, csSubjects, portfolioLinks);
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
-        given(interviewSessionService.create(eq(userId), any(CreateInterviewSessionCommand.class)))
-                .willReturn(session);
+        given(interviewService.create(eq(userId), any(CreateInterviewCommand.class)))
+                .willReturn(interview);
 
-        CreateInterviewSessionRequest request = new CreateInterviewSessionRequest(
+        CreateInterviewRequest request = new CreateInterviewRequest(
                 InterviewType.ALL, Difficulty.ENTRY, 10, InterviewerPersonality.NORMAL,
                 List.of(new CsSubjectRequest(CsCategory.NETWORK, List.of("http/https"))),
                 List.of("https://github.com/user/project"));
@@ -128,7 +128,7 @@ class InterviewSessionControllerTest extends AcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(mapper.writeValueAsString(request))
         .when()
-                .post("/api/interview-sessions")
+                .post("/api/interviews")
         .then()
                 .statusCode(201)
                 .body("id", equalTo(3))
@@ -139,7 +139,7 @@ class InterviewSessionControllerTest extends AcceptanceTest {
 
     @Test
     @DisplayName("면접 유형이 없으면 400이 반환된다")
-    void createSessionWithoutInterviewType() throws Exception {
+    void createInterviewWithoutInterviewType() throws Exception {
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(1L);
 
         String body = """
@@ -156,14 +156,14 @@ class InterviewSessionControllerTest extends AcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(body)
         .when()
-                .post("/api/interview-sessions")
+                .post("/api/interviews")
         .then()
                 .statusCode(400);
     }
 
     @Test
     @DisplayName("숙련도가 없으면 400이 반환된다")
-    void createSessionWithoutDifficulty() throws Exception {
+    void createInterviewWithoutDifficulty() throws Exception {
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(1L);
 
         String body = """
@@ -180,14 +180,14 @@ class InterviewSessionControllerTest extends AcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(body)
         .when()
-                .post("/api/interview-sessions")
+                .post("/api/interviews")
         .then()
                 .statusCode(400);
     }
 
     @Test
     @DisplayName("질문 개수가 없으면 400이 반환된다")
-    void createSessionWithoutQuestionCount() throws Exception {
+    void createInterviewWithoutQuestionCount() throws Exception {
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(1L);
 
         String body = """
@@ -204,14 +204,14 @@ class InterviewSessionControllerTest extends AcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(body)
         .when()
-                .post("/api/interview-sessions")
+                .post("/api/interviews")
         .then()
                 .statusCode(400);
     }
 
     @Test
     @DisplayName("면접관 성격이 없으면 400이 반환된다")
-    void createSessionWithoutInterviewerPersonality() throws Exception {
+    void createInterviewWithoutInterviewerPersonality() throws Exception {
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(1L);
 
         String body = """
@@ -228,15 +228,15 @@ class InterviewSessionControllerTest extends AcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(body)
         .when()
-                .post("/api/interview-sessions")
+                .post("/api/interviews")
         .then()
                 .statusCode(400);
     }
 
     @Test
-    @DisplayName("인증 없이 면접 세션 생성 시 403이 반환된다")
-    void createSessionWithoutAuth() throws Exception {
-        CreateInterviewSessionRequest request = new CreateInterviewSessionRequest(
+    @DisplayName("인증 없이 면접 생성 시 403이 반환된다")
+    void createInterviewWithoutAuth() throws Exception {
+        CreateInterviewRequest request = new CreateInterviewRequest(
                 InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
                 List.of(new CsSubjectRequest(CsCategory.DATA_STRUCTURE, List.of("Map"))),
                 null);
@@ -245,7 +245,7 @@ class InterviewSessionControllerTest extends AcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(mapper.writeValueAsString(request))
         .when()
-                .post("/api/interview-sessions")
+                .post("/api/interviews")
         .then()
                 .statusCode(403);
     }

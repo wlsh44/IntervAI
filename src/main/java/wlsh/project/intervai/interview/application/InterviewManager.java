@@ -4,51 +4,52 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.CsSubject;
-import wlsh.project.intervai.interview.domain.InterviewSession;
+import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.infra.InterviewCsSubjectEntity;
 import wlsh.project.intervai.interview.infra.InterviewCsSubjectRepository;
+import wlsh.project.intervai.interview.infra.InterviewEntity;
 import wlsh.project.intervai.interview.infra.InterviewPortfolioLinkEntity;
 import wlsh.project.intervai.interview.infra.InterviewPortfolioLinkRepository;
-import wlsh.project.intervai.interview.infra.InterviewSessionEntity;
-import wlsh.project.intervai.interview.infra.InterviewSessionRepository;
+import wlsh.project.intervai.interview.infra.InterviewRepository;
 
 @Component
 @RequiredArgsConstructor
-public class InterviewSessionManager {
+public class InterviewManager {
 
-    private final InterviewSessionRepository interviewSessionRepository;
+    private final InterviewRepository interviewRepository;
     private final InterviewCsSubjectRepository interviewCsSubjectRepository;
     private final InterviewPortfolioLinkRepository interviewPortfolioLinkRepository;
 
     @Transactional
-    public InterviewSession create(InterviewSession session) {
-        InterviewSessionEntity sessionEntity = interviewSessionRepository.save(
-                InterviewSessionEntity.from(session));
+    public Interview create(Long userId, CreateInterviewCommand command) {
+        Interview interview = Interview.create(userId, command);
+        InterviewEntity interviewEntity = interviewRepository.save(InterviewEntity.from(interview));
 
-        saveCsSubjects(sessionEntity.getId(), session.getCsSubjects());
-        savePortfolioLinks(sessionEntity.getId(), session.getPortfolioLinks());
+        saveCsSubjects(interviewEntity.getId(), interview.getCsSubjects());
+        savePortfolioLinks(interviewEntity.getId(), interview.getPortfolioLinks());
 
-        return sessionEntity.toDomain(session.getCsSubjects(), session.getPortfolioLinks());
+        return interviewEntity.toDomain(interview.getCsSubjects(), interview.getPortfolioLinks());
     }
 
-    private void saveCsSubjects(Long sessionId, List<CsSubject> csSubjects) {
+    private void saveCsSubjects(Long interviewId, List<CsSubject> csSubjects) {
         if (csSubjects == null || csSubjects.isEmpty()) {
             return;
         }
         List<InterviewCsSubjectEntity> entities = csSubjects.stream()
                 .flatMap(subject -> subject.getTopics().stream()
-                        .map(topic -> InterviewCsSubjectEntity.of(sessionId, subject.getCategory(), topic)))
+                        .map(topic -> InterviewCsSubjectEntity.of(interviewId, subject.getCategory(), topic)))
                 .toList();
         interviewCsSubjectRepository.saveAll(entities);
     }
 
-    private void savePortfolioLinks(Long sessionId, List<String> portfolioLinks) {
+    private void savePortfolioLinks(Long interviewId, List<String> portfolioLinks) {
         if (portfolioLinks == null || portfolioLinks.isEmpty()) {
             return;
         }
         List<InterviewPortfolioLinkEntity> entities = portfolioLinks.stream()
-                .map(url -> InterviewPortfolioLinkEntity.of(sessionId, url))
+                .map(url -> InterviewPortfolioLinkEntity.of(interviewId, url))
                 .toList();
         interviewPortfolioLinkRepository.saveAll(entities);
     }

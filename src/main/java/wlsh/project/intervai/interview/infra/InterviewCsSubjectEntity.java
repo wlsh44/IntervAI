@@ -25,7 +25,7 @@ public class InterviewCsSubjectEntity extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Long sessionId;
+    private Long interviewId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -34,13 +34,13 @@ public class InterviewCsSubjectEntity extends BaseEntity {
     @Column(nullable = false)
     private String topic;
 
-    private InterviewCsSubjectEntity(Long sessionId, CsCategory category, String topic) {
-        this.sessionId = sessionId;
+    private InterviewCsSubjectEntity(Long interviewId, CsCategory category, String topic) {
+        this.interviewId = interviewId;
         this.category = category;
         this.topic = topic;
     }
 
-    public static InterviewCsSubjectEntity of(Long sessionId, CsCategory category, String topic) {
-        return new InterviewCsSubjectEntity(sessionId, category, topic);
+    public static InterviewCsSubjectEntity of(Long interviewId, CsCategory category, String topic) {
+        return new InterviewCsSubjectEntity(interviewId, category, topic);
     }
 }

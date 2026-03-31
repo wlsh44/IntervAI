@@ -2,11 +2,11 @@ package wlsh.project.intervai.interview.presentation.dto;
 
 import java.util.List;
 import wlsh.project.intervai.interview.domain.Difficulty;
-import wlsh.project.intervai.interview.domain.InterviewSession;
+import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewType;
 import wlsh.project.intervai.interview.domain.InterviewerPersonality;
 
-public record CreateInterviewSessionResponse(
+public record CreateInterviewResponse(
         Long id,
         InterviewType interviewType,
         Difficulty difficulty,
@@ -15,18 +15,18 @@ public record CreateInterviewSessionResponse(
         List<CsSubjectResponse> csSubjects,
         List<String> portfolioLinks
 ) {
-    public static CreateInterviewSessionResponse of(InterviewSession session) {
-        List<CsSubjectResponse> csSubjectResponses = session.getCsSubjects().stream()
+    public static CreateInterviewResponse of(Interview interview) {
+        List<CsSubjectResponse> csSubjectResponses = interview.getCsSubjects().stream()
                 .map(CsSubjectResponse::of)
                 .toList();
-        return new CreateInterviewSessionResponse(
-                session.getId(),
-                session.getInterviewType(),
-                session.getDifficulty(),
-                session.getQuestionCount(),
-                session.getInterviewerPersonality(),
+        return new CreateInterviewResponse(
+                interview.getId(),
+                interview.getInterviewType(),
+                interview.getDifficulty(),
+                interview.getQuestionCount(),
+                interview.getInterviewerPersonality(),
                 csSubjectResponses,
-                session.getPortfolioLinks()
+                interview.getPortfolioLinks()
         );
     }
 }
