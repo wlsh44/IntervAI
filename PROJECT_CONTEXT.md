@@ -97,7 +97,7 @@ ChatGPT처럼 면접 대화 기록을 저장하고 이어볼 수 있다.
 
 ---
 
-## 현재 구현 상태 (Stage 1 완료)
+## 현재 구현 상태 (Stage 1 완료, Stage 2 진행 중)
 
 ### user 도메인
 - 회원가입: 닉네임/비밀번호 검증, BCrypt 암호화
@@ -108,6 +108,15 @@ ChatGPT처럼 면접 대화 기록을 저장하고 이어볼 수 있다.
 - `AuthService` → `RefreshTokenValidator` + `RefreshTokenRotator` + `TokenPairGenerator`
 - Refresh Token은 HttpOnly 쿠키로 관리 (`RefreshTokenCookieHandler`)
 - `AccessTokenProvider`, `RefreshTokenProvider`, `JwtProvider`로 토큰 생성/파싱 분리
+- `JwtAuthenticationFilter` — Bearer 토큰 파싱 → `UserInfo`를 SecurityContext에 설정
+
+### profile 도메인
+- 프로필 수정/조회: 희망 직무, 경력 단계, 기술 스택(다대다), 포트폴리오 링크
+- `ProfileService` → `ProfileValidator` (소유자 검증) + `ProfileManager` (CUD) + `ProfileFinder` (조회)
+- `TechStackManager` — 기술 스택 findOrCreate (기존 것 재사용, 없으면 생성)
+- 본인 프로필 검증: `ProfileValidator.validateProfileOwner()` → 타인 접근 시 `PROFILE_ACCESS_DENIED` (403)
+- 기술 스택은 `TechStackEntity` (공유) + `ProfileTechStackEntity` (매핑)로 다대다 관계 관리
+- 포트폴리오 링크는 `PortfolioLinkEntity`로 1:N 관계
 
 ### common 인프라
 - `BaseEntity` (soft delete, `EntityStatus` 기반 상태 전이)
@@ -117,10 +126,13 @@ ChatGPT처럼 면접 대화 기록을 저장하고 이어볼 수 있다.
 
 ### 구현된 API 엔드포인트
 
-| Method | Endpoint | 설명 |
-|--------|----------|------|
-| POST | `/api/users/sign-up` | 회원가입 |
-| POST | `/api/auth/refresh` | Access Token 갱신 (Refresh Token 쿠키 기반) |
+| Method | Endpoint | 설명 | 인증 |
+|--------|----------|------|------|
+| POST | `/api/users/sign-up` | 회원가입 | X |
+| POST | `/api/users/login` | 로그인 | X |
+| POST | `/api/auth/refresh` | Access Token 갱신 (Refresh Token 쿠키 기반) | X |
+| PUT | `/api/profile/{profileId}` | 프로필 수정 (본인 검증) | O |
+| GET | `/api/profile/{profileId}` | 프로필 조회 (본인 검증) | O |
 
 ### 현재 패키지 구조
 
@@ -131,46 +143,72 @@ wlsh.project.intervai
 │   │   ├── application/    # AuthService, JwtProvider, TokenPairGenerator, RefreshToken*
 │   │   ├── domain/         # TokenPair, UserInfo
 │   │   ├── infra/          # RefreshTokenRedisRepository
-│   │   └── presentation/   # AuthController, dto/, cookie/
+│   │   └── presentation/   # AuthController, dto/, cookie/, filter/JwtAuthenticationFilter
 │   ├── config/             # SecurityConfig, JpaAuditingConfig
 │   ├── entity/             # BaseEntity, EntityStatus
 │   └── exception/          # CustomException, ErrorCode, ErrorResponse, GlobalExceptionHandler
-└── user
-    ├── application/        # UserService, UserManager, UserValidator
-    ├── domain/             # User, CreateUserCommand, CreateUserResult
-    ├── infra/              # UserEntity, UserRepository
-    └── presentation/       # UserController, dto/
+├── user
+│   ├── application/        # UserService, UserManager, UserValidator
+│   ├── domain/             # User, CreateUserCommand, CreateUserResult, LoginCommand, LoginResult
+│   ├── infra/              # UserEntity, UserRepository
+│   └── presentation/       # UserController, dto/
+└── profile
+    ├── application/        # ProfileService, ProfileManager, ProfileFinder, ProfileValidator, TechStackManager
+    ├── domain/             # Profile, CreateProfileCommand, UpdateProfileCommand, JobCategory, CareerLevel
+    ├── infra/              # ProfileEntity, ProfileRepository, TechStackEntity, TechStackRepository,
+    │                       #   ProfileTechStackEntity, ProfileTechStackRepository, PortfolioLinkEntity, PortfolioLinkRepository
+    └── presentation/       # ProfileController, dto/ProfileResponse, dto/UpdateProfileRequest
 ```
 
 ---
 
-## 주요 도메인 모델 (초안)
+## 주요 도메인 모델
+
+### 구현 완료
 
 ```
-User
-  - id, passwordHash
-  - nickname
-
-Portfolio
-  - id, userId
-  - githubUrl
-  - description
-
-MetaInfo
-  - id, portfolioId
-  - jobCategory (FRONTEND, BACKEND, FULLSTACK, ANDROID, IOS, DEVOPS, DATA_ENGINEER, ML_ENGINEER)
-  - careerLevel (ENTRY, JUNIOR, SENIOR)
-
-Tech
+User                          # user 도메인
   - id
-  - name
-  
-TechStack
-  - id
-  - metaInfo, techId
+  - nickname (unique)
+  - passwordHash
 
+Profile                       # profile 도메인, User와 1:1
+  - id
+  - userId (unique)
+  - jobCategory: JobCategory
+  - careerLevel: CareerLevel
+  - techStacks: List<String>       # TechStack + ProfileTechStack으로 다대다 관리
+  - portfolioLinks: List<String>   # PortfolioLink로 1:N 관리
+
+TechStack                     # 공유 기술 스택 (여러 프로필에서 재사용)
+  - id
+  - name (unique, max 100)
+
+ProfileTechStack              # Profile ↔ TechStack 매핑 테이블
+  - id
+  - profileId
+  - techStackId
+
+PortfolioLink                 # 프로필별 포트폴리오 URL
+  - id
+  - profileId
+  - url (max 500)
+
+모든 Entity는 BaseEntity 상속: status (ACTIVE/DELETED), createdAt, modifiedAt
+```
+
+### Enum 정의
+
+```
+JobCategory: FRONTEND, BACKEND, FULLSTACK, ML_ENGINEER, ANDROID, IOS, DATA_ENGINEER, DEVOPS
+CareerLevel: ENTRY, JUNIOR, SENIOR
+```
+
+### 미구현 (예정)
+
+```
 InterviewSession
-  - id, userId, portfolioId
+  - id, userId, profileId
   - type (CS / PORTFOLIO / ALL)
   - difficulty (ENTRY / JUNIOR / SENIOR)
   - status (IN_PROGRESS / COMPLETED)
@@ -183,8 +221,6 @@ Message
   - type (ANSWER / FEEDBACK / QUESTION)
   - content
   - sequence
-  
-기본 값으로 createdAt, modifiedAt 포함
 ```
 
 ---
@@ -193,8 +229,8 @@ Message
 
 | 단계 | 내용 | 상태 |
 |------|------|------|
-| Stage 1 | 사용자 인증 (회원가입, JWT 토큰 발급/갱신) | ✅ 완료 |
-| Stage 2 | 기본 정보 및 포트폴리오 등록 | ⬜ 예정 |
+| Stage 1 | 사용자 인증 (회원가입, 로그인, JWT 토큰 발급/갱신) | ✅ 완료 |
+| Stage 2 | 기본 정보 및 포트폴리오 등록 | 🔧 진행 중 |
 | Stage 3 | LLM 연동 기본 채팅 (CS 질문 생성 + 스트리밍) | ⬜ 예정 |
 | Stage 4 | 꼬리 질문 + 실시간 피드백 | ⬜ 예정 |
 | Stage 5 | 세션 기록 저장 및 히스토리 UI | ⬜ 예정 |
