@@ -42,6 +42,10 @@ public enum ErrorCode {
 
     // Question
     QUESTION_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "질문 개수를 초과했습니다."),
+    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "질문을 찾을 수 없습니다."),
+
+    // Answer
+    ANSWER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 답변이 존재합니다."),
     ;
 
     private final HttpStatus httpStatus;
