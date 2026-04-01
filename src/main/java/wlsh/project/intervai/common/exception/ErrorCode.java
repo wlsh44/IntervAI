@@ -35,6 +35,13 @@ public enum ErrorCode {
     PORTFOLIO_LINK_REQUIRED(HttpStatus.BAD_REQUEST, "포트폴리오 면접에는 포트폴리오 링크가 필요합니다."),
     INTERVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "면접을 찾을 수 없습니다."),
     INTERVIEW_ACCESS_DENIED(HttpStatus.FORBIDDEN, "본인의 면접만 접근할 수 있습니다."),
+
+    // Session
+    SESSION_NOT_FOUND(HttpStatus.NOT_FOUND, "면접 세션을 찾을 수 없습니다."),
+    SESSION_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 종료된 면접 세션입니다."),
+
+    // Question
+    QUESTION_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "질문 개수를 초과했습니다."),
     ;
 
     private final HttpStatus httpStatus;

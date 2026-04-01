@@ -67,4 +67,9 @@ public class InterviewEntity extends BaseEntity {
         return Interview.of(id, userId, interviewType, difficulty, questionCount,
                 interviewerPersonality, csSubjects, portfolioLinks);
     }
+
+    public Interview toDomain() {
+        return Interview.of(id, userId, interviewType, difficulty, questionCount,
+                interviewerPersonality, List.of(), List.of());
+    }
 }
