@@ -14,7 +14,7 @@ import wlsh.project.intervai.interview.domain.CsSubject;
 import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.Difficulty;
 import wlsh.project.intervai.interview.domain.InterviewType;
-import wlsh.project.intervai.interview.domain.InterviewerPersonality;
+import wlsh.project.intervai.interview.domain.InterviewerTone;
 
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -29,7 +29,7 @@ class InterviewValidatorTest extends IntegrationTest {
     @DisplayName("질문 개수가 5~10이면 검증을 통과한다")
     void validQuestionCount(int questionCount) {
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.CS, Difficulty.JUNIOR, questionCount, InterviewerPersonality.FRIENDLY,
+                InterviewType.CS, Difficulty.JUNIOR, questionCount, InterviewerTone.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
 
         assertThatNoException()
@@ -41,7 +41,7 @@ class InterviewValidatorTest extends IntegrationTest {
     @DisplayName("질문 개수가 5~10 범위 밖이면 예외가 발생한다")
     void invalidQuestionCount(int questionCount) {
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.CS, Difficulty.JUNIOR, questionCount, InterviewerPersonality.FRIENDLY,
+                InterviewType.CS, Difficulty.JUNIOR, questionCount, InterviewerTone.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
 
         assertThatThrownBy(() -> interviewValidator.validate(command))
@@ -53,7 +53,7 @@ class InterviewValidatorTest extends IntegrationTest {
     @DisplayName("CS 면접에 상세 분야가 있으면 검증을 통과한다")
     void csInterviewWithSubjects() {
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
+                InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.ALGORITHM, List.of("정렬"))), List.of());
 
         assertThatNoException()
@@ -64,7 +64,7 @@ class InterviewValidatorTest extends IntegrationTest {
     @DisplayName("CS 면접에 상세 분야가 없으면 예외가 발생한다")
     void csInterviewWithoutSubjects() {
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
+                InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
                 List.of(), List.of());
 
         assertThatThrownBy(() -> interviewValidator.validate(command))
@@ -76,7 +76,7 @@ class InterviewValidatorTest extends IntegrationTest {
     @DisplayName("포트폴리오 면접에 링크가 있으면 검증을 통과한다")
     void portfolioInterviewWithLinks() {
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.PORTFOLIO, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
+                InterviewType.PORTFOLIO, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
                 List.of(), List.of("https://github.com/user/project"));
 
         assertThatNoException()
@@ -87,7 +87,7 @@ class InterviewValidatorTest extends IntegrationTest {
     @DisplayName("포트폴리오 면접에 링크가 없으면 예외가 발생한다")
     void portfolioInterviewWithoutLinks() {
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.PORTFOLIO, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
+                InterviewType.PORTFOLIO, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
                 List.of(), List.of());
 
         assertThatThrownBy(() -> interviewValidator.validate(command))
@@ -99,7 +99,7 @@ class InterviewValidatorTest extends IntegrationTest {
     @DisplayName("전체 면접에 상세 분야와 링크가 모두 있으면 검증을 통과한다")
     void allInterviewWithBoth() {
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
+                InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATABASE, List.of("인덱스"))),
                 List.of("https://github.com/user/project"));
 
@@ -111,7 +111,7 @@ class InterviewValidatorTest extends IntegrationTest {
     @DisplayName("전체 면접에 상세 분야가 없으면 예외가 발생한다")
     void allInterviewWithoutSubjects() {
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
+                InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
                 List.of(), List.of("https://github.com/user/project"));
 
         assertThatThrownBy(() -> interviewValidator.validate(command))
@@ -123,7 +123,7 @@ class InterviewValidatorTest extends IntegrationTest {
     @DisplayName("전체 면접에 포트폴리오 링크가 없으면 예외가 발생한다")
     void allInterviewWithoutLinks() {
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
+                InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
 
         assertThatThrownBy(() -> interviewValidator.validate(command))
