@@ -13,7 +13,7 @@ import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.Difficulty;
 import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewType;
-import wlsh.project.intervai.interview.domain.InterviewerPersonality;
+import wlsh.project.intervai.interview.domain.InterviewerTone;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -32,7 +32,7 @@ class InterviewServiceTest extends IntegrationTest {
                 CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map", "List")),
                 CsSubject.of(CsCategory.ALGORITHM, List.of("정렬")));
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.CS, Difficulty.JUNIOR, 7, InterviewerPersonality.FRIENDLY,
+                InterviewType.CS, Difficulty.JUNIOR, 7, InterviewerTone.FRIENDLY,
                 csSubjects, List.of());
 
         // when
@@ -44,7 +44,7 @@ class InterviewServiceTest extends IntegrationTest {
         assertThat(interview.getInterviewType()).isEqualTo(InterviewType.CS);
         assertThat(interview.getDifficulty()).isEqualTo(Difficulty.JUNIOR);
         assertThat(interview.getQuestionCount()).isEqualTo(7);
-        assertThat(interview.getInterviewerPersonality()).isEqualTo(InterviewerPersonality.FRIENDLY);
+        assertThat(interview.getInterviewerTone()).isEqualTo(InterviewerTone.FRIENDLY);
         assertThat(interview.getCsSubjects()).hasSize(2);
         assertThat(interview.getPortfolioLinks()).isEmpty();
     }
@@ -55,7 +55,7 @@ class InterviewServiceTest extends IntegrationTest {
         // given
         Long userId = 1L;
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.PORTFOLIO, Difficulty.SENIOR, 5, InterviewerPersonality.AGGRESSIVE,
+                InterviewType.PORTFOLIO, Difficulty.SENIOR, 5, InterviewerTone.AGGRESSIVE,
                 List.of(), List.of("https://github.com/user/project"));
 
         // when
@@ -66,7 +66,7 @@ class InterviewServiceTest extends IntegrationTest {
         assertThat(interview.getInterviewType()).isEqualTo(InterviewType.PORTFOLIO);
         assertThat(interview.getDifficulty()).isEqualTo(Difficulty.SENIOR);
         assertThat(interview.getQuestionCount()).isEqualTo(5);
-        assertThat(interview.getInterviewerPersonality()).isEqualTo(InterviewerPersonality.AGGRESSIVE);
+        assertThat(interview.getInterviewerTone()).isEqualTo(InterviewerTone.AGGRESSIVE);
         assertThat(interview.getCsSubjects()).isEmpty();
         assertThat(interview.getPortfolioLinks()).containsExactly("https://github.com/user/project");
     }
@@ -79,7 +79,7 @@ class InterviewServiceTest extends IntegrationTest {
         List<CsSubject> csSubjects = List.of(
                 CsSubject.of(CsCategory.NETWORK, List.of("http/https", "tcp/udp")));
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.ALL, Difficulty.ENTRY, 10, InterviewerPersonality.NORMAL,
+                InterviewType.ALL, Difficulty.ENTRY, 10, InterviewerTone.NORMAL,
                 csSubjects, List.of("https://github.com/user/project"));
 
         // when
@@ -98,7 +98,7 @@ class InterviewServiceTest extends IntegrationTest {
         // given
         Long userId = 1L;
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.CS, Difficulty.JUNIOR, 4, InterviewerPersonality.FRIENDLY,
+                InterviewType.CS, Difficulty.JUNIOR, 4, InterviewerTone.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
 
         // when & then
@@ -113,7 +113,7 @@ class InterviewServiceTest extends IntegrationTest {
         // given
         Long userId = 1L;
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.CS, Difficulty.JUNIOR, 11, InterviewerPersonality.FRIENDLY,
+                InterviewType.CS, Difficulty.JUNIOR, 11, InterviewerTone.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
 
         // when & then
@@ -128,7 +128,7 @@ class InterviewServiceTest extends IntegrationTest {
         // given
         Long userId = 1L;
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
+                InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
                 List.of(), List.of());
 
         // when & then
@@ -143,7 +143,7 @@ class InterviewServiceTest extends IntegrationTest {
         // given
         Long userId = 1L;
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.PORTFOLIO, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
+                InterviewType.PORTFOLIO, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
                 List.of(), List.of());
 
         // when & then
@@ -158,7 +158,7 @@ class InterviewServiceTest extends IntegrationTest {
         // given
         Long userId = 1L;
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
+                InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
                 List.of(), List.of("https://github.com/user/project"));
 
         // when & then
@@ -173,7 +173,7 @@ class InterviewServiceTest extends IntegrationTest {
         // given
         Long userId = 1L;
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
+                InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
 
         // when & then

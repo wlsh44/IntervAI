@@ -14,7 +14,7 @@ import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.Difficulty;
 import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewType;
-import wlsh.project.intervai.interview.domain.InterviewerPersonality;
+import wlsh.project.intervai.interview.domain.InterviewerTone;
 import wlsh.project.intervai.session.domain.InterviewSession;
 import wlsh.project.intervai.session.domain.InterviewSessionStatus;
 
@@ -77,7 +77,7 @@ class InterviewSessionServiceTest extends IntegrationTest {
 
     private Interview createInterview(Long userId) {
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerPersonality.FRIENDLY,
+                InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
         return interviewManager.create(userId, command);
     }

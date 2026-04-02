@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.Difficulty;
 import wlsh.project.intervai.interview.domain.InterviewType;
-import wlsh.project.intervai.interview.domain.InterviewerPersonality;
+import wlsh.project.intervai.interview.domain.InterviewerTone;
 
 public record CreateInterviewRequest(
         @NotNull(message = "면접 유형은 필수입니다.")
@@ -20,7 +20,7 @@ public record CreateInterviewRequest(
         Integer questionCount,
 
         @NotNull(message = "면접관 성격은 필수입니다.")
-        InterviewerPersonality interviewerPersonality,
+        InterviewerTone interviewerTone,
 
         List<@Valid CsSubjectRequest> csSubjects,
 
@@ -31,7 +31,7 @@ public record CreateInterviewRequest(
                 interviewType,
                 difficulty,
                 questionCount,
-                interviewerPersonality,
+                interviewerTone,
                 csSubjects == null ? List.of() : csSubjects.stream()
                         .map(CsSubjectRequest::toCsSubject)
                         .toList(),

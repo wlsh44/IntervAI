@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import wlsh.project.intervai.common.IntegrationTest;
 import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
+import wlsh.project.intervai.interview.domain.InterviewerTone;
+import wlsh.project.intervai.question.domain.QuestionType;
 import wlsh.project.intervai.interview.application.InterviewFinder;
 import wlsh.project.intervai.interview.application.InterviewManager;
 import wlsh.project.intervai.interview.domain.CsCategory;
@@ -83,7 +85,7 @@ class QuestionValidatorTest extends IntegrationTest {
 
     private Interview createInterview(Long userId, int questionCount) {
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.CS, Difficulty.JUNIOR, questionCount, InterviewerPersonality.FRIENDLY,
+                InterviewType.CS, Difficulty.JUNIOR, questionCount, InterviewerTone.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
         return interviewManager.create(userId, command);
     }

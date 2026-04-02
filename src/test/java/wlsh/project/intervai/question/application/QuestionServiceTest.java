@@ -14,8 +14,9 @@ import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.Difficulty;
 import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewType;
-import wlsh.project.intervai.interview.domain.InterviewerPersonality;
+import wlsh.project.intervai.interview.domain.InterviewerTone;
 import wlsh.project.intervai.question.domain.Question;
+import wlsh.project.intervai.question.domain.QuestionType;
 import wlsh.project.intervai.session.application.InterviewSessionManager;
 import wlsh.project.intervai.session.domain.InterviewSession;
 
@@ -42,7 +43,7 @@ class QuestionServiceTest extends IntegrationTest {
         InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
 
         // when
-        Question question = questionService.create(session.getId());
+        Question question = questionService.create(userId, session.getId(), QuestionType.QUESTION);
 
         // then
         assertThat(question.getId()).isNotNull();
@@ -56,10 +57,11 @@ class QuestionServiceTest extends IntegrationTest {
     @DisplayName("존재하지 않는 세션으로 질문 생성 시 예외가 발생한다")
     void createQuestionWithNonExistentSession() {
         // given
+        Long userId = 1L;
         Long nonExistentSessionId = 999L;
 
         // when & then
-        assertThatThrownBy(() -> questionService.create(nonExistentSessionId))
+        assertThatThrownBy(() -> questionService.create(userId, nonExistentSessionId, QuestionType.QUESTION))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorCode.SESSION_NOT_FOUND.getMessage());
     }
@@ -74,11 +76,11 @@ class QuestionServiceTest extends IntegrationTest {
         InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
 
         for (int i = 0; i < questionCount; i++) {
-            questionService.create(session.getId());
+            questionService.create(userId, session.getId(), QuestionType.QUESTION);
         }
 
         // when & then
-        assertThatThrownBy(() -> questionService.create(session.getId()))
+        assertThatThrownBy(() -> questionService.create(userId, session.getId(), QuestionType.QUESTION))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorCode.QUESTION_COUNT_EXCEEDED.getMessage());
     }
@@ -89,7 +91,7 @@ class QuestionServiceTest extends IntegrationTest {
 
     private Interview createInterview(Long userId, int questionCount) {
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.CS, Difficulty.JUNIOR, questionCount, InterviewerPersonality.FRIENDLY,
+                InterviewType.CS, Difficulty.JUNIOR, questionCount, InterviewerTone.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
         return interviewManager.create(userId, command);
     }

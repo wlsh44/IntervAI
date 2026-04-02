@@ -4,14 +4,14 @@ import java.util.List;
 import wlsh.project.intervai.interview.domain.Difficulty;
 import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewType;
-import wlsh.project.intervai.interview.domain.InterviewerPersonality;
+import wlsh.project.intervai.interview.domain.InterviewerTone;
 
 public record CreateInterviewResponse(
         Long id,
         InterviewType interviewType,
         Difficulty difficulty,
         int questionCount,
-        InterviewerPersonality interviewerPersonality,
+        InterviewerTone interviewerTone,
         List<CsSubjectResponse> csSubjects,
         List<String> portfolioLinks
 ) {
@@ -24,7 +24,7 @@ public record CreateInterviewResponse(
                 interview.getInterviewType(),
                 interview.getDifficulty(),
                 interview.getQuestionCount(),
-                interview.getInterviewerPersonality(),
+                interview.getInterviewerTone(),
                 csSubjectResponses,
                 interview.getPortfolioLinks()
         );

@@ -6,7 +6,7 @@ public record CreateInterviewCommand(
         InterviewType interviewType,
         Difficulty difficulty,
         int questionCount,
-        InterviewerPersonality interviewerPersonality,
+        InterviewerTone interviewerTone,
         List<CsSubject> csSubjects,
         List<String> portfolioLinks
 ) {

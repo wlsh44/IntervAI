@@ -11,19 +11,19 @@ public class Interview {
     private final InterviewType interviewType;
     private final Difficulty difficulty;
     private final int questionCount;
-    private final InterviewerPersonality interviewerPersonality;
+    private final InterviewerTone interviewerTone;
     private final List<CsSubject> csSubjects;
     private final List<String> portfolioLinks;
 
     private Interview(Long id, Long userId, InterviewType interviewType, Difficulty difficulty,
-                      int questionCount, InterviewerPersonality interviewerPersonality,
+                      int questionCount, InterviewerTone interviewerTone,
                       List<CsSubject> csSubjects, List<String> portfolioLinks) {
         this.id = id;
         this.userId = userId;
         this.interviewType = interviewType;
         this.difficulty = difficulty;
         this.questionCount = questionCount;
-        this.interviewerPersonality = interviewerPersonality;
+        this.interviewerTone = interviewerTone;
         this.csSubjects = csSubjects;
         this.portfolioLinks = portfolioLinks;
     }
@@ -32,15 +32,15 @@ public class Interview {
         return new Interview(
                 null, userId,
                 command.interviewType(), command.difficulty(),
-                command.questionCount(), command.interviewerPersonality(),
+                command.questionCount(), command.interviewerTone(),
                 command.csSubjects(), command.portfolioLinks()
         );
     }
 
     public static Interview of(Long id, Long userId, InterviewType interviewType, Difficulty difficulty,
-                                int questionCount, InterviewerPersonality interviewerPersonality,
+                                int questionCount, InterviewerTone interviewerTone,
                                 List<CsSubject> csSubjects, List<String> portfolioLinks) {
         return new Interview(id, userId, interviewType, difficulty, questionCount,
-                interviewerPersonality, csSubjects, portfolioLinks);
+                interviewerTone, csSubjects, portfolioLinks);
     }
 }
