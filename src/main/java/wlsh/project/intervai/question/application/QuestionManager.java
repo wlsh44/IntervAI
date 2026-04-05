@@ -2,6 +2,7 @@ package wlsh.project.intervai.question.application;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,15 @@ public class QuestionManager {
         Question question = Question.create(interviewId, sessionId, content, questionType, questionIndex);
         QuestionEntity entity = questionRepository.save(QuestionEntity.from(question));
         return entity.toDomain();
+    }
+
+    public Optional<Question> createFollowUp(Long interviewId, Long sessionId, String content) {
+        if (content == null || content.isBlank()) {
+            return Optional.empty();
+        }
+        Question question = Question.create(interviewId, sessionId, content, QuestionType.FOLLOW_UP, -1);
+        QuestionEntity entity = questionRepository.save(QuestionEntity.from(question));
+        return Optional.of(entity.toDomain());
     }
 
     @Transactional
