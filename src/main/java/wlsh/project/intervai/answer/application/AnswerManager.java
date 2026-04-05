@@ -5,15 +5,23 @@ import org.springframework.stereotype.Component;
 import wlsh.project.intervai.answer.domain.Answer;
 import wlsh.project.intervai.answer.infra.AnswerEntity;
 import wlsh.project.intervai.answer.infra.AnswerRepository;
+import wlsh.project.intervai.common.entity.EntityStatus;
+import wlsh.project.intervai.common.exception.CustomException;
+import wlsh.project.intervai.common.exception.ErrorCode;
+import wlsh.project.intervai.question.infra.QuestionEntity;
+import wlsh.project.intervai.question.infra.QuestionRepository;
 
 @Component
 @RequiredArgsConstructor
 public class AnswerManager {
 
     private final AnswerRepository answerRepository;
+    private final QuestionRepository questionRepository;
 
-    public Answer create(Long userId, Long interviewId, Long sessionId, Long questionId, String content) {
-        Answer answer = Answer.create(userId, interviewId, sessionId, questionId, content);
+    public Answer create(Long userId, Long questionId, String content) {
+        QuestionEntity question = questionRepository.findByIdAndStatus(questionId, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
+        Answer answer = Answer.create(userId, question.getInterviewId(), question.getSessionId(), questionId, content);
         AnswerEntity entity = answerRepository.save(AnswerEntity.from(answer));
         return entity.toDomain();
     }

@@ -7,4 +7,6 @@ import wlsh.project.intervai.common.entity.EntityStatus;
 public interface InterviewSessionRepository extends JpaRepository<InterviewSessionEntity, Long> {
 
     Optional<InterviewSessionEntity> findByIdAndStatus(Long id, EntityStatus status);
+
+    Optional<InterviewSessionEntity> findByInterviewIdAndStatus(Long interviewId, EntityStatus status);
 }

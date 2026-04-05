@@ -27,9 +27,6 @@ public class QuestionEntity extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Long userId;
-
-    @Column(nullable = false)
     private Long interviewId;
 
     @Column(nullable = false)
@@ -41,22 +38,32 @@ public class QuestionEntity extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private QuestionType type;
+    private QuestionType questionType;
 
-    private QuestionEntity(Long userId, Long interviewId, Long sessionId, String content, QuestionType type) {
-        this.userId = userId;
+    @Column(nullable = false)
+    private int questionIndex;
+
+    private QuestionEntity(Long interviewId, Long sessionId,
+                           String content, QuestionType questionType, int questionIndex) {
         this.interviewId = interviewId;
         this.sessionId = sessionId;
         this.content = content;
-        this.type = type;
+        this.questionType = questionType;
+        this.questionIndex = questionIndex;
     }
 
     public static QuestionEntity from(Question question) {
-        return new QuestionEntity(question.getUserId(), question.getInterviewId(),
-                question.getSessionId(), question.getContent(), question.getType());
+        return new QuestionEntity(question.getInterviewId(),
+                question.getSessionId(), question.getContent(), question.getType(),
+                question.getQuestionIndex());
+    }
+
+    public static QuestionEntity createFollowUp(Long interviewId, Long sessionId,
+                                                String content) {
+        return new QuestionEntity(interviewId, sessionId, content, QuestionType.FOLLOW_UP, -1);
     }
 
     public Question toDomain() {
-        return Question.of(id, userId, interviewId, sessionId, content, type);
+        return Question.of(id, interviewId, sessionId, content, questionType, questionIndex);
     }
 }

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import wlsh.project.intervai.common.entity.EntityStatus;
 import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
-import wlsh.project.intervai.question.application.QuestionFinder;
 import wlsh.project.intervai.session.domain.InterviewSession;
 import wlsh.project.intervai.session.infra.InterviewSessionEntity;
 import wlsh.project.intervai.session.infra.InterviewSessionRepository;
@@ -15,7 +14,6 @@ import wlsh.project.intervai.session.infra.InterviewSessionRepository;
 public class InterviewSessionFinder {
 
     private final InterviewSessionRepository interviewSessionRepository;
-    private final QuestionFinder questionFinder;
 
     public InterviewSessionEntity getEntity(Long sessionId) {
         return interviewSessionRepository.findByIdAndStatus(sessionId, EntityStatus.ACTIVE)
@@ -23,8 +21,15 @@ public class InterviewSessionFinder {
     }
 
     public InterviewSession find(Long sessionId) {
-        InterviewSessionEntity entity = getEntity(sessionId);
-        int currentQuestionCount = questionFinder.countBySessionId(entity.getId());
-        return entity.toDomain(currentQuestionCount);
+        return getEntity(sessionId).toDomain();
+    }
+
+    public InterviewSessionEntity getEntityByInterviewId(Long interviewId) {
+        return interviewSessionRepository.findByInterviewIdAndStatus(interviewId, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new CustomException(ErrorCode.SESSION_NOT_FOUND));
+    }
+
+    public InterviewSession findByInterviewId(Long interviewId) {
+        return getEntityByInterviewId(interviewId).toDomain();
     }
 }

@@ -1,6 +1,5 @@
 package wlsh.project.intervai.session.infra;
 
-import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,6 +14,8 @@ import lombok.NoArgsConstructor;
 import wlsh.project.intervai.common.entity.BaseEntity;
 import wlsh.project.intervai.session.domain.InterviewSession;
 import wlsh.project.intervai.session.domain.InterviewSessionStatus;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -36,24 +37,45 @@ public class InterviewSessionEntity extends BaseEntity {
     @Column(nullable = false)
     private InterviewSessionStatus sessionStatus;
 
+    @Column(nullable = false)
+    private int currentQuestionIndex;
+
     private LocalDateTime completedAt;
 
     private InterviewSessionEntity(Long interviewId, Long userId, InterviewSessionStatus sessionStatus,
-                                    LocalDateTime completedAt) {
+                                   int currentQuestionIndex, LocalDateTime completedAt) {
         this.interviewId = interviewId;
         this.userId = userId;
         this.sessionStatus = sessionStatus;
+        this.currentQuestionIndex = currentQuestionIndex;
         this.completedAt = completedAt;
     }
 
     public static InterviewSessionEntity from(InterviewSession session) {
         return new InterviewSessionEntity(
                 session.getInterviewId(), session.getUserId(), session.getSessionStatus(),
-                session.getCompletedAt()
+                session.getCurrentQuestionIndex(), session.getCompletedAt()
         );
     }
 
-    public InterviewSession toDomain(int currentQuestionCount) {
-        return InterviewSession.of(id, interviewId, userId, sessionStatus, currentQuestionCount, completedAt);
+    public void advanceQuestionIndex() {
+        this.currentQuestionIndex++;
+    }
+
+    public void complete() {
+        this.sessionStatus = InterviewSessionStatus.COMPLETED;
+        this.completedAt = LocalDateTime.now();
+    }
+
+    public InterviewSession toDomain() {
+        return InterviewSession.of(id, interviewId, userId, sessionStatus, currentQuestionIndex, completedAt);
+    }
+
+    public boolean isOwner(Long userId) {
+        return this.userId.equals(userId);
+    }
+
+    public boolean isInProgress() {
+        return this.sessionStatus.equals(InterviewSessionStatus.IN_PROGRESS);
     }
 }

@@ -1,8 +1,9 @@
 package wlsh.project.intervai.question.application;
 
+import java.util.List;
 import wlsh.project.intervai.interview.domain.Interview;
 
 public interface QuestionGenerator {
 
-    String generate(Interview interview);
+    List<String> generateAll(Interview interview);
 }

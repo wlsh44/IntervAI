@@ -97,6 +97,128 @@ ChatGPT처럼 면접 대화 기록을 저장하고 이어볼 수 있다.
 
 ---
 
+## 면접 API 시퀀스 플로우
+
+### 컨텍스트
+이 문서는 AI 면접 연습 앱의 백엔드-프론트엔드 간 API 시퀀스 플로우를 정의한다.
+구현 시 이 플로우를 기준으로 코드를 작성하라.
+
+### 액터
+- Frontend (React + TypeScript)
+- Backend (Spring Boot)
+- Claude API (질문 생성 / 피드백+꼬리질문 / 종합 리포트)
+
+---
+
+### ① 면접 설정 및 질문 사전 생성
+
+1. Frontend → Backend : POST /api/interviews/setup
+    - body: { topic, level, count, interviewerTone }
+    - Interview 도메인 생성
+
+2. Frontend -> Backend : POST /api/interviews/sessions
+    - body: { interviewId }
+    - InterviewSession 도메인 생성
+
+3. Backend → Claude API : 질문 {count}개 일괄 생성 요청
+    - 프롬프트: question-generate.st 사용
+    - 변수: { topic, level, count, interviewerTone }
+
+4. Claude API → Backend : questions[] 반환 (JSON 배열)
+
+5. Backend → DB : 세션 저장
+    - { interviewId, questions[], currentIdx: 0, history: [], status: IN_PROGRESS }
+
+6. Backend → Frontend : 201 { interviewId }
+    - 질문 목록은 프론트에 내려주지 않음
+
+---
+
+### ② 질문 하나씩 노출 (채팅형)
+
+1. Frontend → Backend : GET /api/interviews/{id}/next
+
+2. Backend → DB : questions[currentIdx] 조회
+
+3. Backend → Frontend : 200 { question, questionIdx, total }
+
+---
+
+### ③ 답변 제출 → 피드백 + 꼬리질문 생성
+
+1. Frontend → Backend : POST /api/interviews/{id}/answers
+    - body: { questionId, answerText, isFollowUp }
+
+2. Backend → DB : 세션 + 대화 히스토리 조회
+
+3. Backend → Claude API : 피드백 + 꼬리질문 요청
+    - 프롬프트: feedback-followup.st 사용
+    - 변수: { topic, level, interviewerTone, question, answerText }
+    - 히스토리: Spring AI ChatMemory 어드바이저가 자동 관리
+    - conversationId: interviewId + questionIdx 조합으로 본 질문 단위 분리
+
+4. Claude API → Backend : { feedback, followUpQuestion }
+
+5. Backend → DB : 답변 + 피드백 저장 (history[] append)
+
+6. Backend → Frontend : 200 { feedback, followUpQuestion }
+    - Frontend: feedback은 Zustand에 보관, UI에는 숨김 처리
+    - Frontend: "피드백 보기" 버튼 클릭 시 로컬 상태에서 꺼내 표시
+
+#### 꼬리질문 답변
+- ③과 동일한 흐름 반복
+- isFollowUp: true 로 구분
+- 같은 conversationId 유지 (ChatMemory가 이어서 관리)
+
+---
+
+### ④ 다음 본 질문으로 이동
+
+1. Frontend → Backend : GET /api/interviews/{id}/next
+
+2. Backend → DB : currentIdx++ 후 questions[currentIdx] 조회
+    - 이 시점에 ChatMemory conversationId를 새로 발급하여 이전 꼬리질문 컨텍스트와 분리
+
+3. Backend → Frontend : 200 { question, questionIdx, total }
+
+→ ② ~ ③ 반복
+
+---
+
+### ⑤ 세션 종료 & 종합 리포트
+
+1. Frontend → Backend : POST /api/interviews/{id}/finish
+
+2. Backend → DB : 전체 history + feedbacks 조회
+
+3. Backend → Claude API : 종합 평가 리포트 요청
+    - 프롬프트: score-report.st 사용
+    - 변수: { topic, level, interviewerTone, history }
+
+4. Claude API → Backend : scoreReport
+    - { totalScore, scores: { conceptUnderstanding, problemSolving, communication }, strengths[], improvements[], overallComment }
+
+5. Backend → DB : status를 COMPLETED로 업데이트
+
+6. Backend → Frontend : 200 { scoreReport, questions[{ question, answer, feedback }] }
+
+---
+
+### 프롬프트 파일 구조
+resources/prompts/
+question-generate.st   # ① 질문 생성
+feedback-followup.st   # ③ 피드백 + 꼬리질문
+score-report.st        # ⑤ 종합 리포트
+
+### 주요 설계 결정
+- 질문은 세션 생성 시 전체를 한 번에 생성해 DB에 저장, 프론트엔 1개씩 노출
+- 피드백은 답변 제출 응답에 포함하지만 UI에서 숨김 처리 (추가 API 호출 없음)
+- 꼬리질문 히스토리는 Spring AI ChatMemory 어드바이저가 관리 (프롬프트에 별도 삽입 안 함)
+- 본 질문이 바뀔 때 conversationId를 새로 발급해 꼬리질문 컨텍스트 분리
+- 세션 종료 시 DB status를 COMPLETED로 업데이트
+
+---
+
 ## 현재 구현 상태 (Stage 1 완료, Stage 2 진행 중)
 
 ### user 도메인
