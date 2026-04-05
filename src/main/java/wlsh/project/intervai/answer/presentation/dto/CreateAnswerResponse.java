@@ -1,11 +1,17 @@
 package wlsh.project.intervai.answer.presentation.dto;
 
-import wlsh.project.intervai.answer.domain.Answer;
+import wlsh.project.intervai.answer.domain.AnswerResult;
 
 public record CreateAnswerResponse(
-        Long answerId
+        Long answerId,
+        String feedback,
+        String followUpQuestion
 ) {
-    public static CreateAnswerResponse create(Answer answer) {
-        return new CreateAnswerResponse(answer.getId());
+    public static CreateAnswerResponse of(AnswerResult result) {
+        return new CreateAnswerResponse(
+                result.answerId(),
+                result.feedback(),
+                result.followUpQuestion()
+        );
     }
 }

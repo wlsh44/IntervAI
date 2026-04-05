@@ -72,4 +72,8 @@ public class InterviewEntity extends BaseEntity {
         return Interview.of(id, userId, interviewType, difficulty, questionCount,
                 interviewerTone, List.of(), List.of());
     }
+
+    public boolean isOwner(Long userId) {
+        return this.userId.equals(userId);
+    }
 }

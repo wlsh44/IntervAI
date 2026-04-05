@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.Interview;
 
-
 @Service
 @RequiredArgsConstructor
 public class InterviewService {
