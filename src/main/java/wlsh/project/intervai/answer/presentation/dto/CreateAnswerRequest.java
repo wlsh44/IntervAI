@@ -9,11 +9,9 @@ public record CreateAnswerRequest(
         Long questionId,
 
         @NotBlank(message = "답변 내용은 필수입니다.")
-        String content,
-
-        boolean isFollowUp
+        String content
 ) {
     public CreateAnswerCommand toCommand() {
-        return new CreateAnswerCommand(content, isFollowUp);
+        return new CreateAnswerCommand(content);
     }
 }

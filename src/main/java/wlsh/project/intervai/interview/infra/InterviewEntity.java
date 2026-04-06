@@ -43,33 +43,37 @@ public class InterviewEntity extends BaseEntity {
     @Column(nullable = false)
     private int questionCount;
 
+    @Column(nullable = false)
+    private int maxFollowUpCount;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private InterviewerTone interviewerTone;
 
     private InterviewEntity(Long userId, InterviewType interviewType, Difficulty difficulty,
-                            int questionCount, InterviewerTone interviewerTone) {
+                            int questionCount, int maxFollowUpCount, InterviewerTone interviewerTone) {
         this.userId = userId;
         this.interviewType = interviewType;
         this.difficulty = difficulty;
         this.questionCount = questionCount;
+        this.maxFollowUpCount = maxFollowUpCount;
         this.interviewerTone = interviewerTone;
     }
 
     public static InterviewEntity from(Interview interview) {
         return new InterviewEntity(
                 interview.getUserId(), interview.getInterviewType(), interview.getDifficulty(),
-                interview.getQuestionCount(), interview.getInterviewerTone()
+                interview.getQuestionCount(), interview.getMaxFollowUpCount(), interview.getInterviewerTone()
         );
     }
 
     public Interview toDomain(List<CsSubject> csSubjects, List<String> portfolioLinks) {
-        return Interview.of(id, userId, interviewType, difficulty, questionCount,
+        return Interview.of(id, userId, interviewType, difficulty, questionCount, maxFollowUpCount,
                 interviewerTone, csSubjects, portfolioLinks);
     }
 
     public Interview toDomain() {
-        return Interview.of(id, userId, interviewType, difficulty, questionCount,
+        return Interview.of(id, userId, interviewType, difficulty, questionCount, maxFollowUpCount,
                 interviewerTone, List.of(), List.of());
     }
 

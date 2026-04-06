@@ -24,8 +24,8 @@ public class AnswerHandler {
         return answerResultGenerator.generate(
                 String.valueOf(answer.getSessionId()),
                 interview,
-                question.getContent(),
-                answer.getContent()
+                question,
+                answer
         );
     }
 }
