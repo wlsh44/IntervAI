@@ -155,7 +155,7 @@ ChatGPT처럼 면접 대화 기록을 저장하고 이어볼 수 있다.
     - 프롬프트: feedback-followup.st 사용
     - 변수: { topic, level, interviewerTone, question, answerText }
     - 히스토리: Spring AI ChatMemory 어드바이저가 자동 관리
-    - conversationId: interviewId + questionIdx 조합으로 본 질문 단위 분리
+    - conversationId: sessionId 로 면접 세션 단위 분리
 
 4. Claude API → Backend : { feedback, followUpQuestion }
 
