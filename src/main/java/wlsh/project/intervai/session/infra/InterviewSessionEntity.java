@@ -38,28 +38,37 @@ public class InterviewSessionEntity extends BaseEntity {
     private InterviewSessionStatus sessionStatus;
 
     @Column(nullable = false)
-    private int currentQuestionIndex;
+    private int currentMainQuestionIdx;
+
+    @Column(nullable = false)
+    private int followUpCount;
 
     private LocalDateTime completedAt;
 
     private InterviewSessionEntity(Long interviewId, Long userId, InterviewSessionStatus sessionStatus,
-                                   int currentQuestionIndex, LocalDateTime completedAt) {
+                                   int currentMainQuestionIdx, int followUpCount, LocalDateTime completedAt) {
         this.interviewId = interviewId;
         this.userId = userId;
         this.sessionStatus = sessionStatus;
-        this.currentQuestionIndex = currentQuestionIndex;
+        this.currentMainQuestionIdx = currentMainQuestionIdx;
+        this.followUpCount = followUpCount;
         this.completedAt = completedAt;
     }
 
     public static InterviewSessionEntity from(InterviewSession session) {
         return new InterviewSessionEntity(
                 session.getInterviewId(), session.getUserId(), session.getSessionStatus(),
-                session.getCurrentQuestionIndex(), session.getCompletedAt()
+                session.getCurrentMainQuestionIdx(), session.getFollowUpCount(), session.getCompletedAt()
         );
     }
 
-    public void advanceQuestionIndex() {
-        this.currentQuestionIndex++;
+    public void advanceToNext() {
+        this.currentMainQuestionIdx++;
+        this.followUpCount = 0;
+    }
+
+    public void addFollowUp() {
+        this.followUpCount++;
     }
 
     public void complete() {
@@ -68,7 +77,7 @@ public class InterviewSessionEntity extends BaseEntity {
     }
 
     public InterviewSession toDomain() {
-        return InterviewSession.of(id, interviewId, userId, sessionStatus, currentQuestionIndex, completedAt);
+        return InterviewSession.of(id, interviewId, userId, sessionStatus, currentMainQuestionIdx, followUpCount, completedAt);
     }
 
     public boolean isOwner(Long userId) {

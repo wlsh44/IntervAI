@@ -3,6 +3,7 @@ package wlsh.project.intervai.answer.infra;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -10,16 +11,17 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import wlsh.project.intervai.answer.application.AnswerResultGenerator;
 import wlsh.project.intervai.answer.application.dto.AnswerResultDto;
+import wlsh.project.intervai.answer.domain.Answer;
 import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
 import wlsh.project.intervai.interview.domain.Interview;
+import wlsh.project.intervai.question.domain.Question;
 
 import java.util.Map;
 
 @Component
 @Profile("prod")
-public
-class ClaudeAnswerResultGenerator implements AnswerResultGenerator {
+public class ClaudeAnswerResultGenerator implements AnswerResultGenerator {
 
     private final ChatClient chatClient;
     private final Resource promptResource;
@@ -34,15 +36,15 @@ class ClaudeAnswerResultGenerator implements AnswerResultGenerator {
     }
 
     @Override
-    public AnswerResultDto generate(String conversationId, Interview interview, String question, String answer) {
+    public AnswerResultDto generate(String sessionId, Interview interview, Question question, Answer answer) {
         PromptTemplate template = new PromptTemplate(promptResource);
         String userPrompt = template.render(Map.of(
-                "question", question,
-                "answerText", answer
+                "question", question.getContent(),
+                "answerText", answer.getContent()
         ));
 
         String response = chatClient.prompt()
-                .advisors(advisor -> advisor.param("chat_memory_conversation_id", conversationId))
+                .advisors(advisor -> advisor.param(ChatMemory.CONVERSATION_ID, sessionId))
                 .user(userPrompt)
                 .call()
                 .content();

@@ -10,25 +10,27 @@ public class InterviewSession {
     private final Long interviewId;
     private final Long userId;
     private final InterviewSessionStatus sessionStatus;
-    private final int currentQuestionIndex;
+    private final int currentMainQuestionIdx;
+    private final int followUpCount;
     private final LocalDateTime completedAt;
 
     private InterviewSession(Long id, Long interviewId, Long userId, InterviewSessionStatus sessionStatus,
-                             int currentQuestionIndex, LocalDateTime completedAt) {
+                             int currentMainQuestionIdx, int followUpCount, LocalDateTime completedAt) {
         this.id = id;
         this.interviewId = interviewId;
         this.userId = userId;
         this.sessionStatus = sessionStatus;
-        this.currentQuestionIndex = currentQuestionIndex;
+        this.currentMainQuestionIdx = currentMainQuestionIdx;
+        this.followUpCount = followUpCount;
         this.completedAt = completedAt;
     }
 
     public static InterviewSession create(Long interviewId, Long userId) {
-        return new InterviewSession(null, interviewId, userId, InterviewSessionStatus.IN_PROGRESS, -1, null);
+        return new InterviewSession(null, interviewId, userId, InterviewSessionStatus.IN_PROGRESS, 0, 0, null);
     }
 
     public static InterviewSession of(Long id, Long interviewId, Long userId, InterviewSessionStatus sessionStatus,
-                                      int currentQuestionIndex, LocalDateTime completedAt) {
-        return new InterviewSession(id, interviewId, userId, sessionStatus, currentQuestionIndex, completedAt);
+                                      int currentMainQuestionIdx, int followUpCount, LocalDateTime completedAt) {
+        return new InterviewSession(id, interviewId, userId, sessionStatus, currentMainQuestionIdx, followUpCount, completedAt);
     }
 }

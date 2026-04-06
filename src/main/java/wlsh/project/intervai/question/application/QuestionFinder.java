@@ -7,10 +7,8 @@ import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
 import wlsh.project.intervai.interview.domain.NextQuestionResult;
 import wlsh.project.intervai.question.domain.Question;
-import wlsh.project.intervai.question.infra.QuestionEntity;
+import wlsh.project.intervai.question.domain.QuestionType;
 import wlsh.project.intervai.question.infra.QuestionRepository;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -24,21 +22,27 @@ public class QuestionFinder {
                 .toDomain();
     }
 
-    public NextQuestionResult findAndNext(Long sessionId, Integer questionIdx) {
-        List<QuestionEntity> questions = questionRepository.findBySessionIdAndStatusOrderByQuestionIndexAsc(sessionId, EntityStatus.ACTIVE);
+    public NextQuestionResult findCurrent(Long sessionId, int currentMainQuestionIdx,
+                                          int followUpCount, int totalQuestionCount) {
+        Question question = followUpCount > 0
+                ? findLatestFollowUp(sessionId)
+                : findMainQuestion(sessionId, currentMainQuestionIdx);
 
-        Question currentQuestion = getQuestion(questionIdx, questions);
-        boolean hasNext = questions.size() > currentQuestion.getQuestionIndex() + 1;
-        return new NextQuestionResult(currentQuestion, hasNext);
+        boolean hasNext = currentMainQuestionIdx < totalQuestionCount - 1;
+        return new NextQuestionResult(question, hasNext);
     }
 
-    private Question getQuestion(Integer questionIdx, List<QuestionEntity> questions) {
-        QuestionEntity currentQuestion;
-        if (questionIdx == null) {
-            currentQuestion = questions.getFirst();
-        } else {
-            currentQuestion = questions.get(questionIdx + 1);
-        }
-        return currentQuestion.toDomain();
+    private Question findLatestFollowUp(Long sessionId) {
+        return questionRepository.findFirstBySessionIdAndQuestionTypeAndStatusOrderByIdDesc(
+                        sessionId, QuestionType.FOLLOW_UP, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND))
+                .toDomain();
+    }
+
+    private Question findMainQuestion(Long sessionId, int questionIndex) {
+        return questionRepository.findBySessionIdAndQuestionTypeAndQuestionIndexAndStatus(
+                        sessionId, QuestionType.QUESTION, questionIndex, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND))
+                .toDomain();
     }
 }

@@ -9,16 +9,16 @@ public class Question {
     private final Long interviewId;
     private final Long sessionId;
     private final String content;
-    private final QuestionType type;
+    private final QuestionType questionType;
     private final int questionIndex;
 
     private Question(Long id, Long interviewId, Long sessionId,
-                     String content, QuestionType type, int questionIndex) {
+                     String content, QuestionType questionType, int questionIndex) {
         this.id = id;
         this.interviewId = interviewId;
         this.sessionId = sessionId;
         this.content = content;
-        this.type = type;
+        this.questionType = questionType;
         this.questionIndex = questionIndex;
     }
 
@@ -28,7 +28,11 @@ public class Question {
     }
 
     public static Question of(Long id, Long interviewId, Long sessionId,
-                                String content, QuestionType type, int questionIndex) {
-        return new Question(id, interviewId, sessionId, content, type, questionIndex);
+                                String content, QuestionType questionType, int questionIndex) {
+        return new Question(id, interviewId, sessionId, content, questionType, questionIndex);
+    }
+
+    public boolean isFollowUp() {
+        return this.questionType.equals(QuestionType.FOLLOW_UP);
     }
 }

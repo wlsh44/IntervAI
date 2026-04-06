@@ -20,7 +20,6 @@ public class QuestionService {
     private final InterviewSessionValidator interviewSessionValidator;
     private final QuestionGenerator questionGenerator;
     private final QuestionManager questionManager;
-    private final QuestionValidator questionValidator;
     private final QuestionFinder questionFinder;
 
     public List<Question> createAll(Long userId, Long interviewId) {
@@ -31,8 +30,16 @@ public class QuestionService {
         return questionManager.createAll(interviewId, session.getId(), contents);
     }
 
-    public NextQuestionResult nextQuestion(Long userId, Long interviewId, Integer questionIdx) {
-        questionValidator.validate(userId, interviewId, questionIdx);
-        return questionFinder.findAndNext(interviewId, questionIdx);
+    public NextQuestionResult currentQuestion(Long userId, Long interviewId) {
+        interviewSessionValidator.validateInterviewOwner(interviewId, userId);
+        Interview interview = interviewFinder.find(interviewId);
+        InterviewSession session = interviewSessionFinder.findByInterviewId(interviewId);
+        return questionFinder.findCurrent(
+                session.getId(),
+                session.getCurrentMainQuestionIdx(),
+                session.getFollowUpCount(),
+                interview.getQuestionCount()
+        );
     }
+
 }

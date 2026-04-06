@@ -54,7 +54,7 @@ public class QuestionEntity extends BaseEntity {
 
     public static QuestionEntity from(Question question) {
         return new QuestionEntity(question.getInterviewId(),
-                question.getSessionId(), question.getContent(), question.getType(),
+                question.getSessionId(), question.getContent(), question.getQuestionType(),
                 question.getQuestionIndex());
     }
 
