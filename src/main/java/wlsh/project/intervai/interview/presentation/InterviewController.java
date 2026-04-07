@@ -44,4 +44,12 @@ public class InterviewController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CreateSessionResponse.of(session));
     }
+
+    @PostMapping("/{interviewId}/finish")
+    public ResponseEntity<Void> finish(
+            @AuthenticationPrincipal UserInfo userInfo,
+            @PathVariable Long interviewId) {
+        interviewSessionService.finish(userInfo.userId(), interviewId);
+        return ResponseEntity.ok().build();
+    }
 }

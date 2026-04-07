@@ -10,6 +10,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import wlsh.project.intervai.interview.domain.CsSubject;
@@ -18,6 +19,7 @@ import wlsh.project.intervai.interview.domain.InterviewType;
 import wlsh.project.intervai.question.application.QuestionGenerator;
 
 @Component
+@Profile("prod")
 public class OllamaQuestionGenerator implements QuestionGenerator {
 
     private final ChatClient chatClient;
