@@ -11,22 +11,22 @@ ChatGPT처럼 면접 대화 기록을 저장하고 이어볼 수 있다.
 
 ## 기술 스택
 
-| 레이어 | 기술                                                |
-|--------|---------------------------------------------------|
-| 백엔드 | Spring Boot 3.5, Java 21, Gradle 8.14              |
-| LLM 연동 | SpringAI + Anthropic Claude API (스트리밍)            |
-| 인증 | Spring Security, jjwt 0.12.6                        |
-| 캐시 / 임시 저장 | Redis (Refresh Token 저장)                     |
-| 영구 저장 | MySQL (+ H2 테스트용)                               |
-| 파일 처리 | AWS S3                                             |
-| GitHub 연동 | GitHub REST API                                   |
-| 주요 라이브러리 | Lombok, Bean Validation                       |
-| 테스트 | JUnit 5, REST Assured (MockMvc), Embedded Redis     |
-| 프론트엔드 | React + TypeScript + Vite                         |
-| 상태 관리 | Zustand                                           |
-| 서버 상태 | TanStack Query                                    |
-| UI | Tailwind CSS + shadcn/ui                            |
-| PWA | vite-plugin-pwa                                    |
+| 레이어        | 기술                                              |
+|------------|-------------------------------------------------|
+| 백엔드        | Spring Boot 3.5, Java 21, Gradle 8.14           |
+| LLM 연동     | SpringAI + Anthropic Claude API (스트리밍)          |
+| 인증         | Spring Security, jjwt 0.12.6                    |
+| 캐시 / 임시 저장 | Redis (Refresh Token 저장)                        |
+| 영구 저장      | MySQL (+ H2 테스트용)                               |
+| ORM        | JPA                                             |
+| 파일 처리      | AWS S3                                          |
+| 주요 라이브러리   | Lombok, Bean Validation                         |
+| 테스트        | JUnit 5, REST Assured (MockMvc), Embedded Redis |
+| 프론트엔드      | React + TypeScript + Vite                       |
+| 상태 관리      | Zustand                                         |
+| 서버 상태      | TanStack Query                                  |
+| UI         | Tailwind CSS + shadcn/ui                        |
+| PWA        | vite-plugin-pwa                                 |
 
 ---
 
@@ -63,7 +63,6 @@ ChatGPT처럼 면접 대화 기록을 저장하고 이어볼 수 있다.
 
 #### 진행 방식
 - LLM과의 채팅 인터페이스
-- 스트리밍 응답 지원 (UX 체감 속도)
 - 답변 제출 → 다음 질문 요청 흐름
 - 답변마다 피드백이 존재하지만 유저가 확인하고싶을 때 확인하는 방식
 
@@ -353,7 +352,7 @@ Message
 |------|------|------|
 | Stage 1 | 사용자 인증 (회원가입, 로그인, JWT 토큰 발급/갱신) | ✅ 완료 |
 | Stage 2 | 기본 정보 및 포트폴리오 등록 | 🔧 진행 중 |
-| Stage 3 | LLM 연동 기본 채팅 (CS 질문 생성 + 스트리밍) | ⬜ 예정 |
+| Stage 3 | LLM 연동 기본 채팅 (CS 질문 생성) | ✅ 완료 |
 | Stage 4 | 꼬리 질문 + 실시간 피드백 | ⬜ 예정 |
 | Stage 5 | 세션 기록 저장 및 히스토리 UI | ⬜ 예정 |
 | Stage 6 | 종합 리포트 + 포트폴리오 기반 질문 고도화 | ⬜ 예정 |
