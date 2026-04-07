@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import wlsh.project.intervai.common.AcceptanceTest;
+import wlsh.project.intervai.common.exception.CustomException;
+import wlsh.project.intervai.common.exception.ErrorCode;
 import wlsh.project.intervai.interview.application.InterviewService;
 import wlsh.project.intervai.interview.domain.CsCategory;
 import wlsh.project.intervai.interview.domain.CsSubject;
@@ -18,18 +20,24 @@ import wlsh.project.intervai.interview.domain.InterviewType;
 import wlsh.project.intervai.interview.domain.InterviewerTone;
 import wlsh.project.intervai.interview.presentation.dto.CreateInterviewRequest;
 import wlsh.project.intervai.interview.presentation.dto.CsSubjectRequest;
+import wlsh.project.intervai.session.application.InterviewSessionService;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willThrow;
 
 @WebMvcTest(InterviewController.class)
 class InterviewControllerTest extends AcceptanceTest {
 
     @MockitoBean
     private InterviewService interviewService;
+
+    @MockitoBean
+    private InterviewSessionService interviewSessionService;
 
     @Test
     @DisplayName("CS 면접 생성 성공 시 201과 면접 정보가 반환된다")
@@ -39,7 +47,7 @@ class InterviewControllerTest extends AcceptanceTest {
                 CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map", "List")),
                 CsSubject.of(CsCategory.ALGORITHM, List.of("정렬", "dfs/bfs")));
         Interview interview = Interview.of(1L, userId, InterviewType.CS, Difficulty.JUNIOR,
-                7, InterviewerTone.FRIENDLY, csSubjects, List.of());
+                7, 3, InterviewerTone.FRIENDLY, csSubjects, List.of());
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
         given(interviewService.create(eq(userId), any(CreateInterviewCommand.class)))
@@ -78,7 +86,7 @@ class InterviewControllerTest extends AcceptanceTest {
         Long userId = 1L;
         List<String> portfolioLinks = List.of("https://github.com/user/project");
         Interview interview = Interview.of(2L, userId, InterviewType.PORTFOLIO, Difficulty.SENIOR,
-                5, InterviewerTone.AGGRESSIVE, List.of(), portfolioLinks);
+                5, 3, InterviewerTone.AGGRESSIVE, List.of(), portfolioLinks);
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
         given(interviewService.create(eq(userId), any(CreateInterviewCommand.class)))
@@ -112,7 +120,7 @@ class InterviewControllerTest extends AcceptanceTest {
         List<CsSubject> csSubjects = List.of(CsSubject.of(CsCategory.NETWORK, List.of("http/https")));
         List<String> portfolioLinks = List.of("https://github.com/user/project");
         Interview interview = Interview.of(3L, userId, InterviewType.ALL, Difficulty.ENTRY,
-                10, InterviewerTone.NORMAL, csSubjects, portfolioLinks);
+                10, 3, InterviewerTone.NORMAL, csSubjects, portfolioLinks);
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
         given(interviewService.create(eq(userId), any(CreateInterviewCommand.class)))
@@ -248,5 +256,68 @@ class InterviewControllerTest extends AcceptanceTest {
                 .post("/api/interviews")
         .then()
                 .statusCode(403);
+    }
+
+    @Test
+    @DisplayName("면접 세션 종료 성공 시 200이 반환된다")
+    void finishSession() {
+        Long userId = 1L;
+        Long interviewId = 1L;
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        willDoNothing().given(interviewSessionService).finish(userId, interviewId);
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+        .when()
+                .post("/api/interviews/{interviewId}/finish", interviewId)
+        .then()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("인증 없이 면접 세션 종료 시 403이 반환된다")
+    void finishSessionWithoutAuth() {
+        RestAssuredMockMvc.given()
+        .when()
+                .post("/api/interviews/1/finish")
+        .then()
+                .statusCode(403);
+    }
+
+    @Test
+    @DisplayName("타인의 면접 세션 종료 시도 시 403이 반환된다")
+    void finishSessionWhenNotOwner() {
+        Long userId = 1L;
+        Long interviewId = 1L;
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        willThrow(new CustomException(ErrorCode.INTERVIEW_ACCESS_DENIED))
+                .given(interviewSessionService).finish(userId, interviewId);
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+        .when()
+                .post("/api/interviews/{interviewId}/finish", interviewId)
+        .then()
+                .statusCode(403);
+    }
+
+    @Test
+    @DisplayName("이미 완료된 면접 세션 종료 시도 시 400이 반환된다")
+    void finishSessionWhenAlreadyCompleted() {
+        Long userId = 1L;
+        Long interviewId = 1L;
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        willThrow(new CustomException(ErrorCode.SESSION_ALREADY_COMPLETED))
+                .given(interviewSessionService).finish(userId, interviewId);
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+        .when()
+                .post("/api/interviews/{interviewId}/finish", interviewId)
+        .then()
+                .statusCode(400);
     }
 }

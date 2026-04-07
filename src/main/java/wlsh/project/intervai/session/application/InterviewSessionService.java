@@ -15,4 +15,10 @@ public class InterviewSessionService {
         interviewSessionValidator.validateInterviewOwner(interviewId, userId);
         return interviewSessionManager.create(interviewId, userId);
     }
+
+    public void finish(Long userId, Long interviewId) {
+        interviewSessionValidator.validateInterviewOwner(interviewId, userId);
+        interviewSessionValidator.validateSessionInProgress(interviewId);
+        interviewSessionManager.complete(interviewId);
+    }
 }
