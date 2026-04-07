@@ -1,0 +1,2 @@
+- [개발 단계별 구현 상태](project_stage_status.md) — Stage 1-3 완료, Stage 4 진행 중 (2026-04-07)
+- [핵심 도메인 구조 및 API 엔드포인트](project_domain_structure.md) — 면접 도메인 패키지/엔티티/API 경로
