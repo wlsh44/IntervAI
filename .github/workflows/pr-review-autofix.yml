@@ -1,0 +1,86 @@
+name: PR 리뷰 자동 처리
+
+on:
+  pull_request_review:
+    types: [submitted]
+  pull_request_review_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: pr-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  auto-fix-review:
+    # claude-code-action 봇이 만든 커밋으로 인한 재귀 실행 방지
+    if: github.actor != 'claude-code[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: 리뷰 코멘트 수집
+        id: review
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr_number = context.payload.pull_request.number;
+            const branch = context.payload.pull_request.head.ref;
+
+            // 인라인 코멘트
+            const { data: comments } = await github.rest.pulls.listReviewComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr_number,
+            });
+
+            // 리뷰 요약 코멘트
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr_number,
+            });
+
+            const inlineComments = comments
+              .map(c => `[${c.path}:${c.line ?? c.original_line}]\n${c.body}`)
+              .join('\n---\n');
+
+            const reviewBodies = reviews
+              .filter(r => r.body && r.body.trim())
+              .map(r => `[리뷰 요약 by ${r.user.login}]\n${r.body}`)
+              .join('\n---\n');
+
+            const allComments = [inlineComments, reviewBodies].filter(Boolean).join('\n===\n');
+
+            core.setOutput('pr_number', pr_number);
+            core.setOutput('branch', branch);
+            core.setOutput('comments', allComments || '(리뷰 코멘트 없음)');
+
+      - name: Claude Code로 리뷰 분석 및 수정
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            PR #${{ steps.review.outputs.pr_number }} (`${{ steps.review.outputs.branch }}` 브랜치)에 다음 리뷰 코멘트가 달렸어.
+
+            === 리뷰 내용 ===
+            ${{ steps.review.outputs.comments }}
+            =================
+
+            각 코멘트를 분석해서:
+            - 타당한 지적이면 코드를 수정해줘
+            - 이미 반영됐거나 불필요한 내용이면 무시해
+
+            수정 후:
+            1. 프런트엔드 파일(front/) 수정했다면 반드시 `cd /Users/runner/work/IntervAI/IntervAI/front && npm ci && npm run typecheck` 실행해서 타입 에러 확인
+            2. 수정 사항이 있으면 `git add -A && git commit -m "fix: PR 리뷰 반영 (#${{ steps.review.outputs.pr_number }})" && git push` 실행
+            3. 수정 사항이 없으면 아무것도 하지 마
+
+            중요: 커밋 메시지에 반드시 `[skip ci]`를 붙이지 마 (리뷰 반영 기록이 필요함)
