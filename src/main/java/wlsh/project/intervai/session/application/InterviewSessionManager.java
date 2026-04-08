@@ -17,22 +17,25 @@ public class InterviewSessionManager {
     private final InterviewSessionRepository interviewSessionRepository;
     private final InterviewSessionFinder interviewSessionFinder;
 
+    @Transactional
     public InterviewSession create(Long interviewId, Long userId) {
         InterviewSession session = InterviewSession.create(interviewId, userId);
         InterviewSessionEntity entity = interviewSessionRepository.save(InterviewSessionEntity.from(session));
         return entity.toDomain();
     }
 
+    @Transactional
     public void advanceToNext(Long sessionId) {
         InterviewSessionEntity entity = interviewSessionRepository.findByIdAndStatus(sessionId, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new CustomException(ErrorCode.SESSION_NOT_FOUND));
         entity.advanceToNext();
     }
 
-    public void addFollowUp(Long sessionId) {
+    @Transactional
+    public void addFollowUpCount(Long sessionId) {
         InterviewSessionEntity entity = interviewSessionRepository.findByIdAndStatus(sessionId, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new CustomException(ErrorCode.SESSION_NOT_FOUND));
-        entity.addFollowUp();
+        entity.addFollowUpCount();
     }
 
     @Transactional

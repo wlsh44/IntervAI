@@ -36,7 +36,7 @@ class InterviewSessionManagerTest extends IntegrationTest {
         Long userId = 1L;
         Interview interview = createInterview(userId);
         InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
-        interviewSessionManager.addFollowUp(session.getId());
+        interviewSessionManager.addFollowUpCount(session.getId());
 
         // when
         interviewSessionManager.advanceToNext(session.getId());
@@ -49,14 +49,14 @@ class InterviewSessionManagerTest extends IntegrationTest {
 
     @Test
     @DisplayName("꼬리 질문을 추가하면 followUpCount가 1 증가한다")
-    void addFollowUp() {
+    void addFollowUpCount() {
         // given
         Long userId = 1L;
         Interview interview = createInterview(userId);
         InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
 
         // when
-        interviewSessionManager.addFollowUp(session.getId());
+        interviewSessionManager.addFollowUpCount(session.getId());
 
         // then
         InterviewSession updated = interviewSessionFinder.find(session.getId());
@@ -73,9 +73,9 @@ class InterviewSessionManagerTest extends IntegrationTest {
         InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
 
         // when
-        interviewSessionManager.addFollowUp(session.getId());
-        interviewSessionManager.addFollowUp(session.getId());
-        interviewSessionManager.addFollowUp(session.getId());
+        interviewSessionManager.addFollowUpCount(session.getId());
+        interviewSessionManager.addFollowUpCount(session.getId());
+        interviewSessionManager.addFollowUpCount(session.getId());
 
         // then
         InterviewSession updated = interviewSessionFinder.find(session.getId());
@@ -89,12 +89,12 @@ class InterviewSessionManagerTest extends IntegrationTest {
         Long userId = 1L;
         Interview interview = createInterview(userId);
         InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
-        interviewSessionManager.addFollowUp(session.getId());
-        interviewSessionManager.addFollowUp(session.getId());
+        interviewSessionManager.addFollowUpCount(session.getId());
+        interviewSessionManager.addFollowUpCount(session.getId());
         interviewSessionManager.advanceToNext(session.getId());
 
         // when
-        interviewSessionManager.addFollowUp(session.getId());
+        interviewSessionManager.addFollowUpCount(session.getId());
 
         // then
         InterviewSession updated = interviewSessionFinder.find(session.getId());
