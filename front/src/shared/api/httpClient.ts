@@ -10,6 +10,7 @@ export const httpClient = axios.create({
 let accessTokenGetter: (() => string | null) | null = null
 let accessTokenSetter: ((token: string) => void) | null = null
 let onUnauthorized: (() => void) | null = null
+let refreshPromise: Promise<string> | null = null
 
 export function setupHttpClient(
   getToken: () => string | null,
@@ -35,18 +36,27 @@ httpClient.interceptors.response.use(
     const originalRequest = error.config
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
+
+      if (!refreshPromise) {
+        refreshPromise = axios
+          .post(`${BASE_URL}${API_PATHS.auth.refresh}`, {}, { withCredentials: true })
+          .then((res) => {
+            const newToken: string = res.data.accessToken
+            accessTokenSetter?.(newToken)
+            return newToken
+          })
+          .finally(() => {
+            refreshPromise = null
+          })
+      }
+
       try {
-        const res = await axios.post(
-          `${BASE_URL}${API_PATHS.auth.refresh}`,
-          {},
-          { withCredentials: true },
-        )
-        const newToken: string = res.data.accessToken
-        accessTokenSetter?.(newToken)
+        const newToken = await refreshPromise
         originalRequest.headers.Authorization = `Bearer ${newToken}`
         return httpClient(originalRequest)
-      } catch {
+      } catch (err) {
         onUnauthorized?.()
+        return Promise.reject(err)
       }
     }
     return Promise.reject(error)
