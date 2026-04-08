@@ -118,4 +118,44 @@ class QuestionControllerTest extends AcceptanceTest {
         .then()
                 .statusCode(403);
     }
+
+    @Test
+    @DisplayName("종료된 세션에 질문 생성 요청 시 400이 반환된다")
+    void createAllQuestionsForCompletedSession() {
+        Long userId = 1L;
+        Long interviewId = 10L;
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        given(questionService.createAll(eq(userId), eq(interviewId)))
+                .willThrow(new CustomException(ErrorCode.SESSION_ALREADY_COMPLETED));
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+        .when()
+                .post("/api/interviews/{interviewId}/questions", interviewId)
+        .then()
+                .statusCode(400)
+                .body("code", equalTo("SESSION_ALREADY_COMPLETED"))
+                .body("message", equalTo(ErrorCode.SESSION_ALREADY_COMPLETED.getMessage()));
+    }
+
+    @Test
+    @DisplayName("종료된 세션에서 현재 질문 조회 시 400이 반환된다")
+    void currentQuestionForCompletedSession() {
+        Long userId = 1L;
+        Long interviewId = 10L;
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        given(questionService.currentQuestion(eq(userId), eq(interviewId)))
+                .willThrow(new CustomException(ErrorCode.SESSION_ALREADY_COMPLETED));
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+        .when()
+                .get("/api/interviews/{interviewId}/questions/current", interviewId)
+        .then()
+                .statusCode(400)
+                .body("code", equalTo("SESSION_ALREADY_COMPLETED"))
+                .body("message", equalTo(ErrorCode.SESSION_ALREADY_COMPLETED.getMessage()));
+    }
 }

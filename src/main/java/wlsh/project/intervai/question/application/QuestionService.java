@@ -24,6 +24,7 @@ public class QuestionService {
 
     public List<Question> createAll(Long userId, Long interviewId) {
         interviewSessionValidator.validateInterviewOwner(interviewId, userId);
+        interviewSessionValidator.validateSessionInProgress(interviewId);
         Interview interview = interviewFinder.find(interviewId);
         InterviewSession session = interviewSessionFinder.findByInterviewId(interviewId);
         List<String> contents = questionGenerator.generateAll(interview);
@@ -32,6 +33,7 @@ public class QuestionService {
 
     public NextQuestionResult currentQuestion(Long userId, Long interviewId) {
         interviewSessionValidator.validateInterviewOwner(interviewId, userId);
+        interviewSessionValidator.validateSessionInProgress(interviewId);
         Interview interview = interviewFinder.find(interviewId);
         InterviewSession session = interviewSessionFinder.findByInterviewId(interviewId);
         return questionFinder.findCurrent(
