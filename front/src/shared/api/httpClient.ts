@@ -7,13 +7,16 @@ export const httpClient = axios.create({
 
 // accessToken을 런타임에 주입받기 위한 setter
 let accessTokenGetter: (() => string | null) | null = null
+let accessTokenSetter: ((token: string) => void) | null = null
 let onUnauthorized: (() => void) | null = null
 
 export function setupHttpClient(
   getToken: () => string | null,
+  setToken: (token: string) => void,
   handleUnauthorized: () => void,
 ) {
   accessTokenGetter = getToken
+  accessTokenSetter = setToken
   onUnauthorized = handleUnauthorized
 }
 
@@ -38,10 +41,8 @@ httpClient.interceptors.response.use(
           { withCredentials: true },
         )
         const newToken: string = res.data.accessToken
-        // 토큰 갱신 — setupHttpClient로 주입된 setter로 처리
-        if (accessTokenGetter) {
-          originalRequest.headers.Authorization = `Bearer ${newToken}`
-        }
+        accessTokenSetter?.(newToken)
+        originalRequest.headers.Authorization = `Bearer ${newToken}`
         return httpClient(originalRequest)
       } catch {
         onUnauthorized?.()
