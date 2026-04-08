@@ -1,7 +1,8 @@
 import axios from 'axios'
+import { BASE_URL, API_PATHS } from './constants'
 
 export const httpClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080',
+  baseURL: BASE_URL,
   withCredentials: true,
 })
 
@@ -36,7 +37,7 @@ httpClient.interceptors.response.use(
       originalRequest._retry = true
       try {
         const res = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'}/api/auth/refresh`,
+          `${BASE_URL}${API_PATHS.auth.refresh}`,
           {},
           { withCredentials: true },
         )
