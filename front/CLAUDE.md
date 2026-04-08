@@ -45,8 +45,8 @@ npm run typecheck  # tsc --noEmit
 ## 기능 개발 워크플로우
 
 ```
-[1] dev-planner  →  요구사항(docs) + 디자인(Stitch) + 백엔드 현황(src/) → PLAN.md
-[2] plan-executor → frontend-developer  →  구현
+[1] 요구사항(docs) 체크 -> 디자인(Stitch mcp) + 백엔드 현황(src/) 체크 -> dev-planner로 PLAN.md
+[2] plan-executor → 브랜치 이동 -> frontend-developer → 구현
 ```
 
 **dev-planner 호출 시 전달:**
