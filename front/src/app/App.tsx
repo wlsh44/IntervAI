@@ -23,7 +23,8 @@ const queryClient = new QueryClient({
 const PUBLIC_PATHS = ['/login', '/register']
 
 const AppInitializer = () => {
-  const { accessToken, setAuth, setAccessToken, clearAuth } = useAuthStore()
+  const { accessToken, setAuth, clearAuth } = useAuthStore()
+  const setInitialized = useAuthStore((s) => s.setInitialized)
   const navigate = useNavigate()
   const location = useLocation()
   const initialized = useRef(false)
@@ -45,7 +46,10 @@ const AppInitializer = () => {
     if (initialized.current) return
     initialized.current = true
 
-    if (accessToken) return
+    if (accessToken) {
+      setInitialized(true)
+      return
+    }
 
     const isPublicPath = PUBLIC_PATHS.includes(location.pathname)
 
@@ -65,17 +69,22 @@ const AppInitializer = () => {
           navigate('/login', { replace: true })
         }
       })
-  }, [accessToken, location.pathname, setAuth, setAccessToken, clearAuth, navigate])
+      .finally(() => {
+        setInitialized(true)
+      })
+  }, [accessToken, location.pathname, setAuth, clearAuth, setInitialized, navigate])
 
   return null
 }
 
 const App = () => {
+  const isInitialized = useAuthStore((s) => s.isInitialized)
+
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AppInitializer />
-        <Router />
+        {isInitialized ? <Router /> : null}
         <ToastContainer />
       </BrowserRouter>
     </QueryClientProvider>
