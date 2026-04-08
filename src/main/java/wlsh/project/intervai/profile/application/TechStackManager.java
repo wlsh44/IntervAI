@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import wlsh.project.intervai.common.entity.EntityStatus;
 import wlsh.project.intervai.profile.infra.TechStackEntity;
 import wlsh.project.intervai.profile.infra.TechStackRepository;
@@ -16,6 +17,7 @@ public class TechStackManager {
 
     private final TechStackRepository techStackRepository;
 
+    @Transactional
     public List<TechStackEntity> findOrCreate(List<String> names) {
         List<TechStackEntity> existing = techStackRepository.findAllByNameInAndStatus(names, EntityStatus.ACTIVE);
 
