@@ -2,6 +2,7 @@ package wlsh.project.intervai.answer.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import wlsh.project.intervai.answer.domain.Answer;
 import wlsh.project.intervai.answer.infra.AnswerEntity;
 import wlsh.project.intervai.answer.infra.AnswerRepository;
@@ -18,6 +19,7 @@ public class AnswerManager {
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
 
+    @Transactional
     public Answer create(Long userId, Long questionId, String content) {
         QuestionEntity question = questionRepository.findByIdAndStatus(questionId, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));

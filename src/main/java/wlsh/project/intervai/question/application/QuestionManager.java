@@ -17,6 +17,7 @@ public class QuestionManager {
 
     private final QuestionRepository questionRepository;
 
+    @Transactional
     public Question create(Long interviewId, Long sessionId,
                            String content, QuestionType questionType, int questionIndex) {
         Question question = Question.create(interviewId, sessionId, content, questionType, questionIndex);

@@ -67,7 +67,7 @@ public class InterviewSessionEntity extends BaseEntity {
         this.followUpCount = 0;
     }
 
-    public void addFollowUp() {
+    public void addFollowUpCount() {
         this.followUpCount++;
     }
 
