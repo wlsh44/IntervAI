@@ -41,7 +41,10 @@ httpClient.interceptors.response.use(
         refreshPromise = axios
           .post(`${BASE_URL}${API_PATHS.auth.refresh}`, {}, { withCredentials: true })
           .then((res) => {
-            const newToken: string = res.data.accessToken
+            const newToken = res.data?.accessToken
+            if (typeof newToken !== 'string') {
+              throw new Error('Invalid refresh response')
+            }
             accessTokenSetter?.(newToken)
             return newToken
           })
