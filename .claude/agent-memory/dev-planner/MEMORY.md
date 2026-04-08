@@ -1,0 +1,2 @@
+- [InterviewSession 도메인 구현 현황](project_session_domain.md) — Finder/Manager/Validator 역할 분리, complete()/isInProgress() Entity 메서드 기구현
+- [Controller 테스트 패턴](project_test_pattern.md) — WebMvcTest + AcceptanceTest + RestAssuredMockMvc 패턴, void/예외 mock 방법
