@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import axios from 'axios'
 import { useAuthStore } from '../features/auth/stores/authStore'
 import { setupHttpClient } from '../shared/api/httpClient'
+import { BASE_URL, API_PATHS } from '../shared/api/constants'
+import { ToastContainer } from '../shared/components/ui/Toast'
 import Router from './router'
 
 const queryClient = new QueryClient({
@@ -21,7 +23,7 @@ const queryClient = new QueryClient({
 const PUBLIC_PATHS = ['/login', '/register']
 
 const AppInitializer = () => {
-  const { accessToken, setAuth, clearAuth } = useAuthStore()
+  const { accessToken, setAuth, setAccessToken, clearAuth } = useAuthStore()
   const navigate = useNavigate()
   const location = useLocation()
   const initialized = useRef(false)
@@ -31,12 +33,7 @@ const AppInitializer = () => {
 
     setupHttpClient(
       () => getState().accessToken,
-      (token) => {
-        const state = getState()
-        if (state.userId !== null && state.nickname !== null) {
-          getState().setAuth(token, state.userId, state.nickname)
-        }
-      },
+      (token) => getState().setAccessToken(token),
       () => {
         getState().clearAuth()
         navigate('/login', { replace: true })
@@ -54,7 +51,7 @@ const AppInitializer = () => {
 
     axios
       .post<{ accessToken: string; id: number; nickname: string }>(
-        `${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'}/api/auth/refresh`,
+        `${BASE_URL}${API_PATHS.auth.refresh}`,
         {},
         { withCredentials: true },
       )
@@ -68,7 +65,7 @@ const AppInitializer = () => {
           navigate('/login', { replace: true })
         }
       })
-  }, [accessToken, location.pathname, setAuth, clearAuth, navigate])
+  }, [accessToken, location.pathname, setAuth, setAccessToken, clearAuth, navigate])
 
   return null
 }
@@ -79,6 +76,7 @@ const App = () => {
       <BrowserRouter>
         <AppInitializer />
         <Router />
+        <ToastContainer />
       </BrowserRouter>
     </QueryClientProvider>
   )

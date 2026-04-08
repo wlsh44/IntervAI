@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { create } from 'zustand'
 
 type ToastType = 'error' | 'success' | 'info'
 
@@ -8,27 +8,30 @@ interface ToastItem {
   type: ToastType
 }
 
+interface ToastState {
+  toasts: ToastItem[]
+  toast: (message: string, type?: ToastType) => void
+  removeToast: (id: number) => void
+}
+
 let toastIdCounter = 0
 
+export const useToastStore = create<ToastState>((set) => ({
+  toasts: [],
+  toast: (message, type = 'info') => {
+    const id = ++toastIdCounter
+    set((state) => ({ toasts: [...state.toasts, { id, message, type }] }))
+    setTimeout(() => {
+      set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) }))
+    }, 3000)
+  },
+  removeToast: (id) =>
+    set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) })),
+}))
+
 export const useToast = () => {
-  const [toasts, setToasts] = useState<ToastItem[]>([])
-
-  const removeToast = useCallback((id: number) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id))
-  }, [])
-
-  const toast = useCallback(
-    (message: string, type: ToastType = 'info') => {
-      const id = ++toastIdCounter
-      setToasts((prev) => [...prev, { id, message, type }])
-      setTimeout(() => {
-        setToasts((prev) => prev.filter((t) => t.id !== id))
-      }, 3000)
-    },
-    [],
-  )
-
-  return { toast, toasts, removeToast }
+  const { toast } = useToastStore()
+  return { toast }
 }
 
 const typeStyles: Record<ToastType, string> = {
@@ -37,47 +40,25 @@ const typeStyles: Record<ToastType, string> = {
   info: 'bg-gray-800 text-white',
 }
 
-interface ToastContainerProps {
-  toasts: ToastItem[]
-  removeToast: (id: number) => void
-}
+export const ToastContainer = () => {
+  const { toasts, removeToast } = useToastStore()
 
-const ToastItemComponent = ({
-  item,
-  onRemove,
-}: {
-  item: ToastItem
-  onRemove: () => void
-}) => {
-  useEffect(() => {
-    return () => {}
-  }, [])
-
-  return (
-    <div
-      className={`flex items-center justify-between gap-3 px-4 py-3 rounded-lg shadow-lg min-w-64 max-w-sm ${typeStyles[item.type]}`}
-    >
-      <span className="text-sm">{item.message}</span>
-      <button
-        onClick={onRemove}
-        className="text-white/80 hover:text-white flex-shrink-0"
-        aria-label="닫기"
-      >
-        x
-      </button>
-    </div>
-  )
-}
-
-export const ToastContainer = ({ toasts, removeToast }: ToastContainerProps) => {
   return (
     <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
       {toasts.map((item) => (
-        <ToastItemComponent
+        <div
           key={item.id}
-          item={item}
-          onRemove={() => removeToast(item.id)}
-        />
+          className={`flex items-center justify-between gap-3 px-4 py-3 rounded-lg shadow-lg min-w-64 max-w-sm ${typeStyles[item.type]}`}
+        >
+          <span className="text-sm">{item.message}</span>
+          <button
+            onClick={() => removeToast(item.id)}
+            className="text-white/80 hover:text-white flex-shrink-0"
+            aria-label="닫기"
+          >
+            ✕
+          </button>
+        </div>
       ))}
     </div>
   )
