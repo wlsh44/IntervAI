@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
 import { extractApiError, getErrorMessage } from '../../../shared/api/apiError'
 import { useToast } from '../../../shared/components/ui/Toast'
@@ -9,6 +9,7 @@ type AuthMutationFn = typeof login
 
 export function useAuthMutation(mutationFn: AuthMutationFn) {
   const navigate = useNavigate()
+  const location = useLocation()
   const setAuth = useAuthStore((s) => s.setAuth)
   const { toast } = useToast()
 
@@ -16,7 +17,8 @@ export function useAuthMutation(mutationFn: AuthMutationFn) {
     mutationFn,
     onSuccess: (data) => {
       setAuth(data.accessToken, data.id, data.nickname)
-      navigate('/')
+      const from = (location.state as { from?: string } | null)?.from ?? '/'
+      navigate(from, { replace: true })
     },
     onError: (error) => {
       const { code } = extractApiError(error)

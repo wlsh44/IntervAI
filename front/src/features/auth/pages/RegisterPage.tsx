@@ -9,6 +9,7 @@ import AuthLayout from '../components/AuthLayout'
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const { mutate: registerUser, isPending } = useRegister()
 
   const {
@@ -18,7 +19,7 @@ const RegisterPage = () => {
   } = useForm<RegisterFormValues>({ resolver: zodResolver(registerSchema) })
 
   const onSubmit = (data: RegisterFormValues) => {
-    registerUser(data)
+    registerUser({ nickname: data.nickname, password: data.password })
   }
 
   return (
@@ -34,7 +35,8 @@ const RegisterPage = () => {
             {...register('nickname')}
             type="text"
             placeholder="사용할 닉네임을 입력하세요"
-            className="w-full bg-[#141f38] text-[#dee5ff] placeholder-[#40485d] rounded-xl px-4 py-3 text-sm outline-none border border-[#40485d]/20 focus:border-[#85adff]/50 transition-colors"
+            disabled={isPending}
+            className="w-full bg-[#141f38] text-[#dee5ff] placeholder-[#40485d] rounded-xl px-4 py-3 text-sm outline-none border border-[#40485d]/20 focus:border-[#85adff]/50 transition-colors disabled:opacity-50"
           />
           {errors.nickname && (
             <p className="mt-1.5 text-xs text-[#ff716c]">{errors.nickname.message}</p>
@@ -52,7 +54,8 @@ const RegisterPage = () => {
               {...register('password')}
               type={showPassword ? 'text' : 'password'}
               placeholder="사용할 비밀번호를 입력하세요"
-              className="w-full bg-[#141f38] text-[#dee5ff] placeholder-[#40485d] rounded-xl px-4 py-3 pr-11 text-sm outline-none border border-[#40485d]/20 focus:border-[#85adff]/50 transition-colors"
+              disabled={isPending}
+              className="w-full bg-[#141f38] text-[#dee5ff] placeholder-[#40485d] rounded-xl px-4 py-3 pr-11 text-sm outline-none border border-[#40485d]/20 focus:border-[#85adff]/50 transition-colors disabled:opacity-50"
             />
             <button
               type="button"
@@ -65,6 +68,34 @@ const RegisterPage = () => {
           </div>
           {errors.password && (
             <p className="mt-1.5 text-xs text-[#ff716c]">{errors.password.message}</p>
+          )}
+        </div>
+
+        {/* 비밀번호 확인 */}
+        <div>
+          <label htmlFor="confirmPassword" className="block text-sm text-[#a3aac4] mb-1.5">
+            비밀번호 확인
+          </label>
+          <div className="relative">
+            <input
+              id="confirmPassword"
+              {...register('confirmPassword')}
+              type={showConfirmPassword ? 'text' : 'password'}
+              placeholder="비밀번호를 다시 입력하세요"
+              disabled={isPending}
+              className="w-full bg-[#141f38] text-[#dee5ff] placeholder-[#40485d] rounded-xl px-4 py-3 pr-11 text-sm outline-none border border-[#40485d]/20 focus:border-[#85adff]/50 transition-colors disabled:opacity-50"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
+              aria-label={showConfirmPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
+            >
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+          {errors.confirmPassword && (
+            <p className="mt-1.5 text-xs text-[#ff716c]">{errors.confirmPassword.message}</p>
           )}
         </div>
 

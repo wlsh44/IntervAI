@@ -32,7 +32,8 @@ const LoginPage = () => {
             {...register('nickname')}
             type="text"
             placeholder="닉네임을 입력하세요"
-            className="w-full bg-[#141f38] text-[#dee5ff] placeholder-[#40485d] rounded-xl px-4 py-3 text-sm outline-none border border-[#40485d]/20 focus:border-[#85adff]/50 transition-colors"
+            disabled={isPending}
+            className="w-full bg-[#141f38] text-[#dee5ff] placeholder-[#40485d] rounded-xl px-4 py-3 text-sm outline-none border border-[#40485d]/20 focus:border-[#85adff]/50 transition-colors disabled:opacity-50"
           />
           {errors.nickname && (
             <p className="mt-1.5 text-xs text-[#ff716c]">{errors.nickname.message}</p>
@@ -48,7 +49,8 @@ const LoginPage = () => {
               {...register('password')}
               type={showPassword ? 'text' : 'password'}
               placeholder="비밀번호를 입력하세요"
-              className="w-full bg-[#141f38] text-[#dee5ff] placeholder-[#40485d] rounded-xl px-4 py-3 pr-11 text-sm outline-none border border-[#40485d]/20 focus:border-[#85adff]/50 transition-colors"
+              disabled={isPending}
+              className="w-full bg-[#141f38] text-[#dee5ff] placeholder-[#40485d] rounded-xl px-4 py-3 pr-11 text-sm outline-none border border-[#40485d]/20 focus:border-[#85adff]/50 transition-colors disabled:opacity-50"
             />
             <button
               type="button"
