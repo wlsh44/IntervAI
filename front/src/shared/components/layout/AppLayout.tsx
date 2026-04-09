@@ -5,6 +5,7 @@ const navItems = [
   { label: '대시보드', to: '/' },
   { label: '새 면접', to: '/interview' },
   { label: '히스토리', to: '/history' },
+  { label: '프로필 설정', to: '/profile' },
 ]
 
 const AppLayout = () => {
