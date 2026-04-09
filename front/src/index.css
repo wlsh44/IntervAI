@@ -1,3 +1,15 @@
+@theme {
+  --color-auth-bg: #060e20;
+  --color-auth-card: #0f1930;
+  --color-auth-input: #141f38;
+  --color-auth-outline: #40485d;
+  --color-auth-primary: #85adff;
+  --color-auth-secondary: #ac8aff;
+  --color-auth-text: #dee5ff;
+  --color-auth-muted: #a3aac4;
+  --color-auth-error: #ff716c;
+}
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;

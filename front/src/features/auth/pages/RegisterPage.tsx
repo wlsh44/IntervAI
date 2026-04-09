@@ -1,15 +1,12 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Eye, EyeOff } from 'lucide-react'
 import { useRegister } from '../hooks/useRegister'
 import { registerSchema, type RegisterFormValues } from '../utils/validationSchemas'
 import AuthLayout from '../components/AuthLayout'
+import PasswordInput from '../components/PasswordInput'
 
 const RegisterPage = () => {
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const { mutate: registerUser, isPending } = useRegister()
 
   const {
@@ -27,8 +24,8 @@ const RegisterPage = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* 닉네임 */}
         <div>
-          <label htmlFor="nickname" className="block text-sm text-[#a3aac4] mb-1.5">
-            닉네임 <span className="text-[#40485d]">(4~8자)</span>
+          <label htmlFor="nickname" className="block text-sm text-auth-muted mb-1.5">
+            닉네임 <span className="text-auth-outline">(4~8자)</span>
           </label>
           <input
             id="nickname"
@@ -36,82 +33,47 @@ const RegisterPage = () => {
             type="text"
             placeholder="사용할 닉네임을 입력하세요"
             disabled={isPending}
-            className="w-full bg-[#141f38] text-[#dee5ff] placeholder-[#40485d] rounded-xl px-4 py-3 text-sm outline-none border border-[#40485d]/20 focus:border-[#85adff]/50 transition-colors disabled:opacity-50"
+            className="w-full bg-auth-input text-auth-text placeholder-auth-outline rounded-xl px-4 py-3 text-sm outline-none border border-auth-outline/20 focus:border-auth-primary/50 transition-colors disabled:opacity-50"
           />
           {errors.nickname && (
-            <p className="mt-1.5 text-xs text-[#ff716c]">{errors.nickname.message}</p>
+            <p className="mt-1.5 text-xs text-auth-error">{errors.nickname.message}</p>
           )}
         </div>
 
         {/* 비밀번호 */}
-        <div>
-          <label htmlFor="password" className="block text-sm text-[#a3aac4] mb-1.5">
-            비밀번호 <span className="text-[#40485d]">(4~12자)</span>
-          </label>
-          <div className="relative">
-            <input
-              id="password"
-              {...register('password')}
-              type={showPassword ? 'text' : 'password'}
-              placeholder="사용할 비밀번호를 입력하세요"
-              disabled={isPending}
-              className="w-full bg-[#141f38] text-[#dee5ff] placeholder-[#40485d] rounded-xl px-4 py-3 pr-11 text-sm outline-none border border-[#40485d]/20 focus:border-[#85adff]/50 transition-colors disabled:opacity-50"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
-              aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
-          {errors.password && (
-            <p className="mt-1.5 text-xs text-[#ff716c]">{errors.password.message}</p>
-          )}
-        </div>
+        <PasswordInput
+          id="password"
+          label="비밀번호"
+          hint="(4~12자)"
+          registration={register('password')}
+          error={errors.password}
+          placeholder="사용할 비밀번호를 입력하세요"
+          disabled={isPending}
+        />
 
         {/* 비밀번호 확인 */}
-        <div>
-          <label htmlFor="confirmPassword" className="block text-sm text-[#a3aac4] mb-1.5">
-            비밀번호 확인
-          </label>
-          <div className="relative">
-            <input
-              id="confirmPassword"
-              {...register('confirmPassword')}
-              type={showConfirmPassword ? 'text' : 'password'}
-              placeholder="비밀번호를 다시 입력하세요"
-              disabled={isPending}
-              className="w-full bg-[#141f38] text-[#dee5ff] placeholder-[#40485d] rounded-xl px-4 py-3 pr-11 text-sm outline-none border border-[#40485d]/20 focus:border-[#85adff]/50 transition-colors disabled:opacity-50"
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
-              aria-label={showConfirmPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
-            >
-              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
-          {errors.confirmPassword && (
-            <p className="mt-1.5 text-xs text-[#ff716c]">{errors.confirmPassword.message}</p>
-          )}
-        </div>
+        <PasswordInput
+          id="confirmPassword"
+          label="비밀번호 확인"
+          registration={register('confirmPassword')}
+          error={errors.confirmPassword}
+          placeholder="비밀번호를 다시 입력하세요"
+          disabled={isPending}
+        />
 
         {/* 회원가입 버튼 */}
         <button
           type="submit"
           disabled={isPending}
-          className="w-full py-3 rounded-xl text-sm font-semibold text-black bg-gradient-to-r from-[#85adff] to-[#ac8aff] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity mt-2"
+          className="w-full py-3 rounded-xl text-sm font-semibold text-black bg-gradient-to-r from-auth-primary to-auth-secondary hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity mt-2"
         >
           {isPending ? '가입 중...' : '회원가입'}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-[#a3aac4]">
+      <p className="mt-6 text-center text-sm text-auth-muted">
         이미 계정이 있으신가요?{' '}
-        <Link to="/login" className="text-[#85adff] hover:text-[#ac8aff] transition-colors">
+        <Link to="/login" className="text-auth-primary hover:text-auth-secondary transition-colors">
           로그인
         </Link>
       </p>
