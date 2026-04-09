@@ -5,6 +5,7 @@ import LoginPage from '../features/auth/pages/LoginPage'
 import RegisterPage from '../features/auth/pages/RegisterPage'
 import DashboardPage from '../shared/pages/DashboardPage'
 import InterviewPage from '../features/interview/pages/InterviewPage'
+import ProfilePage from '../features/profile/pages/ProfilePage'
 import NotFoundPage from '../shared/pages/NotFoundPage'
 
 const Router = () => {
@@ -17,6 +18,7 @@ const Router = () => {
         <Route element={<AppLayout />}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/interview" element={<InterviewPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
       </Route>
 
