@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Lock } from 'lucide-react'
 import type { UseFormRegisterReturn, FieldError } from 'react-hook-form'
 
 interface PasswordInputProps {
@@ -17,18 +17,21 @@ const PasswordInput = ({ id, label, registration, error, placeholder, disabled, 
 
   return (
     <div>
-      <label htmlFor={id} className="block text-sm text-auth-muted mb-1.5">
+      <label htmlFor={id} className="block text-sm font-medium text-auth-text mb-1.5">
         {label}
-        {hint && <span className="text-auth-outline ml-1">{hint}</span>}
+        {hint && <span className="text-auth-muted font-normal ml-1">{hint}</span>}
       </label>
       <div className="relative">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-auth-muted">
+          <Lock size={16} />
+        </span>
         <input
           id={id}
           {...registration}
           type={show ? 'text' : 'password'}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full bg-auth-input text-auth-text placeholder-auth-outline rounded-xl px-4 py-3 pr-11 text-sm outline-none border border-auth-outline/20 focus:border-auth-primary/50 transition-colors disabled:opacity-50"
+          className="w-full bg-auth-input text-auth-text placeholder-auth-outline rounded-xl pl-9 pr-11 py-3 text-sm outline-none transition-all disabled:opacity-50 focus:bg-white focus:shadow-[0_0_0_3px_rgba(70,72,212,0.12)]"
         />
         <button
           type="button"
