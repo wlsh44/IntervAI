@@ -8,4 +8,7 @@ export const API_PATHS = {
     login: '/api/users/login',
     signUp: '/api/users/sign-up',
   },
+  profile: {
+    base: '/api/users/profile',
+  },
 } as const
