@@ -19,7 +19,6 @@ TanStack Query v5 · Zustand v5 · axios · react-router-dom v7 · react-hook-fo
 | 기능 | `fe/feat/{도메인}` | `fe/feat/auth` |
 | 버그 | `fe/fix/{도메인}` | `fe/fix/chat` |
 | 리팩터링 | `fe/refactor/{도메인}` | `fe/refactor/profile` |
-
 ---
 
 ## 개발 명령어
@@ -45,8 +44,14 @@ npm run typecheck  # tsc --noEmit
 ## 기능 개발 워크플로우
 
 ```
-[1] 요구사항(docs) 체크 -> 디자인(Stitch mcp) + 백엔드 현황(src/) 체크 -> dev-planner로 PLAN.md
-[2] plan-executor → 브랜치 이동 -> frontend-developer → 구현
+[1] 요구사항(docs) 체크 -> 디자인(Stitch mcp) 조회
+[2] docs/api.md 조회 -> dev-planner로 PLAN.md
+[3] plan-executor → 브랜치 이동(fe/feat/{도메인})
+[4] frontend-developer → 구현 -> 코드 리뷰(/codex:review --background 사용)
+[5] 논리적 단위로 커밋 분리 → git push
+[6] gh pr create → PR 생성 (base: main)
+[7] PR 리뷰 확인 → 수정 필요 여부 판단 (필요 없으면 코멘트 전부 resolve 처리) 
+[8] 수정할 경우 [3], [4] 다시 진행 → push 및 해결된 코멘트 resolve
 ```
 
 **dev-planner 호출 시 전달:**
@@ -54,3 +59,6 @@ npm run typecheck  # tsc --noEmit
 - Stitch 화면 ID
 - 백엔드 경로: `src/main/java/wlsh/project/intervai/{도메인}/`
 - 브랜치: `fe/feat/{도메인}`
+
+**참고자료**
+./GITHUB.md : 프런트 브랜치 전략, PR 전략

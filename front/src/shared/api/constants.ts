@@ -4,4 +4,8 @@ export const API_PATHS = {
   auth: {
     refresh: '/api/auth/refresh',
   },
+  users: {
+    login: '/api/users/login',
+    signUp: '/api/users/sign-up',
+  },
 } as const
