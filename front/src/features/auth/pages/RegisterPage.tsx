@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRegister } from '../hooks/useRegister'
 import { registerSchema, type RegisterFormValues } from '../utils/validationSchemas'
 import AuthLayout from '../components/AuthLayout'
+import NicknameInput from '../components/NicknameInput'
 import PasswordInput from '../components/PasswordInput'
 
 const RegisterPage = () => {
@@ -20,27 +21,32 @@ const RegisterPage = () => {
   }
 
   return (
-    <AuthLayout title="회원가입">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        {/* 닉네임 */}
-        <div>
-          <label htmlFor="nickname" className="block text-sm text-auth-muted mb-1.5">
-            닉네임 <span className="text-auth-outline">(4~8자)</span>
-          </label>
-          <input
-            id="nickname"
-            {...register('nickname')}
-            type="text"
-            placeholder="사용할 닉네임을 입력하세요"
-            disabled={isPending}
-            className="w-full bg-auth-input text-auth-text placeholder-auth-outline rounded-xl px-4 py-3 text-sm outline-none border border-auth-outline/20 focus:border-auth-primary/50 transition-colors disabled:opacity-50"
-          />
-          {errors.nickname && (
-            <p className="mt-1.5 text-xs text-auth-error">{errors.nickname.message}</p>
-          )}
-        </div>
+    <AuthLayout
+      title="회원가입"
+      subtitle="인터브아이에서 AI 면접 연습을 시작하세요"
+      footer={
+        <>
+          이미 계정이 있으신가요?{' '}
+          <Link
+            to="/login"
+            className="font-medium text-auth-primary hover:text-auth-secondary transition-colors"
+          >
+            로그인
+          </Link>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <NicknameInput
+          id="nickname"
+          label="닉네임"
+          hint="(4~8자)"
+          registration={register('nickname')}
+          error={errors.nickname}
+          placeholder="사용할 닉네임을 입력하세요"
+          disabled={isPending}
+        />
 
-        {/* 비밀번호 */}
         <PasswordInput
           id="password"
           label="비밀번호"
@@ -51,7 +57,6 @@ const RegisterPage = () => {
           disabled={isPending}
         />
 
-        {/* 비밀번호 확인 */}
         <PasswordInput
           id="confirmPassword"
           label="비밀번호 확인"
@@ -61,22 +66,15 @@ const RegisterPage = () => {
           disabled={isPending}
         />
 
-        {/* 회원가입 버튼 */}
         <button
           type="submit"
           disabled={isPending}
-          className="w-full py-3 rounded-xl text-sm font-semibold text-black bg-gradient-to-r from-auth-primary to-auth-secondary hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity mt-2"
+          className="w-full py-3 rounded-xl text-sm font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed transition-opacity hover:opacity-90 mt-2"
+          style={{ background: 'linear-gradient(135deg, #4648d4 0%, #6b38d4 100%)' }}
         >
           {isPending ? '가입 중...' : '회원가입'}
         </button>
       </form>
-
-      <p className="mt-6 text-center text-sm text-auth-muted">
-        이미 계정이 있으신가요?{' '}
-        <Link to="/login" className="text-auth-primary hover:text-auth-secondary transition-colors">
-          로그인
-        </Link>
-      </p>
     </AuthLayout>
   )
 }
