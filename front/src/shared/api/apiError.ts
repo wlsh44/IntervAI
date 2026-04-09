@@ -13,6 +13,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
   INVALID_TOKEN: '인증이 만료되었습니다. 다시 로그인해주세요.',
   EXPIRED_TOKEN: '인증이 만료되었습니다. 다시 로그인해주세요.',
   LOGIN_FAILED: '닉네임 또는 비밀번호가 올바르지 않습니다.',
+  DUPLICATE_NICKNAME: '이미 사용 중인 닉네임입니다.',
   // 면접
   INTERVIEW_NOT_FOUND: '면접을 찾을 수 없습니다.',
   INTERVIEW_ACCESS_DENIED: '접근 권한이 없습니다.',
