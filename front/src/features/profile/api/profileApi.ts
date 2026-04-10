@@ -21,8 +21,5 @@ export interface UpdateProfileRequest {
 export const getProfile = (): Promise<ProfileResponse> =>
   httpClient.get<ProfileResponse>(API_PATHS.profile.base).then((res) => res.data)
 
-export const createProfile = (): Promise<ProfileResponse> =>
-  httpClient.post<ProfileResponse>(API_PATHS.profile.base).then((res) => res.data)
-
 export const updateProfile = (body: UpdateProfileRequest): Promise<ProfileResponse> =>
   httpClient.put<ProfileResponse>(API_PATHS.profile.base, body).then((res) => res.data)
