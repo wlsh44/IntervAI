@@ -1,11 +1,15 @@
 spring:
   ai:
     anthropic:
-      enabled: false
+      api-key: ${ANTHROPIC_API_KEY:}
+      chat:
+        options:
+          model: claude-sonnet-4-20250514
+          max-tokens: 1024
   data:
     redis:
       host: localhost
-      port: 6370
+      port: 6379
   datasource:
     url: jdbc:h2:mem:intervai
     driver-class-name: org.h2.Driver
@@ -18,3 +22,11 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+
+jwt:
+  access:
+    secret: ${JWT_ACCESS_SECRET:defaultAccessSecretKeyForLocalDevelopmentOnlyDoNotUse1234567890}
+    expiration: 86400000
+  refresh:
+    secret: ${JWT_REFRESH_SECRET:defaultRefreshSecretKeyForLocalDevelopmentOnlyDoNotUse123456789}
+    expiration: 604800000
