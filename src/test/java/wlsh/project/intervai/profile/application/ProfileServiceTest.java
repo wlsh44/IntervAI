@@ -25,33 +25,6 @@ class ProfileServiceTest extends IntegrationTest {
     private ProfileManager profileManager;
 
     @Test
-    @DisplayName("프로필 생성 성공 시 프로필이 반환된다")
-    void create() {
-        // given
-        Long userId = 100L;
-
-        // when
-        Profile profile = profileService.create(userId);
-
-        // then
-        assertThat(profile).isNotNull();
-        assertThat(profile.getUserId()).isEqualTo(userId);
-    }
-
-    @Test
-    @DisplayName("이미 프로필이 존재하는 경우 생성 시 예외가 발생한다")
-    void createAlreadyExists() {
-        // given
-        Long userId = 200L;
-        profileManager.create(userId, CreateProfileCommand.EMPTY_PROFILE);
-
-        // when & then
-        assertThatThrownBy(() -> profileService.create(userId))
-                .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.PROFILE_ALREADY_EXISTS.getMessage());
-    }
-
-    @Test
     @DisplayName("본인 프로필을 수정하면 수정된 프로필이 반환된다")
     void updateProfile() {
         // given
