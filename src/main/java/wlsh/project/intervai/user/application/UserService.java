@@ -50,4 +50,8 @@ public class UserService {
 
         return new LoginResult(user, tokenPair.accessToken(), tokenPair.refreshToken());
     }
+
+    public User getMe(Long userId) {
+        return userFinder.findById(userId);
+    }
 }

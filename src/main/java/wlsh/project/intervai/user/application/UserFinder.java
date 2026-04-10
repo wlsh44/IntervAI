@@ -19,4 +19,10 @@ public class UserFinder {
                 .orElseThrow(() -> new CustomException(ErrorCode.LOGIN_FAILED))
                 .toDomain();
     }
+
+    public User findById(Long userId) {
+        return userRepository.findByIdAndStatus(userId, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND))
+                .toDomain();
+    }
 }
