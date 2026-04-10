@@ -294,6 +294,7 @@ GET /api/users/profile
 | `careerLevel` | CareerLevel | 경력 수준 |
 | `techStacks` | String[] | 기술 스택 목록 |
 | `portfolioLinks` | String[] | 포트폴리오 링크 목록 |
+| `updatedAt` | String (ISO 8601) | 마지막 수정 시각 |
 
 **에러**
 
@@ -310,7 +311,8 @@ GET /api/users/profile
   "jobCategory": "BACKEND",
   "careerLevel": "JUNIOR",
   "techStacks": ["Java", "Spring Boot", "MySQL"],
-  "portfolioLinks": ["https://github.com/user/project"]
+  "portfolioLinks": ["https://github.com/user/project"],
+  "updatedAt": "2026-04-10T12:34:56"
 }
 ```
 

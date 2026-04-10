@@ -8,6 +8,7 @@ export interface ProfileResponse {
   careerLevel: CareerLevel | null
   techStacks: string[]
   portfolioLinks: string[]
+  updatedAt: string | null
 }
 
 export interface UpdateProfileRequest {

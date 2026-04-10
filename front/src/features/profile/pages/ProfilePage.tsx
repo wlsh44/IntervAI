@@ -92,9 +92,9 @@ const ProfilePage = () => {
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-[#131b2e]">프로필 설정</h1>
-          {profile && (
+          {profile?.updatedAt && (
             <p className="text-sm text-[#767586] mt-1">
-              최근 업데이트: {new Date().toLocaleDateString('ko-KR')}
+              최근 업데이트: {new Date(profile.updatedAt).toLocaleDateString('ko-KR')}
             </p>
           )}
         </div>
