@@ -1,15 +1,8 @@
 import type { InterviewListResponse } from '../api/dashboardApi'
+import { formatDate } from '../../../shared/utils/date'
 
 interface StatsSectionProps {
   data: InterviewListResponse | undefined
-}
-
-const formatDate = (createdAt: string): string => {
-  return new Date(createdAt).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
 }
 
 const StatsSection = ({ data }: StatsSectionProps) => {
