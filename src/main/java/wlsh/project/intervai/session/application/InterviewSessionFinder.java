@@ -1,5 +1,6 @@
 package wlsh.project.intervai.session.application;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import wlsh.project.intervai.common.entity.EntityStatus;
@@ -31,5 +32,9 @@ public class InterviewSessionFinder {
 
     public InterviewSession findByInterviewId(Long interviewId) {
         return getEntityByInterviewId(interviewId).toDomain();
+    }
+
+    public List<InterviewSessionEntity> findByInterviewIds(List<Long> interviewIds) {
+        return interviewSessionRepository.findByInterviewIdInAndStatus(interviewIds, EntityStatus.ACTIVE);
     }
 }
