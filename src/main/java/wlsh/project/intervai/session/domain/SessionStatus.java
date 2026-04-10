@@ -1,6 +1,6 @@
 package wlsh.project.intervai.session.domain;
 
-public enum InterviewSessionStatus {
+public enum SessionStatus {
     IN_PROGRESS,
     COMPLETED
 }

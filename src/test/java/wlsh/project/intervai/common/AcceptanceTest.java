@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import wlsh.project.intervai.common.auth.application.AccessTokenProvider;
 import wlsh.project.intervai.common.auth.presentation.filter.JwtAuthenticationFilter;
 import wlsh.project.intervai.common.config.SecurityConfig;
@@ -19,6 +20,9 @@ public abstract class AcceptanceTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private UrlBasedCorsConfigurationSource corsConfigurationSource;
 
     @MockitoBean
     protected AccessTokenProvider accessTokenProvider;

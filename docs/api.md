@@ -104,6 +104,13 @@ Bean Validation 실패 시 아래 형식으로 반환됩니다.
 | `JUNIOR` | 주니어 |
 | `SENIOR` | 시니어 |
 
+### SessionStatus
+
+| 값 | 설명 |
+|----|------|
+| `IN_PROGRESS` | 진행 중 |
+| `COMPLETED` | 완료 |
+
 ---
 
 ## 사용자 인증
@@ -665,6 +672,68 @@ POST /api/interviews/{interviewId}/sessions/finish
 
 ```
 // Response 200 (body 없음)
+```
+
+---
+
+## 면접 목록 조회
+
+### 면접 목록 조회
+
+```
+GET /api/interviews
+```
+
+**인증**: 필요
+
+**Query Parameters**
+
+| 파라미터 | 타입 | 기본값 | 설명 |
+|---------|------|--------|------|
+| `page` | Integer | 0 | 페이지 번호 (0부터 시작) |
+| `size` | Integer | 10 | 페이지 크기 |
+
+**Response** `200 OK`
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `content` | InterviewSummary[] | 면접 요약 목록 |
+| `totalElements` | Long | 전체 면접 수 |
+| `totalPages` | Integer | 전체 페이지 수 |
+| `last` | Boolean | 마지막 페이지 여부 |
+
+**InterviewSummary 구조**
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `id` | Long | 면접 ID |
+| `interviewType` | InterviewType | 면접 유형 |
+| `difficulty` | Difficulty | 난이도 |
+| `questionCount` | Integer | 질문 수 |
+| `sessionStatus` | SessionStatus | 세션 상태 (`IN_PROGRESS` / `COMPLETED`) |
+| `createdAt` | String (ISO 8601) | 면접 생성 시각 |
+
+**에러**: 없음 (인증된 사용자의 면접이 없으면 빈 목록 반환)
+
+**예시**
+
+```json
+// Response 200
+{
+  "content": [
+    {
+      "id": 1,
+      "interviewType": "CS",
+      "difficulty": "JUNIOR",
+      "questionCount": 5,
+      "sessionStatus": "COMPLETED",
+      "createdAt": "2026-04-10T12:34:56"
+    }
+  ],
+  "totalElements": 1,
+  "totalPages": 1,
+  "last": true
+}
 ```
 
 ---
