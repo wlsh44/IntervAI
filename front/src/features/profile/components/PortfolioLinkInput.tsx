@@ -13,10 +13,10 @@ const PortfolioLinkInput = ({ value, onChange }: PortfolioLinkInputProps) => {
 
   const addLink = () => {
     const trimmed = inputValue.trim()
+    setInputValue('')
     if (!trimmed) return
     if (value.length >= MAX_LINKS || value.includes(trimmed)) return
     onChange([...value, trimmed])
-    setInputValue('')
   }
 
   const removeLink = (link: string) => {
