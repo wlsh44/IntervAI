@@ -14,7 +14,7 @@ const PortfolioLinkInput = ({ value, onChange }: PortfolioLinkInputProps) => {
   const addLink = () => {
     const trimmed = inputValue.trim()
     if (!trimmed) return
-    if (value.length >= MAX_LINKS) return
+    if (value.length >= MAX_LINKS || value.includes(trimmed)) return
     onChange([...value, trimmed])
     setInputValue('')
   }

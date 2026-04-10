@@ -37,7 +37,7 @@ const TechStackInput = ({ value, onChange }: TechStackInputProps) => {
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault()
-      addStack(inputValue)
+      addStack(inputValue.replace(/,/g, ''))
       setInputValue('')
     }
   }
