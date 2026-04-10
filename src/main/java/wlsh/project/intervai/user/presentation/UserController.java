@@ -5,20 +5,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wlsh.project.intervai.common.auth.domain.UserInfo;
 import wlsh.project.intervai.common.auth.presentation.cookie.RefreshTokenCookieHandler;
 import wlsh.project.intervai.user.application.UserService;
 import wlsh.project.intervai.user.domain.CreateUserCommand;
 import wlsh.project.intervai.user.domain.CreateUserResult;
 import wlsh.project.intervai.user.domain.LoginCommand;
 import wlsh.project.intervai.user.domain.LoginResult;
+import wlsh.project.intervai.user.domain.User;
 import wlsh.project.intervai.user.presentation.dto.CreateUserRequest;
 import wlsh.project.intervai.user.presentation.dto.CreateUserResponse;
 import wlsh.project.intervai.user.presentation.dto.LoginRequest;
 import wlsh.project.intervai.user.presentation.dto.LoginResponse;
+import wlsh.project.intervai.user.presentation.dto.UserMeResponse;
 
 @RestController
 @RequestMapping("/api/users")
@@ -46,5 +51,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookieHandler.createRefreshTokenCookie(result.refreshToken()).toString())
                 .body(LoginResponse.of(result.user(), result.accessToken()));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserMeResponse> getMe(@AuthenticationPrincipal UserInfo userInfo) {
+        User user = userService.getMe(userInfo.userId());
+        return ResponseEntity.ok(UserMeResponse.of(user));
     }
 }
