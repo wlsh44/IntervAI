@@ -32,41 +32,6 @@ class ProfileControllerTest extends AcceptanceTest {
     private ProfileService profileService;
 
     @Test
-    @DisplayName("프로필 생성 성공 시 201과 프로필 정보가 반환된다")
-    void createProfile() {
-        Long userId = 1L;
-        Profile profile = Profile.of(10L, userId, null, null, List.of(), List.of(), null);
-        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
-        given(profileService.create(userId)).willReturn(profile);
-
-        RestAssuredMockMvc.given()
-                .header("Authorization", "Bearer valid-token")
-        .when()
-                .post("/api/users/profile")
-        .then()
-                .statusCode(201)
-                .body("id", equalTo(10));
-    }
-
-    @Test
-    @DisplayName("프로필이 이미 존재하면 생성 시 409가 반환된다")
-    void createProfileAlreadyExists() {
-        Long userId = 1L;
-        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
-        willThrow(new CustomException(ErrorCode.PROFILE_ALREADY_EXISTS))
-                .given(profileService).create(userId);
-
-        RestAssuredMockMvc.given()
-                .header("Authorization", "Bearer valid-token")
-        .when()
-                .post("/api/users/profile")
-        .then()
-                .statusCode(409)
-                .body("code", equalTo("PROFILE_ALREADY_EXISTS"))
-                .body("message", equalTo("이미 프로필이 존재합니다."));
-    }
-
-    @Test
     @DisplayName("프로필 수정 성공 시 200과 프로필 정보가 반환된다")
     void updateProfile() throws Exception {
         Long userId = 1L;
@@ -125,13 +90,20 @@ class ProfileControllerTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("인증 없이 프로필 생성 시 403이 반환된다")
-    void createProfileWithoutAuth() {
+    @DisplayName("프로필이 존재하지 않으면 조회 시 404가 반환된다")
+    void getProfileNotFound() {
+        Long userId = 1L;
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        willThrow(new CustomException(ErrorCode.PROFILE_NOT_FOUND))
+                .given(profileService).getProfile(userId);
+
         RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
         .when()
-                .post("/api/users/profile")
+                .get("/api/users/profile")
         .then()
-                .statusCode(403);
+                .statusCode(404)
+                .body("code", equalTo("PROFILE_NOT_FOUND"));
     }
 
     @Test
