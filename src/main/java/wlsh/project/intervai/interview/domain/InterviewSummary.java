@@ -2,6 +2,7 @@ package wlsh.project.intervai.interview.domain;
 
 import java.time.LocalDateTime;
 import wlsh.project.intervai.interview.infra.InterviewEntity;
+import wlsh.project.intervai.session.domain.SessionStatus;
 
 public class InterviewSummary {
 
