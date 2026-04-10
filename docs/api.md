@@ -247,33 +247,7 @@ POST /api/auth/refresh
 
 ## 프로필
 
-### 프로필 생성
-
-```
-POST /api/users/profile
-```
-
-**인증**: 필요 (JWT의 userId 사용)
-
-**Request Body**: 없음 (userId는 인증 토큰에서 추출)
-
-**Response** `201 Created`
-
-| 필드 | 타입 | 설명 |
-|------|------|------|
-| `id` | Long | 프로필 ID |
-| `jobCategory` | JobCategory | 희망 직군 (초기값 null) |
-| `careerLevel` | CareerLevel | 경력 수준 (초기값 null) |
-| `techStacks` | String[] | 기술 스택 목록 (초기값 []) |
-| `portfolioLinks` | String[] | 포트폴리오 링크 목록 (초기값 []) |
-
-**에러**
-
-| ErrorCode | HTTP | 설명 |
-|-----------|------|------|
-| `PROFILE_ALREADY_EXISTS` | 409 | 이미 프로필 존재 |
-
----
+> 프로필은 회원가입 시 자동으로 생성됩니다. 별도의 생성 API는 없습니다.
 
 ### 프로필 조회
 
@@ -719,7 +693,6 @@ POST /api/interviews/{interviewId}/sessions/finish
 |-----------|------|------|
 | `PROFILE_NOT_FOUND` | 404 | 프로필 없음 |
 | `PROFILE_ACCESS_DENIED` | 403 | 타인 프로필 접근 |
-| `PROFILE_ALREADY_EXISTS` | 409 | 프로필 중복 생성 |
 
 ### 면접
 

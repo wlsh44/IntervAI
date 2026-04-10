@@ -4,9 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { JobCategory, CareerLevel } from '../../../shared/types/enums'
 import { useProfile } from '../hooks/useProfile'
-import { useCreateProfile } from '../hooks/useCreateProfile'
 import { useUpdateProfile } from '../hooks/useUpdateProfile'
-import { extractApiError } from '../../../shared/api/apiError'
 import JobCategorySelector from '../components/JobCategorySelector'
 import CareerLevelSelector from '../components/CareerLevelSelector'
 import TechStackInput from '../components/TechStackInput'
@@ -33,12 +31,8 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>
 
 const ProfilePage = () => {
-  const { data: profile, isLoading, error } = useProfile()
-  const { mutate: createProfile, isPending: isCreating } = useCreateProfile()
+  const { data: profile, isLoading } = useProfile()
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile()
-
-  const isProfileNotFound =
-    error !== null && extractApiError(error).code === 'PROFILE_NOT_FOUND'
 
   const {
     control,
@@ -56,12 +50,6 @@ const ProfilePage = () => {
   })
 
   useEffect(() => {
-    if (isProfileNotFound) {
-      createProfile()
-    }
-  }, [isProfileNotFound, createProfile])
-
-  useEffect(() => {
     if (profile) {
       reset({
         jobCategory: profile.jobCategory ?? undefined,
@@ -76,7 +64,7 @@ const ProfilePage = () => {
     updateProfile(data)
   }
 
-  if (isLoading || isCreating) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#faf8ff]">
         <div className="flex flex-col items-center gap-3">
