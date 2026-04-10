@@ -5,10 +5,17 @@
 - 대상 사용자: 회원가입 후 면접 연습을 시작하려는 사용자
 - 관련 개발 단계: Stage 2 (완료)
 
+## 진행 상황
+
+| 단계 | 상태 |
+|------|------|
+| Stage 2 — 사용자 프로필 | ✅ 완료 |
+
 ## 요구사항
 ### 기능 요구사항
-- [x] 프로필 조회 (본인만 가능)
-- [x] 프로필 수정 (본인만 가능)
+- [x] 프로필 생성 (회원가입 후 userId 기반 자동 생성 또는 수동 생성)
+- [x] 프로필 조회 (본인만 가능, userId 기반)
+- [x] 프로필 수정 (본인만 가능, profileId 기반)
 - [x] 목표 직군 설정 (FRONTEND / BACKEND / FULLSTACK / ANDROID / IOS / DEVOPS / DATA_ENGINEER / ML_ENGINEER)
 - [x] 경력 수준 설정 (ENTRY / JUNIOR / SENIOR)
 - [x] 기술 스택 태그 등록 (다대다 관계, 기존 스택 재사용)
@@ -37,9 +44,10 @@
 6. 이후 면접 세션 생성 시 프로필 데이터가 기본값으로 자동 적용된다.
 
 ## 수용 기준 (Acceptance Criteria)
-- [x] `GET /api/profile/{profileId}` — 본인 프로필 조회 성공
-- [x] `PUT /api/profile/{profileId}` — 본인 프로필 수정 성공
-- [x] 타인의 프로필 접근 시 403(`PROFILE_ACCESS_DENIED`) 반환
+- [x] `POST /api/users/profile` — 프로필 생성 성공 (userId 기반)
+- [x] `GET /api/users/profile` — 본인 프로필 조회 성공 (userId 기반)
+- [x] `PUT /api/users/profile` — 본인 프로필 수정 성공 (userId 기반)
+- [x] 타인의 프로필 접근 차단 (accessToken의 userId로 검증)
 - [x] 기술 스택 등록 시 동일한 이름의 스택이 이미 존재하면 새로 생성하지 않고 재사용
 - [ ] 프로필 사진 업로드 및 S3 저장 성공
 - [ ] GitHub URL 입력 시 레포지토리 목록 파싱 성공

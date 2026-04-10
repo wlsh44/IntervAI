@@ -247,19 +247,43 @@ POST /api/auth/refresh
 
 ## 프로필
 
+### 프로필 생성
+
+```
+POST /api/users/profile
+```
+
+**인증**: 필요 (JWT의 userId 사용)
+
+**Request Body**: 없음 (userId는 인증 토큰에서 추출)
+
+**Response** `201 Created`
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `id` | Long | 프로필 ID |
+| `jobCategory` | JobCategory | 희망 직군 (초기값 null) |
+| `careerLevel` | CareerLevel | 경력 수준 (초기값 null) |
+| `techStacks` | String[] | 기술 스택 목록 (초기값 []) |
+| `portfolioLinks` | String[] | 포트폴리오 링크 목록 (초기값 []) |
+
+**에러**
+
+| ErrorCode | HTTP | 설명 |
+|-----------|------|------|
+| `PROFILE_ALREADY_EXISTS` | 409 | 이미 프로필 존재 |
+
+---
+
 ### 프로필 조회
 
 ```
-GET /api/profile/{profileId}
+GET /api/users/profile
 ```
 
-**인증**: 필요 (본인 프로필만 조회 가능)
+**인증**: 필요 (JWT의 userId로 본인 프로필 조회)
 
-**Path Parameters**
-
-| 파라미터 | 타입 | 설명 |
-|---------|------|------|
-| `profileId` | Long | 프로필 ID |
+**Path Parameters**: 없음
 
 **Response** `200 OK`
 
@@ -270,13 +294,13 @@ GET /api/profile/{profileId}
 | `careerLevel` | CareerLevel | 경력 수준 |
 | `techStacks` | String[] | 기술 스택 목록 |
 | `portfolioLinks` | String[] | 포트폴리오 링크 목록 |
+| `updatedAt` | String (ISO 8601) | 마지막 수정 시각 |
 
 **에러**
 
 | ErrorCode | HTTP | 설명 |
 |-----------|------|------|
 | `PROFILE_NOT_FOUND` | 404 | 프로필 없음 |
-| `PROFILE_ACCESS_DENIED` | 403 | 타인 프로필 접근 |
 
 **예시**
 
@@ -287,7 +311,8 @@ GET /api/profile/{profileId}
   "jobCategory": "BACKEND",
   "careerLevel": "JUNIOR",
   "techStacks": ["Java", "Spring Boot", "MySQL"],
-  "portfolioLinks": ["https://github.com/user/project"]
+  "portfolioLinks": ["https://github.com/user/project"],
+  "updatedAt": "2026-04-10T12:34:56"
 }
 ```
 
@@ -296,16 +321,12 @@ GET /api/profile/{profileId}
 ### 프로필 수정
 
 ```
-PUT /api/profile/{profileId}
+PUT /api/users/profile
 ```
 
-**인증**: 필요 (본인 프로필만 수정 가능)
+**인증**: 필요 (JWT의 userId로 본인 프로필 수정)
 
-**Path Parameters**
-
-| 파라미터 | 타입 | 설명 |
-|---------|------|------|
-| `profileId` | Long | 프로필 ID |
+**Path Parameters**: 없음
 
 **Request Body**
 
@@ -325,7 +346,6 @@ PUT /api/profile/{profileId}
 | ErrorCode | HTTP | 설명 |
 |-----------|------|------|
 | `PROFILE_NOT_FOUND` | 404 | 프로필 없음 |
-| `PROFILE_ACCESS_DENIED` | 403 | 타인 프로필 접근 |
 | `INVALID_INPUT` | 400 | 유효성 검사 실패 |
 
 **예시**
