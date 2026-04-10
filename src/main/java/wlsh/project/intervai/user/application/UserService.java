@@ -7,8 +7,6 @@ import wlsh.project.intervai.common.auth.application.TokenPairGenerator;
 import wlsh.project.intervai.common.auth.domain.TokenPair;
 import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
-import wlsh.project.intervai.profile.application.ProfileManager;
-import wlsh.project.intervai.profile.domain.CreateProfileCommand;
 import wlsh.project.intervai.user.domain.CreateUserCommand;
 import wlsh.project.intervai.user.domain.CreateUserResult;
 import wlsh.project.intervai.user.domain.LoginCommand;
@@ -20,19 +18,16 @@ import wlsh.project.intervai.user.domain.User;
 public class UserService {
 
     private final UserValidator userValidator;
-    private final UserManager userManager;
+    private final UserAuthHandler userAuthHandler;
     private final UserFinder userFinder;
     private final PasswordEncoder passwordEncoder;
     private final TokenPairGenerator tokenPairGenerator;
-    private final ProfileManager profileManager;
 
     public CreateUserResult create(CreateUserCommand command) {
         userValidator.validateCreateUser(command.nickname(), command.password());
 
         String encodedPassword = passwordEncoder.encode(command.password());
-        User user = userManager.create(command.nickname(), encodedPassword);
-
-        profileManager.create(user.getId(), CreateProfileCommand.EMPTY_PROFILE);
+        User user = userAuthHandler.signUp(command.nickname(), encodedPassword);
 
         TokenPair tokenPair = tokenPairGenerator.createTokenPair(user.getId());
 
