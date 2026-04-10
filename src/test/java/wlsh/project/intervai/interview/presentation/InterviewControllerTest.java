@@ -2,10 +2,14 @@ package wlsh.project.intervai.interview.presentation;
 
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import wlsh.project.intervai.common.AcceptanceTest;
 import wlsh.project.intervai.common.exception.CustomException;
@@ -16,8 +20,10 @@ import wlsh.project.intervai.interview.domain.CsSubject;
 import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.Difficulty;
 import wlsh.project.intervai.interview.domain.Interview;
+import wlsh.project.intervai.interview.domain.InterviewSummary;
 import wlsh.project.intervai.interview.domain.InterviewType;
 import wlsh.project.intervai.interview.domain.InterviewerTone;
+import wlsh.project.intervai.interview.domain.SessionStatus;
 import wlsh.project.intervai.interview.presentation.dto.CreateInterviewRequest;
 import wlsh.project.intervai.interview.presentation.dto.CsSubjectRequest;
 import wlsh.project.intervai.session.application.InterviewSessionService;
@@ -319,5 +325,69 @@ class InterviewControllerTest extends AcceptanceTest {
                 .post("/api/interviews/{interviewId}/finish", interviewId)
         .then()
                 .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("면접 목록 조회 성공 시 200과 면접 목록이 반환된다")
+    void getInterviewList() {
+        Long userId = 1L;
+        LocalDateTime createdAt = LocalDateTime.of(2024, 1, 15, 10, 0, 0);
+        List<InterviewSummary> summaries = List.of(
+                InterviewSummary.of(1L, InterviewType.CS, Difficulty.JUNIOR, 7, SessionStatus.COMPLETED, createdAt),
+                InterviewSummary.of(2L, InterviewType.PORTFOLIO, Difficulty.SENIOR, 5, SessionStatus.IN_PROGRESS, createdAt)
+        );
+        Page<InterviewSummary> page = new PageImpl<>(summaries, PageRequest.of(0, 10), 2);
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        given(interviewService.getList(eq(userId), any())).willReturn(page);
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+        .when()
+                .get("/api/interviews")
+        .then()
+                .statusCode(200)
+                .body("content", hasSize(2))
+                .body("content[0].id", equalTo(1))
+                .body("content[0].interviewType", equalTo("CS"))
+                .body("content[0].difficulty", equalTo("JUNIOR"))
+                .body("content[0].questionCount", equalTo(7))
+                .body("content[0].sessionStatus", equalTo("COMPLETED"))
+                .body("content[1].id", equalTo(2))
+                .body("content[1].sessionStatus", equalTo("IN_PROGRESS"))
+                .body("totalElements", equalTo(2))
+                .body("totalPages", equalTo(1))
+                .body("last", equalTo(true));
+    }
+
+    @Test
+    @DisplayName("면접이 없을 때 빈 목록이 반환된다")
+    void getInterviewListEmpty() {
+        Long userId = 1L;
+        Page<InterviewSummary> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 10), 0);
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        given(interviewService.getList(eq(userId), any())).willReturn(emptyPage);
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+        .when()
+                .get("/api/interviews")
+        .then()
+                .statusCode(200)
+                .body("content", hasSize(0))
+                .body("totalElements", equalTo(0))
+                .body("totalPages", equalTo(0))
+                .body("last", equalTo(true));
+    }
+
+    @Test
+    @DisplayName("인증 없이 면접 목록 조회 시 403이 반환된다")
+    void getInterviewListWithoutAuth() {
+        RestAssuredMockMvc.given()
+        .when()
+                .get("/api/interviews")
+        .then()
+                .statusCode(403);
     }
 }
