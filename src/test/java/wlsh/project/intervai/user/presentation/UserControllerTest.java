@@ -247,4 +247,32 @@ class UserControllerTest extends AcceptanceTest {
         .then()
                 .statusCode(400);
     }
+
+    @Test
+    @DisplayName("GET /api/users/me 성공 시 200과 유저 정보가 반환된다")
+    void getMe() {
+        Long userId = 1L;
+        User user = User.of(userId, "testuser", "encodedPassword");
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        given(userService.getMe(userId)).willReturn(user);
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+        .when()
+                .get("/api/users/me")
+        .then()
+                .statusCode(200)
+                .body("id", equalTo(1))
+                .body("name", equalTo("testuser"));
+    }
+
+    @Test
+    @DisplayName("인증 없이 GET /api/users/me 요청 시 403이 반환된다")
+    void getMeWithoutAuth() {
+        RestAssuredMockMvc.given()
+        .when()
+                .get("/api/users/me")
+        .then()
+                .statusCode(403);
+    }
 }

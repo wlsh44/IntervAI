@@ -45,9 +45,21 @@ public class ProfileManager {
         ProfileEntity profileEntity = profileRepository.findByIdAndStatus(profileId, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new CustomException(ErrorCode.PROFILE_NOT_FOUND));
 
+        return updateProfileEntity(profileEntity, command);
+    }
+
+    @Transactional
+    public Profile updateByUserId(Long userId, UpdateProfileCommand command) {
+        ProfileEntity profileEntity = profileRepository.findByUserIdAndStatus(userId, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new CustomException(ErrorCode.PROFILE_NOT_FOUND));
+
+        return updateProfileEntity(profileEntity, command);
+    }
+
+    private Profile updateProfileEntity(ProfileEntity profileEntity, UpdateProfileCommand command) {
         profileEntity.update(command.jobCategory(), command.careerLevel());
 
-        profileTechStackRepository.findAllByProfileIdAndStatus(profileId, EntityStatus.ACTIVE)
+        profileTechStackRepository.findAllByProfileIdAndStatus(profileEntity.getId(), EntityStatus.ACTIVE)
                 .forEach(BaseEntity::delete);
         portfolioLinkRepository.findAllByProfileIdAndStatus(profileEntity.getId(), EntityStatus.ACTIVE)
                 .forEach(BaseEntity::delete);

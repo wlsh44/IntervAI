@@ -11,15 +11,12 @@ public class ProfileService {
 
     private final ProfileFinder profileFinder;
     private final ProfileManager profileManager;
-    private final ProfileValidator profileValidator;
 
-    public Profile updateProfile(Long userId, Long profileId, UpdateProfileCommand command) {
-        profileValidator.validateProfileOwner(profileId, userId);
-        return profileManager.update(profileId, command);
+    public Profile getProfile(Long userId) {
+        return profileFinder.findByUserId(userId);
     }
 
-    public Profile getProfile(Long userId, Long profileId) {
-        profileValidator.validateProfileOwner(profileId, userId);
-        return profileFinder.findById(profileId);
+    public Profile updateProfile(Long userId, UpdateProfileCommand command) {
+        return profileManager.updateByUserId(userId, command);
     }
 }
