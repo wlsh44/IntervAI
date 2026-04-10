@@ -2,6 +2,7 @@ package wlsh.project.intervai.profile.presentation;
 
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import wlsh.project.intervai.profile.domain.UpdateProfileCommand;
 import wlsh.project.intervai.profile.presentation.dto.UpdateProfileRequest;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -34,10 +36,11 @@ class ProfileControllerTest extends AcceptanceTest {
     void updateProfile() throws Exception {
         Long userId = 1L;
         Long profileId = 10L;
+        LocalDateTime updatedAt = LocalDateTime.of(2024, 1, 1, 0, 0, 0);
         Profile profile = Profile.of(profileId, userId, JobCategory.BACKEND, CareerLevel.JUNIOR,
-                List.of("Java", "Spring"), List.of("https://github.com/test"));
+                List.of("Java", "Spring"), List.of("https://github.com/test"), updatedAt);
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
-        given(profileService.updateProfile(eq(userId), eq(profileId), any(UpdateProfileCommand.class)))
+        given(profileService.updateProfile(eq(userId), any(UpdateProfileCommand.class)))
                 .willReturn(profile);
 
         UpdateProfileRequest request = new UpdateProfileRequest(
@@ -49,7 +52,7 @@ class ProfileControllerTest extends AcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(mapper.writeValueAsString(request))
         .when()
-                .put("/api/profile/{profileId}", profileId)
+                .put("/api/users/profile")
         .then()
                 .statusCode(200)
                 .body("id", equalTo(10))
@@ -57,74 +60,50 @@ class ProfileControllerTest extends AcceptanceTest {
                 .body("careerLevel", equalTo("JUNIOR"))
                 .body("techStacks[0]", equalTo("Java"))
                 .body("techStacks[1]", equalTo("Spring"))
-                .body("portfolioLinks[0]", equalTo("https://github.com/test"));
-    }
-
-    @Test
-    @DisplayName("본인의 프로필이 아닌 경우 수정 시 403이 반환된다")
-    void updateProfileAccessDenied() throws Exception {
-        Long userId = 1L;
-        Long profileId = 10L;
-        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
-        willThrow(new CustomException(ErrorCode.PROFILE_ACCESS_DENIED))
-                .given(profileService).updateProfile(eq(userId), eq(profileId), any(UpdateProfileCommand.class));
-
-        UpdateProfileRequest request = new UpdateProfileRequest(
-                JobCategory.BACKEND, CareerLevel.JUNIOR,
-                List.of("Java", "Spring"), List.of());
-
-        RestAssuredMockMvc.given()
-                .header("Authorization", "Bearer valid-token")
-                .contentType(ContentType.JSON)
-                .body(mapper.writeValueAsString(request))
-        .when()
-                .put("/api/profile/{profileId}", profileId)
-        .then()
-                .statusCode(403)
-                .body("code", equalTo("PROFILE_ACCESS_DENIED"))
-                .body("message", equalTo("본인의 프로필만 접근할 수 있습니다."));
+                .body("portfolioLinks[0]", equalTo("https://github.com/test"))
+                .body("updatedAt", notNullValue());
     }
 
     @Test
     @DisplayName("프로필 조회 성공 시 200과 프로필 정보가 반환된다")
-    void getProfile() throws Exception {
+    void getProfile() {
         Long userId = 1L;
         Long profileId = 10L;
+        LocalDateTime updatedAt = LocalDateTime.of(2024, 1, 1, 0, 0, 0);
         Profile profile = Profile.of(profileId, userId, JobCategory.FRONTEND, CareerLevel.ENTRY,
-                List.of("React", "TypeScript"), List.of());
+                List.of("React", "TypeScript"), List.of(), updatedAt);
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
-        given(profileService.getProfile(userId, profileId)).willReturn(profile);
+        given(profileService.getProfile(userId)).willReturn(profile);
 
         RestAssuredMockMvc.given()
                 .header("Authorization", "Bearer valid-token")
         .when()
-                .get("/api/profile/{profileId}", profileId)
+                .get("/api/users/profile")
         .then()
                 .statusCode(200)
                 .body("id", equalTo(10))
                 .body("jobCategory", equalTo("FRONTEND"))
                 .body("careerLevel", equalTo("ENTRY"))
                 .body("techStacks[0]", equalTo("React"))
-                .body("techStacks[1]", equalTo("TypeScript"));
+                .body("techStacks[1]", equalTo("TypeScript"))
+                .body("updatedAt", notNullValue());
     }
 
     @Test
-    @DisplayName("본인의 프로필이 아닌 경우 조회 시 403이 반환된다")
-    void getProfileAccessDenied() throws Exception {
+    @DisplayName("프로필이 존재하지 않으면 조회 시 404가 반환된다")
+    void getProfileNotFound() {
         Long userId = 1L;
-        Long profileId = 10L;
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
-        given(profileService.getProfile(userId, profileId))
-                .willThrow(new CustomException(ErrorCode.PROFILE_ACCESS_DENIED));
+        willThrow(new CustomException(ErrorCode.PROFILE_NOT_FOUND))
+                .given(profileService).getProfile(userId);
 
         RestAssuredMockMvc.given()
                 .header("Authorization", "Bearer valid-token")
         .when()
-                .get("/api/profile/{profileId}", profileId)
+                .get("/api/users/profile")
         .then()
-                .statusCode(403)
-                .body("code", equalTo("PROFILE_ACCESS_DENIED"))
-                .body("message", equalTo("본인의 프로필만 접근할 수 있습니다."));
+                .statusCode(404)
+                .body("code", equalTo("PROFILE_NOT_FOUND"));
     }
 
     @Test
@@ -132,7 +111,7 @@ class ProfileControllerTest extends AcceptanceTest {
     void getProfileWithoutAuth() {
         RestAssuredMockMvc.given()
         .when()
-                .get("/api/profile/{profileId}", 10L)
+                .get("/api/users/profile")
         .then()
                 .statusCode(403);
     }
@@ -148,7 +127,7 @@ class ProfileControllerTest extends AcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(mapper.writeValueAsString(request))
         .when()
-                .put("/api/profile/{profileId}", 10L)
+                .put("/api/users/profile")
         .then()
                 .statusCode(403);
     }

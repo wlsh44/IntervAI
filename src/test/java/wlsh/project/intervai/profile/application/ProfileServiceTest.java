@@ -31,13 +31,13 @@ class ProfileServiceTest extends IntegrationTest {
         Long userId = 1L;
         CreateProfileCommand createCommand = new CreateProfileCommand(
                 JobCategory.BACKEND, CareerLevel.JUNIOR, List.of("Java"), List.of());
-        Profile created = profileManager.create(userId, createCommand);
+        profileManager.create(userId, createCommand);
 
         UpdateProfileCommand updateCommand = new UpdateProfileCommand(
                 JobCategory.FRONTEND, CareerLevel.SENIOR, List.of("React", "TypeScript"), List.of("https://github.com/test"));
 
         // when
-        Profile updated = profileService.updateProfile(userId, created.getId(), updateCommand);
+        Profile updated = profileService.updateProfile(userId, updateCommand);
 
         // then
         assertThat(updated.getJobCategory()).isEqualTo(JobCategory.FRONTEND);
@@ -47,35 +47,15 @@ class ProfileServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("타인의 프로필을 수정하면 예외가 발생한다")
-    void updateProfileAccessDenied() {
-        // given
-        Long ownerId = 1L;
-        Long otherUserId = 2L;
-        CreateProfileCommand createCommand = new CreateProfileCommand(
-                JobCategory.BACKEND, CareerLevel.JUNIOR, List.of("Java"), List.of());
-        Profile created = profileManager.create(ownerId, createCommand);
-
-        UpdateProfileCommand updateCommand = new UpdateProfileCommand(
-                JobCategory.FRONTEND, CareerLevel.SENIOR, List.of("React"), List.of());
-
-        // when & then
-        assertThatThrownBy(() -> profileService.updateProfile(otherUserId, created.getId(), updateCommand))
-                .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.PROFILE_ACCESS_DENIED.getMessage());
-    }
-
-    @Test
     @DisplayName("존재하지 않는 프로필을 수정하면 예외가 발생한다")
     void updateProfileNotFound() {
         // given
-        Long userId = 1L;
-        Long nonExistentProfileId = 999L;
+        Long userId = 999L;
         UpdateProfileCommand updateCommand = new UpdateProfileCommand(
                 JobCategory.BACKEND, CareerLevel.JUNIOR, List.of("Java"), List.of());
 
         // when & then
-        assertThatThrownBy(() -> profileService.updateProfile(userId, nonExistentProfileId, updateCommand))
+        assertThatThrownBy(() -> profileService.updateProfile(userId, updateCommand))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorCode.PROFILE_NOT_FOUND.getMessage());
     }
@@ -87,13 +67,13 @@ class ProfileServiceTest extends IntegrationTest {
         Long userId = 1L;
         CreateProfileCommand createCommand = new CreateProfileCommand(
                 JobCategory.BACKEND, CareerLevel.ENTRY, List.of("Java", "Spring"), List.of("https://github.com/test"));
-        Profile created = profileManager.create(userId, createCommand);
+        profileManager.create(userId, createCommand);
 
         // when
-        Profile found = profileService.getProfile(userId, created.getId());
+        Profile found = profileService.getProfile(userId);
 
         // then
-        assertThat(found.getId()).isEqualTo(created.getId());
+        assertThat(found.getUserId()).isEqualTo(userId);
         assertThat(found.getJobCategory()).isEqualTo(JobCategory.BACKEND);
         assertThat(found.getCareerLevel()).isEqualTo(CareerLevel.ENTRY);
         assertThat(found.getTechStacks()).containsExactly("Java", "Spring");
@@ -101,30 +81,13 @@ class ProfileServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("타인의 프로필을 조회하면 예외가 발생한다")
-    void getProfileAccessDenied() {
-        // given
-        Long ownerId = 1L;
-        Long otherUserId = 2L;
-        CreateProfileCommand createCommand = new CreateProfileCommand(
-                JobCategory.BACKEND, CareerLevel.JUNIOR, List.of("Java"), List.of());
-        Profile created = profileManager.create(ownerId, createCommand);
-
-        // when & then
-        assertThatThrownBy(() -> profileService.getProfile(otherUserId, created.getId()))
-                .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.PROFILE_ACCESS_DENIED.getMessage());
-    }
-
-    @Test
     @DisplayName("존재하지 않는 프로필을 조회하면 예외가 발생한다")
     void getProfileNotFound() {
         // given
-        Long userId = 1L;
-        Long nonExistentProfileId = 999L;
+        Long userId = 999L;
 
         // when & then
-        assertThatThrownBy(() -> profileService.getProfile(userId, nonExistentProfileId))
+        assertThatThrownBy(() -> profileService.getProfile(userId))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorCode.PROFILE_NOT_FOUND.getMessage());
     }

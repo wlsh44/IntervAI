@@ -7,4 +7,6 @@ import wlsh.project.intervai.common.entity.EntityStatus;
 public interface ProfileRepository extends JpaRepository<ProfileEntity, Long> {
 
     Optional<ProfileEntity> findByIdAndStatus(Long id, EntityStatus status);
+
+    Optional<ProfileEntity> findByUserIdAndStatus(Long userId, EntityStatus status);
 }

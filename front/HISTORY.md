@@ -85,3 +85,14 @@ const authClient = axios.create({ baseURL: BASE_URL, withCredentials: true })
 |---------|------|
 | `fe-dev-planner` | Stitch 디자인 분석 + 코드 현황 파악 + PLAN.md 작성 |
 | `fe-plan-executor` | PLAN.md 단계별 구현 + typecheck 자동 검증 |
+
+---
+
+### 프런트엔드 변경 (fe/feat/profile)
+
+- `createProfile` API 함수 삭제
+- `useCreateProfile` 훅 삭제
+- `ProfilePage`에서 프로필 생성 로직 제거 (회원가입 시 자동 생성이므로 바로 조회)
+- `ProfileResponse.updatedAt` 필드 반영 — 최근 업데이트 날짜 표시
+- 포트폴리오 링크 중복 추가 방지 버그 수정
+- 기술 스택 쉼표 입력 시 태그명에 쉼표 포함되는 버그 수정

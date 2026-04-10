@@ -47,8 +47,12 @@ public class ProfileEntity extends BaseEntity {
         return new ProfileEntity(profile.getUserId(), profile.getJobCategory(), profile.getCareerLevel());
     }
 
+    public static ProfileEntity ofEmpty(Long userId) {
+        return new ProfileEntity(userId, null, null);
+    }
+
     public Profile toDomain(List<String> techStacks, List<String> portfolioLinks) {
-        return Profile.of(id, userId, jobCategory, careerLevel, techStacks, portfolioLinks);
+        return Profile.of(id, userId, jobCategory, careerLevel, techStacks, portfolioLinks, getModifiedAt());
     }
 
     public void update(JobCategory jobCategory, CareerLevel careerLevel) {
