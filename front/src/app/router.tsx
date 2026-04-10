@@ -7,6 +7,7 @@ import DashboardPage from '../shared/pages/DashboardPage'
 import InterviewPage from '../features/interview/pages/InterviewPage'
 import ProfilePage from '../features/profile/pages/ProfilePage'
 import NotFoundPage from '../shared/pages/NotFoundPage'
+import HistoryPage from '../shared/pages/HistoryPage'
 
 const Router = () => {
   return (
@@ -19,6 +20,7 @@ const Router = () => {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/interview" element={<InterviewPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/history" element={<HistoryPage />} />
         </Route>
       </Route>
 
