@@ -1,8 +1,5 @@
 package wlsh.project.intervai.interview.application;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,19 +10,22 @@ import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
 import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewSummary;
-import wlsh.project.intervai.interview.domain.SessionStatus;
 import wlsh.project.intervai.interview.infra.InterviewEntity;
 import wlsh.project.intervai.interview.infra.InterviewRepository;
-import wlsh.project.intervai.session.application.InterviewSessionFinder;
-import wlsh.project.intervai.session.domain.InterviewSessionStatus;
+import wlsh.project.intervai.session.domain.SessionStatus;
 import wlsh.project.intervai.session.infra.InterviewSessionEntity;
+import wlsh.project.intervai.session.infra.InterviewSessionRepository;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class InterviewFinder {
 
     private final InterviewRepository interviewRepository;
-    private final InterviewSessionFinder interviewSessionFinder;
+    private final InterviewSessionRepository interviewSessionRepository;
 
     public Interview find(Long interviewId) {
         return interviewRepository.findByIdAndStatus(interviewId, EntityStatus.ACTIVE)
@@ -40,26 +40,17 @@ public class InterviewFinder {
 
         List<Long> interviewIds = interviewPage.getContent().stream()
                 .map(InterviewEntity::getId)
-                .collect(Collectors.toList());
+                .toList();
 
-        Map<Long, InterviewSessionEntity> sessionMap = interviewSessionFinder
-                .findByInterviewIds(interviewIds)
+        Map<Long, InterviewSessionEntity> sessionMap = interviewSessionRepository
+                .findByInterviewIdInAndStatus(interviewIds, EntityStatus.ACTIVE)
                 .stream()
                 .collect(Collectors.toMap(InterviewSessionEntity::getInterviewId, s -> s));
 
         return interviewPage.map(entity -> {
             InterviewSessionEntity session = sessionMap.get(entity.getId());
-            SessionStatus sessionStatus = resolveSessionStatus(session);
+            SessionStatus sessionStatus = session.getSessionStatus();
             return InterviewSummary.of(entity, sessionStatus);
         });
-    }
-
-    private SessionStatus resolveSessionStatus(InterviewSessionEntity session) {
-        if (session == null) {
-            return SessionStatus.IN_PROGRESS;
-        }
-        return session.getSessionStatus() == InterviewSessionStatus.COMPLETED
-                ? SessionStatus.COMPLETED
-                : SessionStatus.IN_PROGRESS;
     }
 }
