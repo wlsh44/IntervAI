@@ -11,4 +11,7 @@ export const API_PATHS = {
   profile: {
     base: '/api/users/profile',
   },
+  interviews: {
+    list: '/api/interviews',
+  },
 } as const
