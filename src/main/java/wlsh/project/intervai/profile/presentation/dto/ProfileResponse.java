@@ -1,5 +1,6 @@
 package wlsh.project.intervai.profile.presentation.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import wlsh.project.intervai.profile.domain.CareerLevel;
 import wlsh.project.intervai.profile.domain.JobCategory;
@@ -10,7 +11,8 @@ public record ProfileResponse(
         JobCategory jobCategory,
         CareerLevel careerLevel,
         List<String> techStacks,
-        List<String> portfolioLinks
+        List<String> portfolioLinks,
+        LocalDateTime updatedAt
 ) {
 
     public static ProfileResponse of(Profile profile) {
@@ -19,7 +21,8 @@ public record ProfileResponse(
                 profile.getJobCategory(),
                 profile.getCareerLevel(),
                 profile.getTechStacks(),
-                profile.getPortfolioLinks()
+                profile.getPortfolioLinks(),
+                profile.getUpdatedAt()
         );
     }
 }

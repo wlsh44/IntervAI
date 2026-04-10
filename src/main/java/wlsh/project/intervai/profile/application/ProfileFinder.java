@@ -29,6 +29,17 @@ public class ProfileFinder {
         ProfileEntity profileEntity = profileRepository.findByIdAndStatus(profileId, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new CustomException(ErrorCode.PROFILE_NOT_FOUND));
 
+        return buildProfile(profileEntity);
+    }
+
+    public Profile findByUserId(Long userId) {
+        ProfileEntity profileEntity = profileRepository.findByUserIdAndStatus(userId, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new CustomException(ErrorCode.PROFILE_NOT_FOUND));
+
+        return buildProfile(profileEntity);
+    }
+
+    private Profile buildProfile(ProfileEntity profileEntity) {
         List<Long> techStackIds = profileTechStackRepository.findAllByProfileIdAndStatus(profileEntity.getId(), EntityStatus.ACTIVE)
                 .stream()
                 .map(ProfileTechStackEntity::getTechStackId)
