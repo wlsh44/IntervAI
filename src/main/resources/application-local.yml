@@ -1,4 +1,7 @@
 spring:
+  ai:
+    anthropic:
+      enabled: false
   data:
     redis:
       host: localhost
