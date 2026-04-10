@@ -8,13 +8,14 @@ import wlsh.project.intervai.common.exception.ErrorCode;
 import wlsh.project.intervai.interview.infra.InterviewEntity;
 import wlsh.project.intervai.interview.infra.InterviewRepository;
 import wlsh.project.intervai.session.infra.InterviewSessionEntity;
+import wlsh.project.intervai.session.infra.InterviewSessionRepository;
 
 @Component
 @RequiredArgsConstructor
 public class InterviewSessionValidator {
 
     private final InterviewRepository interviewRepository;
-    private final InterviewSessionFinder interviewSessionFinder;
+    private final InterviewSessionRepository interviewSessionRepository;
 
     public void validateInterviewOwner(Long interviewId, Long userId) {
         InterviewEntity interviewEntity = interviewRepository.findByIdAndStatus(interviewId, EntityStatus.ACTIVE)
@@ -25,7 +26,8 @@ public class InterviewSessionValidator {
     }
 
     public void validateSessionInProgress(Long interviewId) {
-        InterviewSessionEntity entity = interviewSessionFinder.getEntityByInterviewId(interviewId);
+        InterviewSessionEntity entity = interviewSessionRepository.findByInterviewIdAndStatus(interviewId, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new CustomException(ErrorCode.SESSION_NOT_FOUND));
         if (!entity.isInProgress()) {
             throw new CustomException(ErrorCode.SESSION_ALREADY_COMPLETED);
         }
