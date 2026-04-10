@@ -23,6 +23,7 @@ import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewSummary;
 import wlsh.project.intervai.interview.domain.InterviewType;
 import wlsh.project.intervai.interview.domain.InterviewerTone;
+import wlsh.project.intervai.interview.domain.SessionStatus;
 import wlsh.project.intervai.interview.presentation.dto.CreateInterviewRequest;
 import wlsh.project.intervai.interview.presentation.dto.CsSubjectRequest;
 import wlsh.project.intervai.session.application.InterviewSessionService;
