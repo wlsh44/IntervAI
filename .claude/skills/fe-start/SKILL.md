@@ -1,6 +1,8 @@
-# /fe-start
-
-프런트엔드 기능 개발 워크플로우 [1]~[2] 실행 — 디자인 조회 + 개발 플랜 생성
+---
+name: fe-start
+description: 프런트엔드 기능 개발 워크플로우 [1]~[2] 실행 — 디자인 조회 + 개발 플랜 생성
+argument-hint: [domain] [screenId]
+---
 
 ## 사용법
 ```
