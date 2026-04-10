@@ -48,7 +48,7 @@ public class ProfileEntity extends BaseEntity {
     }
 
     public Profile toDomain(List<String> techStacks, List<String> portfolioLinks) {
-        return Profile.of(id, userId, jobCategory, careerLevel, techStacks, portfolioLinks);
+        return Profile.of(id, userId, jobCategory, careerLevel, techStacks, portfolioLinks, getModifiedAt());
     }
 
     public void update(JobCategory jobCategory, CareerLevel careerLevel) {

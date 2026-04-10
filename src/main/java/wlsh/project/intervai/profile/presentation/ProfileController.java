@@ -2,10 +2,11 @@ package wlsh.project.intervai.profile.presentation;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,26 +18,31 @@ import wlsh.project.intervai.profile.presentation.dto.ProfileResponse;
 import wlsh.project.intervai.profile.presentation.dto.UpdateProfileRequest;
 
 @RestController
-@RequestMapping("/api/profile")
+@RequestMapping("/api/users/profile")
 @RequiredArgsConstructor
 public class ProfileController {
 
     private final ProfileService profileService;
 
-    @PutMapping("/{profileId}")
-    public ResponseEntity<ProfileResponse> updateProfile(
-            @AuthenticationPrincipal UserInfo userInfo,
-            @PathVariable Long profileId,
-            @Valid @RequestBody UpdateProfileRequest request) {
-        Profile profile = profileService.updateProfile(userInfo.userId(), profileId, request.toCommand());
+    @PostMapping
+    public ResponseEntity<ProfileResponse> createProfile(
+            @AuthenticationPrincipal UserInfo userInfo) {
+        Profile profile = profileService.create(userInfo.userId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(ProfileResponse.of(profile));
+    }
+
+    @GetMapping
+    public ResponseEntity<ProfileResponse> getProfile(
+            @AuthenticationPrincipal UserInfo userInfo) {
+        Profile profile = profileService.getProfile(userInfo.userId());
         return ResponseEntity.ok(ProfileResponse.of(profile));
     }
 
-    @GetMapping("/{profileId}")
-    public ResponseEntity<ProfileResponse> getProfile(
+    @PutMapping
+    public ResponseEntity<ProfileResponse> updateProfile(
             @AuthenticationPrincipal UserInfo userInfo,
-            @PathVariable Long profileId) {
-        Profile profile = profileService.getProfile(userInfo.userId(), profileId);
+            @Valid @RequestBody UpdateProfileRequest request) {
+        Profile profile = profileService.updateProfile(userInfo.userId(), request.toCommand());
         return ResponseEntity.ok(ProfileResponse.of(profile));
     }
 }
