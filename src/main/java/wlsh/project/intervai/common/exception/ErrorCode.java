@@ -19,6 +19,7 @@ public enum ErrorCode {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "올바르지 않은 토큰입니다."),
 
     // User
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "닉네임 또는 비밀번호가 일치하지 않습니다."),
     DUPLICATE_NICKNAME(HttpStatus.BAD_REQUEST, "이미 사용 중인 닉네임입니다."),
     INVALID_NICKNAME_LENGTH(HttpStatus.BAD_REQUEST, "닉네임은 4자 이상 8자 이하여야 합니다."),
