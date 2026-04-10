@@ -52,3 +52,9 @@ export const CareerLevel = {
   SENIOR: 'SENIOR',
 } as const
 export type CareerLevel = (typeof CareerLevel)[keyof typeof CareerLevel]
+
+export const SessionStatus = {
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+} as const
+export type SessionStatus = (typeof SessionStatus)[keyof typeof SessionStatus]

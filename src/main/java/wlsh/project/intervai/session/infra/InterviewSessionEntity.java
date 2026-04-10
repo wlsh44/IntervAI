@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wlsh.project.intervai.common.entity.BaseEntity;
 import wlsh.project.intervai.session.domain.InterviewSession;
-import wlsh.project.intervai.session.domain.InterviewSessionStatus;
+import wlsh.project.intervai.session.domain.SessionStatus;
 
 import java.time.LocalDateTime;
 
@@ -35,7 +35,7 @@ public class InterviewSessionEntity extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private InterviewSessionStatus sessionStatus;
+    private SessionStatus sessionStatus;
 
     @Column(nullable = false)
     private int currentMainQuestionIdx;
@@ -45,7 +45,7 @@ public class InterviewSessionEntity extends BaseEntity {
 
     private LocalDateTime completedAt;
 
-    private InterviewSessionEntity(Long interviewId, Long userId, InterviewSessionStatus sessionStatus,
+    private InterviewSessionEntity(Long interviewId, Long userId, SessionStatus sessionStatus,
                                    int currentMainQuestionIdx, int followUpCount, LocalDateTime completedAt) {
         this.interviewId = interviewId;
         this.userId = userId;
@@ -72,7 +72,7 @@ public class InterviewSessionEntity extends BaseEntity {
     }
 
     public void complete() {
-        this.sessionStatus = InterviewSessionStatus.COMPLETED;
+        this.sessionStatus = SessionStatus.COMPLETED;
         this.completedAt = LocalDateTime.now();
     }
 
@@ -85,6 +85,6 @@ public class InterviewSessionEntity extends BaseEntity {
     }
 
     public boolean isInProgress() {
-        return this.sessionStatus.equals(InterviewSessionStatus.IN_PROGRESS);
+        return this.sessionStatus.equals(SessionStatus.IN_PROGRESS);
     }
 }
