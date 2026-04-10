@@ -1,33 +1,26 @@
 import { Link } from 'react-router-dom'
 import type { InterviewSummary } from '../api/dashboardApi'
 import { InterviewType, SessionStatus } from '../../../shared/types/enums'
+import { formatDate } from '../../../shared/utils/date'
 
 interface RecentHistorySectionProps {
   items: InterviewSummary[]
 }
 
-const INTERVIEW_TYPE_LABEL: Record<string, string> = {
+const INTERVIEW_TYPE_LABEL: Record<InterviewType, string> = {
   [InterviewType.CS]: 'CS 기초',
   [InterviewType.PORTFOLIO]: '포트폴리오',
   [InterviewType.ALL]: '종합',
 }
 
-const SESSION_STATUS_LABEL: Record<string, string> = {
+const SESSION_STATUS_LABEL: Record<SessionStatus, string> = {
   [SessionStatus.IN_PROGRESS]: '진행 중',
   [SessionStatus.COMPLETED]: '완료',
 }
 
-const SESSION_STATUS_COLOR: Record<string, string> = {
+const SESSION_STATUS_COLOR: Record<SessionStatus, string> = {
   [SessionStatus.IN_PROGRESS]: 'text-amber-600 bg-amber-50',
   [SessionStatus.COMPLETED]: 'text-green-600 bg-green-50',
-}
-
-const formatDate = (createdAt: string): string => {
-  return new Date(createdAt).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
 }
 
 const RecentHistorySection = ({ items }: RecentHistorySectionProps) => {
@@ -51,15 +44,15 @@ const RecentHistorySection = ({ items }: RecentHistorySectionProps) => {
             >
               <div>
                 <p className="text-[#131b2e] font-medium">
-                  {INTERVIEW_TYPE_LABEL[item.interviewType] ?? item.interviewType}
+                  {INTERVIEW_TYPE_LABEL[item.interviewType]}
                 </p>
                 <p className="text-sm text-[#131b2e]/50 mt-0.5">{formatDate(item.createdAt)}</p>
               </div>
               <div className="flex items-center gap-3">
                 <span
-                  className={`text-xs font-medium px-2 py-1 rounded-full ${SESSION_STATUS_COLOR[item.sessionStatus] ?? ''}`}
+                  className={`text-xs font-medium px-2 py-1 rounded-full ${SESSION_STATUS_COLOR[item.sessionStatus]}`}
                 >
-                  {SESSION_STATUS_LABEL[item.sessionStatus] ?? item.sessionStatus}
+                  {SESSION_STATUS_LABEL[item.sessionStatus]}
                 </span>
                 <span className="text-[#4648d4] text-lg">›</span>
               </div>
