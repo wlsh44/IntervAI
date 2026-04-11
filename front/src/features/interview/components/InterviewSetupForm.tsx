@@ -81,7 +81,10 @@ const InterviewSetupForm = () => {
     if (!profileData) return
     if (profileData.careerLevel) setValue('difficulty', profileData.careerLevel)
     if (profileData.techStacks.length > 0) setValue('techStacks', profileData.techStacks)
-    if (profileData.portfolioLinks.length > 0) setValue('portfolioLinks', profileData.portfolioLinks)
+    if (profileData.portfolioLinks.length > 0) {
+      setValue('portfolioLinks', profileData.portfolioLinks)
+      setValue('interviewType', 'PORTFOLIO')
+    }
   }, [profileData])
 
   const watchedValues = useWatch({ control })
