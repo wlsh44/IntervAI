@@ -63,6 +63,7 @@ const InterviewSetupForm = () => {
     control,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<InterviewSetupFormValues>({
     resolver: zodResolver(interviewSetupSchema),
@@ -79,11 +80,13 @@ const InterviewSetupForm = () => {
 
   useEffect(() => {
     if (!profileData) return
+    const currentType = getValues('interviewType')
+
     if (profileData.careerLevel) setValue('difficulty', profileData.careerLevel)
-    if (profileData.techStacks.length > 0) setValue('techStacks', profileData.techStacks)
-    if (profileData.portfolioLinks.length > 0) {
-      setValue('portfolioLinks', profileData.portfolioLinks)
-      setValue('interviewType', 'PORTFOLIO')
+
+    if (currentType === 'PORTFOLIO' || currentType === 'ALL') {
+      if (profileData.techStacks.length > 0) setValue('techStacks', profileData.techStacks)
+      if (profileData.portfolioLinks.length > 0) setValue('portfolioLinks', profileData.portfolioLinks)
     }
   }, [profileData])
 
