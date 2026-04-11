@@ -8,7 +8,9 @@ const InterviewPage = () => {
   const resetInterview = useInterviewStore((s) => s.resetInterview)
 
   useEffect(() => {
-    resetInterview()
+    if (phase === 'finished') {
+      resetInterview()
+    }
   }, [])
 
   return (
