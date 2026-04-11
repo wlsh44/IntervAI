@@ -1,7 +1,8 @@
+import { useEffect } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2 } from 'lucide-react'
+import { Loader2, UserCircle } from 'lucide-react'
 
 import InterviewTypeSelector from './InterviewTypeSelector'
 import CsSubjectsSelector from './CsSubjectsSelector'
@@ -13,6 +14,7 @@ import InterviewerToneSelector from './InterviewerToneSelector'
 import InterviewSetupSummary from './InterviewSetupSummary'
 
 import { useCreateInterview } from '../hooks/useCreateInterview'
+import { useLoadProfile } from '../hooks/useLoadProfile'
 import type { CsSubjectRequest } from '../api/interviewApi'
 import type { InterviewType, Difficulty, InterviewerTone } from '../../../shared/types/enums'
 
@@ -55,10 +57,12 @@ type InterviewSetupFormValues = z.infer<typeof interviewSetupSchema>
 
 const InterviewSetupForm = () => {
   const { mutate, isPending } = useCreateInterview()
+  const { refetch: fetchProfile, isFetching: isLoadingProfile, data: profileData } = useLoadProfile()
 
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<InterviewSetupFormValues>({
     resolver: zodResolver(interviewSetupSchema),
@@ -72,6 +76,13 @@ const InterviewSetupForm = () => {
       techStacks: [],
     },
   })
+
+  useEffect(() => {
+    if (!profileData) return
+    if (profileData.careerLevel) setValue('difficulty', profileData.careerLevel)
+    if (profileData.techStacks.length > 0) setValue('techStacks', profileData.techStacks)
+    if (profileData.portfolioLinks.length > 0) setValue('portfolioLinks', profileData.portfolioLinks)
+  }, [profileData])
 
   const watchedValues = useWatch({ control })
   const interviewType = watchedValues.interviewType as InterviewType | undefined
@@ -97,9 +108,24 @@ const InterviewSetupForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl mx-auto p-8 space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-[#131b2e] mb-2">면접 설정</h1>
-        <p className="text-sm text-[#767586]">맞춤형 AI 면접을 시작하기 위해 설정을 선택해주세요.</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-[#131b2e] mb-2">면접 설정</h1>
+          <p className="text-sm text-[#767586]">맞춤형 AI 면접을 시작하기 위해 설정을 선택해주세요.</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => fetchProfile()}
+          disabled={isLoadingProfile}
+          className="flex items-center gap-1.5 px-4 py-2 border border-[#4648d4] text-[#4648d4] rounded-lg text-sm font-medium hover:bg-[#eaedff] transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap mt-1"
+        >
+          {isLoadingProfile ? (
+            <Loader2 size={15} className="animate-spin" />
+          ) : (
+            <UserCircle size={15} />
+          )}
+          프로필 불러오기
+        </button>
       </div>
 
       {/* 면접 유형 */}
