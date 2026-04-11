@@ -230,6 +230,7 @@ const InterviewSetupForm = () => {
           interviewerTone: (watchedValues.interviewerTone as InterviewerTone) ?? null,
           csSubjects: (watchedValues.csSubjects as CsSubjectRequest[]) ?? [],
           portfolioLinks: watchedValues.portfolioLinks ?? [],
+          techStacks: (watchedValues.techStacks as string[]) ?? [],
         }}
       />
 

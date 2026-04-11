@@ -10,6 +10,9 @@ export const useCreateInterview = () => {
   const { toast } = useToast()
 
   const { mutate, isPending } = useMutation({
+    onMutate: () => {
+      setPhase('generating')
+    },
     mutationFn: async (body: CreateInterviewRequest) => {
       const interview = await createInterview(body)
       const session = await createSession(interview.id)

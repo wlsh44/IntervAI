@@ -12,14 +12,6 @@ interface TechStackInputProps {
 const TechStackInput = ({ value, onChange, error }: TechStackInputProps) => {
   const [inputValue, setInputValue] = useState('')
 
-  const addStack = (stack: string) => {
-    const trimmed = stack.trim()
-    if (!trimmed) return
-    if (value.length >= MAX_STACKS) return
-    if (value.includes(trimmed)) return
-    onChange([...value, trimmed])
-  }
-
   const removeStack = (stack: string) => {
     onChange(value.filter((s) => s !== stack))
   }
@@ -27,7 +19,14 @@ const TechStackInput = ({ value, onChange, error }: TechStackInputProps) => {
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault()
-      addStack(inputValue.replace(/,/g, ''))
+      const newStacks = inputValue
+        .split(/[,\n]/)
+        .map((s) => s.trim())
+        .filter((s) => s && !value.includes(s))
+
+      if (newStacks.length > 0) {
+        onChange([...value, ...newStacks].slice(0, MAX_STACKS))
+      }
       setInputValue('')
     }
   }

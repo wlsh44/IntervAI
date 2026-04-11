@@ -11,11 +11,21 @@ interface PortfolioLinkInputProps {
 
 const PortfolioLinkInput = ({ value, onChange, error }: PortfolioLinkInputProps) => {
   const [inputValue, setInputValue] = useState('')
+  const [urlError, setUrlError] = useState('')
 
   const addLink = () => {
     const trimmed = inputValue.trim()
-    setInputValue('')
     if (!trimmed) return
+
+    try {
+      new URL(trimmed)
+    } catch {
+      setUrlError('올바른 URL 형식을 입력해주세요. (예: https://github.com/your-project)')
+      return
+    }
+
+    setUrlError('')
+    setInputValue('')
     if (value.length >= MAX_LINKS || value.includes(trimmed)) return
     onChange([...value, trimmed])
   }
@@ -39,7 +49,7 @@ const PortfolioLinkInput = ({ value, onChange, error }: PortfolioLinkInputProps)
         <input
           type="url"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={(e) => { setInputValue(e.target.value); setUrlError('') }}
           onKeyDown={handleKeyDown}
           disabled={isMaxReached}
           placeholder="https://github.com/your-project"
@@ -84,10 +94,11 @@ const PortfolioLinkInput = ({ value, onChange, error }: PortfolioLinkInputProps)
         </ul>
       )}
 
+      {urlError && <p className="text-xs text-[#ba1a1a]">{urlError}</p>}
       <p className="text-xs text-[#767586]">
         {value.length}/{MAX_LINKS}개 등록됨
       </p>
-      {error && <p className="text-xs text-[#ba1a1a] mt-1">{error}</p>}
+      {error && <p className="text-xs text-[#ba1a1a]">{error}</p>}
     </div>
   )
 }
