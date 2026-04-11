@@ -109,7 +109,10 @@ const InterviewSetupForm = () => {
       questionCount: data.questionCount,
       interviewerTone: data.interviewerTone as InterviewerTone,
       ...(csSubjects !== undefined && { csSubjects }),
-      ...(showPortfolioSection && { portfolioLinks: data.portfolioLinks }),
+      ...(showPortfolioSection && {
+        portfolioLinks: data.portfolioLinks,
+        techStacks: data.techStacks,
+      }),
     })
   }
 

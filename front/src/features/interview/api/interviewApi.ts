@@ -14,6 +14,7 @@ export interface CreateInterviewRequest {
   interviewerTone: InterviewerTone
   csSubjects?: CsSubjectRequest[]
   portfolioLinks?: string[]
+  techStacks?: string[]
 }
 
 export interface CreateInterviewResponse {
@@ -24,6 +25,7 @@ export interface CreateInterviewResponse {
   interviewerTone: InterviewerTone
   csSubjects: CsSubjectRequest[]
   portfolioLinks: string[]
+  techStacks: string[]
 }
 
 export interface CreateSessionResponse {
