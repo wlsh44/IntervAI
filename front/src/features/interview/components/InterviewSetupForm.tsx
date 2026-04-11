@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -57,7 +56,7 @@ type InterviewSetupFormValues = z.infer<typeof interviewSetupSchema>
 
 const InterviewSetupForm = () => {
   const { mutate, isPending } = useCreateInterview()
-  const { refetch: fetchProfile, isFetching: isLoadingProfile, data: profileData } = useLoadProfile()
+  const { refetch: fetchProfile, isFetching: isLoadingProfile } = useLoadProfile()
 
   const {
     control,
@@ -78,17 +77,19 @@ const InterviewSetupForm = () => {
     },
   })
 
-  useEffect(() => {
-    if (!profileData) return
+  const handleLoadProfile = async () => {
+    const { data } = await fetchProfile()
+    if (!data) return
+
     const currentType = getValues('interviewType')
 
-    if (profileData.careerLevel) setValue('difficulty', profileData.careerLevel)
+    if (data.careerLevel) setValue('difficulty', data.careerLevel)
 
     if (currentType === 'PORTFOLIO' || currentType === 'ALL') {
-      if (profileData.techStacks.length > 0) setValue('techStacks', profileData.techStacks)
-      if (profileData.portfolioLinks.length > 0) setValue('portfolioLinks', profileData.portfolioLinks)
+      if (data.techStacks.length > 0) setValue('techStacks', data.techStacks)
+      if (data.portfolioLinks.length > 0) setValue('portfolioLinks', data.portfolioLinks)
     }
-  }, [profileData])
+  }
 
   const watchedValues = useWatch({ control })
   const interviewType = watchedValues.interviewType as InterviewType | undefined
@@ -121,7 +122,7 @@ const InterviewSetupForm = () => {
         </div>
         <button
           type="button"
-          onClick={() => fetchProfile()}
+          onClick={handleLoadProfile}
           disabled={isLoadingProfile}
           className="flex items-center gap-1.5 px-4 py-2 border border-[#4648d4] text-[#4648d4] rounded-lg text-sm font-medium hover:bg-[#eaedff] transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap mt-1"
         >
