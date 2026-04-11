@@ -372,6 +372,7 @@ POST /api/interviews
 | `interviewerTone` | InterviewerTone | O | `FRIENDLY` / `NORMAL` / `AGGRESSIVE` |
 | `csSubjects` | CsSubject[] | 조건부 | `interviewType`이 `CS` 또는 `ALL`인 경우 필수 |
 | `portfolioLinks` | String[] | 조건부 | `interviewType`이 `PORTFOLIO` 또는 `ALL`인 경우 필수 |
+| `techStacks` | String[] | 선택 | `interviewType`이 `PORTFOLIO` 또는 `ALL`인 경우 사용 |
 
 **CsSubject 구조**
 
@@ -391,6 +392,7 @@ POST /api/interviews
 | `interviewerTone` | InterviewerTone | 면접관 톤 |
 | `csSubjects` | CsSubjectResponse[] | CS 과목 목록 |
 | `portfolioLinks` | String[] | 포트폴리오 링크 목록 |
+| `techStacks` | String[] | 기술 스택 목록 |
 
 **에러**
 
