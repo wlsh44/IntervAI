@@ -8,6 +8,7 @@ interface FormValues {
   interviewerTone: InterviewerTone | null
   csSubjects: CsSubjectRequest[]
   portfolioLinks: string[]
+  techStacks: string[]
 }
 
 interface InterviewSetupSummaryProps {
@@ -33,7 +34,7 @@ const TONE_LABELS: Record<InterviewerTone, string> = {
 }
 
 const InterviewSetupSummary = ({ formValues }: InterviewSetupSummaryProps) => {
-  const { interviewType, difficulty, questionCount, interviewerTone, csSubjects, portfolioLinks } = formValues
+  const { interviewType, difficulty, questionCount, interviewerTone, csSubjects, portfolioLinks, techStacks } = formValues
 
   const totalCsTopics = csSubjects.reduce((sum, s) => sum + s.topics.length, 0)
   const showCsSection = interviewType === 'CS' || interviewType === 'ALL'
@@ -45,7 +46,12 @@ const InterviewSetupSummary = ({ formValues }: InterviewSetupSummaryProps) => {
     { label: '질문 수', value: `${questionCount}문제` },
     { label: '면접관 스타일', value: interviewerTone ? TONE_LABELS[interviewerTone] : '-' },
     ...(showCsSection ? [{ label: 'CS 과목 수', value: `${totalCsTopics}개` }] : []),
-    ...(showPortfolioSection ? [{ label: '포트폴리오 링크 수', value: `${portfolioLinks.length}개` }] : []),
+    ...(showPortfolioSection
+      ? [
+          { label: '기술 스택 수', value: `${techStacks.length}개` },
+          { label: '포트폴리오 링크 수', value: `${portfolioLinks.length}개` },
+        ]
+      : []),
   ]
 
   return (
