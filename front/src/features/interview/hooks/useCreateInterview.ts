@@ -25,6 +25,7 @@ export const useCreateInterview = () => {
       setPhase('chat')
     },
     onError: (error: unknown) => {
+      setPhase('setup')
       const apiError = extractApiError(error)
       const message = getErrorMessage(apiError.code)
       toast(message, 'error')
