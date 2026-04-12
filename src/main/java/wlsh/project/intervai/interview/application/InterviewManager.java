@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.CsSubject;
 import wlsh.project.intervai.interview.domain.Interview;
@@ -29,12 +30,20 @@ public class InterviewManager {
 
         saveCsSubjects(interviewEntity.getId(), interview.getCsSubjects());
         savePortfolioLinks(interviewEntity.getId(), interview.getPortfolioLinks());
+        saveTechStacks(interviewEntity.getId(), interview.getTechStacks());
 
         return interviewEntity.toDomain(interview.getCsSubjects(), interview.getPortfolioLinks());
     }
 
+    private void saveTechStacks(Long interviewId, List<String> techStacks) {
+        if (CollectionUtils.isEmpty(techStacks)) {
+            return;
+        }
+        //TODO
+    }
+
     private void saveCsSubjects(Long interviewId, List<CsSubject> csSubjects) {
-        if (csSubjects == null || csSubjects.isEmpty()) {
+        if (CollectionUtils.isEmpty(csSubjects)) {
             return;
         }
         List<InterviewCsSubjectEntity> entities = csSubjects.stream()
@@ -45,7 +54,7 @@ public class InterviewManager {
     }
 
     private void savePortfolioLinks(Long interviewId, List<String> portfolioLinks) {
-        if (portfolioLinks == null || portfolioLinks.isEmpty()) {
+        if (CollectionUtils.isEmpty(portfolioLinks)) {
             return;
         }
         List<InterviewPortfolioLinkEntity> entities = portfolioLinks.stream()
