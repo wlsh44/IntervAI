@@ -13,5 +13,8 @@ export const API_PATHS = {
   },
   interviews: {
     list: '/api/interviews',
+    create: '/api/interviews',
+    sessions: (interviewId: number) => `/api/interviews/${interviewId}/sessions`,
+    questions: (interviewId: number) => `/api/interviews/${interviewId}/questions`,
   },
 } as const

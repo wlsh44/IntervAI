@@ -19,6 +19,9 @@ export const ERROR_MESSAGES: Record<string, string> = {
   PROFILE_ACCESS_DENIED: '본인의 프로필만 수정할 수 있습니다.',
   PROFILE_ALREADY_EXISTS: '이미 프로필이 존재합니다.',
   // 면접
+  INVALID_QUESTION_COUNT: '질문 수는 5~10개 사이여야 합니다.',
+  CS_SUBJECT_REQUIRED: 'CS 유형 선택 시 CS 과목을 하나 이상 선택해주세요.',
+  PORTFOLIO_LINK_REQUIRED: '포트폴리오 유형 선택 시 포트폴리오 링크를 하나 이상 입력해주세요.',
   INTERVIEW_NOT_FOUND: '면접을 찾을 수 없습니다.',
   INTERVIEW_ACCESS_DENIED: '접근 권한이 없습니다.',
   SESSION_NOT_FOUND: '면접 세션을 찾을 수 없습니다.',
