@@ -8,6 +8,7 @@ public record CreateInterviewCommand(
         int questionCount,
         InterviewerTone interviewerTone,
         List<CsSubject> csSubjects,
-        List<String> portfolioLinks
+        List<String> portfolioLinks,
+        List<String> techStacks
 ) {
 }

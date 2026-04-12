@@ -1,6 +1,7 @@
 package wlsh.project.intervai.interview.domain;
 
 import java.util.List;
+
 import lombok.Getter;
 
 @Getter
@@ -17,10 +18,11 @@ public class Interview {
     private final InterviewerTone interviewerTone;
     private final List<CsSubject> csSubjects;
     private final List<String> portfolioLinks;
+    private final List<String> techStacks;
 
     private Interview(Long id, Long userId, InterviewType interviewType, Difficulty difficulty,
                       int questionCount, int maxFollowUpCount, InterviewerTone interviewerTone,
-                      List<CsSubject> csSubjects, List<String> portfolioLinks) {
+                      List<CsSubject> csSubjects, List<String> portfolioLinks, List<String> techStacks) {
         this.id = id;
         this.userId = userId;
         this.interviewType = interviewType;
@@ -30,6 +32,7 @@ public class Interview {
         this.interviewerTone = interviewerTone;
         this.csSubjects = csSubjects;
         this.portfolioLinks = portfolioLinks;
+        this.techStacks = techStacks;
     }
 
     public static Interview create(Long userId, CreateInterviewCommand command) {
@@ -37,14 +40,14 @@ public class Interview {
                 null, userId,
                 command.interviewType(), command.difficulty(),
                 command.questionCount(), DEFAULT_MAX_FOLLOW_UP_COUNT, command.interviewerTone(),
-                command.csSubjects(), command.portfolioLinks()
+                command.csSubjects(), command.portfolioLinks(), command.techStacks()
         );
     }
 
     public static Interview of(Long id, Long userId, InterviewType interviewType, Difficulty difficulty,
-                                int questionCount, int maxFollowUpCount, InterviewerTone interviewerTone,
-                                List<CsSubject> csSubjects, List<String> portfolioLinks) {
+                               int questionCount, int maxFollowUpCount, InterviewerTone interviewerTone,
+                               List<CsSubject> csSubjects, List<String> portfolioLinks, List<String> techStacks) {
         return new Interview(id, userId, interviewType, difficulty, questionCount, maxFollowUpCount,
-                interviewerTone, csSubjects, portfolioLinks);
+                interviewerTone, csSubjects, portfolioLinks, techStacks);
     }
 }

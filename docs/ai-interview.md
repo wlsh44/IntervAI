@@ -20,6 +20,9 @@
 - [x] CS 기초 질문 생성: CsCategory(DATA_STRUCTURE, ALGORITHM, NETWORK, LANGUAGE, DATABASE) 및 세부 토픽 기반
 - [x] 포트폴리오 기반 질문 생성: portfolioLinks를 시스템 프롬프트에 주입하여 맞춤 질문 생성
 - [x] 종합(ALL) 유형: CS + 포트폴리오 기반 질문을 혼합하여 생성
+- [x] 면접 생성할 때, 사용자의 프로필 설정을 기반으로 '프로필 불러오기' 호출을 통해 면접 생성의 값 세팅을 프로필 기반 세팅으로 설정
+  - CS 면접 생성의 페이지에서 '프로필 불러오기'를 눌렀을 경우: 난이도 설정
+  - 포트폴리 면접 생성 페이지 또는 종합 면접 생성 페이지에서 '프로필 불러오기'를 눌렀을 경우: 포트폴리오 링크, 기술 스택, 난이도 설정
 - [x] 세션 생성 후 별도 API 호출로 질문 일괄 생성하여 DB에 저장 (`POST /api/interviews/{interviewId}/questions`)
 - [ ] GitHub 레포지토리의 기술 스택, 커밋 패턴, README 분석을 통한 고도화된 포트폴리오 질문 (Stage 6)
 
