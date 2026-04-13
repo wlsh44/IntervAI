@@ -3,13 +3,14 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useInterviewStore } from '../stores/interviewStore'
 import { useSubmitAnswer } from '../hooks/useSubmitAnswer'
 import { useFinishSession } from '../hooks/useFinishSession'
-import { extractApiError } from '../../../shared/api/apiError'
+import { ApiErrorCode, extractApiError } from '../../../shared/api/apiError'
 import { queryKeys } from '../../../shared/types/queryKeys'
 import { getCurrentQuestion } from '../api/interviewApi'
 import ChatHeader from './ChatHeader'
 import ChatMessageList from './ChatMessageList'
 import ChatInputArea from './ChatInputArea'
 import AllQuestionsCompletedBanner from './AllQuestionsCompletedBanner'
+import { QuestionType } from '../../../shared/types/enums'
 import type { ChatMessage } from '../types/chat'
 
 const InterviewChatScreen = () => {
@@ -46,7 +47,7 @@ const InterviewChatScreen = () => {
           setMessages((prev) => [...prev, aiMsg])
           setPendingQuestionId(question.questionId)
           // P2: 본 질문일 때만 카운터 증가 (꼬리 질문은 questionCount에 포함되지 않음)
-          if (question.questionType === 'QUESTION') {
+          if (question.questionType === QuestionType.QUESTION) {
             incrementQuestionIndex()
           }
           // P1: hasNext: false는 "마지막 질문"을 의미하지 "완료"를 의미하지 않음.
@@ -54,9 +55,9 @@ const InterviewChatScreen = () => {
         })
         .catch((err: unknown) => {
           const apiError = extractApiError(err)
-          if (apiError.code === 'SESSION_ALREADY_COMPLETED') {
+          if (apiError.code === ApiErrorCode.SESSION_ALREADY_COMPLETED) {
             setPhase('finished')
-          } else if (apiError.code === 'ALL_QUESTIONS_ANSWERED') {
+          } else if (apiError.code === ApiErrorCode.ALL_QUESTIONS_ANSWERED) {
             setAllCompleted(true)
           }
         })
@@ -77,7 +78,7 @@ const InterviewChatScreen = () => {
     interviewId,
     onSuccess: (data, content) => {
       const candidateMsg: ChatMessage = {
-        id: String(Date.now()),
+        id: crypto.randomUUID(),
         role: 'candidate',
         content,
         feedback: data.feedback,

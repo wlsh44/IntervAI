@@ -8,6 +8,15 @@ export function extractApiError(error: unknown): ApiError {
   return { code: 'UNKNOWN_ERROR', message: '알 수 없는 오류가 발생했습니다.' }
 }
 
+export const ApiErrorCode = {
+  SESSION_ALREADY_COMPLETED: 'SESSION_ALREADY_COMPLETED',
+  ALL_QUESTIONS_ANSWERED: 'ALL_QUESTIONS_ANSWERED',
+  ANSWER_ALREADY_EXISTS: 'ANSWER_ALREADY_EXISTS',
+  INTERVIEW_NOT_FOUND: 'INTERVIEW_NOT_FOUND',
+  INTERVIEW_ACCESS_DENIED: 'INTERVIEW_ACCESS_DENIED',
+  SESSION_NOT_FOUND: 'SESSION_NOT_FOUND',
+} as const
+
 export const ERROR_MESSAGES: Record<string, string> = {
   // 인증
   INVALID_TOKEN: '인증이 만료되었습니다. 다시 로그인해주세요.',
