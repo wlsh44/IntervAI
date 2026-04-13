@@ -30,7 +30,7 @@ class InterviewValidatorTest extends IntegrationTest {
     void validQuestionCount(int questionCount) {
         CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.CS, Difficulty.JUNIOR, questionCount, InterviewerTone.FRIENDLY,
-                List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
+                List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of(), List.of());
 
         assertThatNoException()
                 .isThrownBy(() -> interviewValidator.validate(command));
@@ -42,7 +42,7 @@ class InterviewValidatorTest extends IntegrationTest {
     void invalidQuestionCount(int questionCount) {
         CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.CS, Difficulty.JUNIOR, questionCount, InterviewerTone.FRIENDLY,
-                List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
+                List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of(), List.of());
 
         assertThatThrownBy(() -> interviewValidator.validate(command))
                 .isInstanceOf(CustomException.class)
@@ -54,7 +54,7 @@ class InterviewValidatorTest extends IntegrationTest {
     void csInterviewWithSubjects() {
         CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
-                List.of(CsSubject.of(CsCategory.ALGORITHM, List.of("정렬"))), List.of());
+                List.of(CsSubject.of(CsCategory.ALGORITHM, List.of("정렬"))), List.of(), List.of());
 
         assertThatNoException()
                 .isThrownBy(() -> interviewValidator.validate(command));
@@ -65,7 +65,7 @@ class InterviewValidatorTest extends IntegrationTest {
     void csInterviewWithoutSubjects() {
         CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
-                List.of(), List.of());
+                List.of(), List.of(), List.of());
 
         assertThatThrownBy(() -> interviewValidator.validate(command))
                 .isInstanceOf(CustomException.class)
@@ -77,7 +77,7 @@ class InterviewValidatorTest extends IntegrationTest {
     void portfolioInterviewWithLinks() {
         CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.PORTFOLIO, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
-                List.of(), List.of("https://github.com/user/project"));
+                List.of(), List.of("https://github.com/user/project"), List.of());
 
         assertThatNoException()
                 .isThrownBy(() -> interviewValidator.validate(command));
@@ -88,7 +88,7 @@ class InterviewValidatorTest extends IntegrationTest {
     void portfolioInterviewWithoutLinks() {
         CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.PORTFOLIO, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
-                List.of(), List.of());
+                List.of(), List.of(), List.of());
 
         assertThatThrownBy(() -> interviewValidator.validate(command))
                 .isInstanceOf(CustomException.class)
@@ -101,7 +101,8 @@ class InterviewValidatorTest extends IntegrationTest {
         CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATABASE, List.of("인덱스"))),
-                List.of("https://github.com/user/project"));
+                List.of("https://github.com/user/project"),
+                List.of());
 
         assertThatNoException()
                 .isThrownBy(() -> interviewValidator.validate(command));
@@ -112,7 +113,7 @@ class InterviewValidatorTest extends IntegrationTest {
     void allInterviewWithoutSubjects() {
         CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
-                List.of(), List.of("https://github.com/user/project"));
+                List.of(), List.of("https://github.com/user/project"), List.of());
 
         assertThatThrownBy(() -> interviewValidator.validate(command))
                 .isInstanceOf(CustomException.class)
@@ -124,7 +125,7 @@ class InterviewValidatorTest extends IntegrationTest {
     void allInterviewWithoutLinks() {
         CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.ALL, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
-                List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
+                List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of(), List.of());
 
         assertThatThrownBy(() -> interviewValidator.validate(command))
                 .isInstanceOf(CustomException.class)
