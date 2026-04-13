@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { finishSession } from '../api/interviewApi'
 import { useInterviewStore } from '../stores/interviewStore'
-import { extractApiError, getErrorMessage } from '../../../shared/api/apiError'
+import { ApiErrorCode, extractApiError, getErrorMessage } from '../../../shared/api/apiError'
 import { useToast } from '../../../shared/components/ui/toastStore'
 
 export const useFinishSession = () => {
@@ -15,7 +15,7 @@ export const useFinishSession = () => {
     },
     onError: (error: unknown) => {
       const apiError = extractApiError(error)
-      if (apiError.code === 'SESSION_ALREADY_COMPLETED') {
+      if (apiError.code === ApiErrorCode.SESSION_ALREADY_COMPLETED) {
         setPhase('finished')
         return
       }

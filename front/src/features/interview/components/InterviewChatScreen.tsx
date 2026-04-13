@@ -3,24 +3,28 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useInterviewStore } from '../stores/interviewStore'
 import { useSubmitAnswer } from '../hooks/useSubmitAnswer'
 import { useFinishSession } from '../hooks/useFinishSession'
-import { ApiErrorCode, extractApiError } from '../../../shared/api/apiError'
+import { ApiErrorCode, extractApiError, getErrorMessage } from '../../../shared/api/apiError'
+import { useToast } from '../../../shared/components/ui/toastStore'
 import { queryKeys } from '../../../shared/types/queryKeys'
+import { QuestionType } from '../../../shared/types/enums'
 import { getCurrentQuestion } from '../api/interviewApi'
 import ChatHeader from './ChatHeader'
 import ChatMessageList from './ChatMessageList'
 import ChatInputArea from './ChatInputArea'
 import AllQuestionsCompletedBanner from './AllQuestionsCompletedBanner'
-import { QuestionType } from '../../../shared/types/enums'
+import FinishConfirmDialog from './FinishConfirmDialog'
 import type { ChatMessage } from '../types/chat'
 
 const InterviewChatScreen = () => {
   const { interviewId, questionCount, currentQuestionIndex, setPhase, incrementQuestionIndex } =
     useInterviewStore()
   const queryClient = useQueryClient()
+  const { toast } = useToast()
 
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [allCompleted, setAllCompleted] = useState(false)
   const [pendingQuestionId, setPendingQuestionId] = useState<number | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   // P3: ref로 중복 처리 방지 (React StrictMode에서 effect가 두 번 실행되어도 안전)
   const appendedQuestionIds = useRef(new Set<number>())
 
@@ -59,10 +63,13 @@ const InterviewChatScreen = () => {
             setPhase('finished')
           } else if (apiError.code === ApiErrorCode.ALL_QUESTIONS_ANSWERED) {
             setAllCompleted(true)
+          } else {
+            // P2: 그 외 에러(네트워크 오류, INTERVIEW_NOT_FOUND 등)는 토스트로 안내
+            toast(getErrorMessage(apiError.code), 'error')
           }
         })
     },
-    [queryClient, incrementQuestionIndex, setPhase],
+    [queryClient, incrementQuestionIndex, setPhase, toast],
   )
 
   useEffect(() => {
@@ -106,7 +113,8 @@ const InterviewChatScreen = () => {
     submit({ questionId: pendingQuestionId, content })
   }
 
-  const handleFinish = () => {
+  const handleConfirmFinish = () => {
+    setIsDialogOpen(false)
     if (interviewId === null) return
     finish(interviewId)
   }
@@ -116,7 +124,7 @@ const InterviewChatScreen = () => {
       <ChatHeader
         currentQuestionIndex={currentQuestionIndex}
         questionCount={questionCount}
-        onFinish={handleFinish}
+        onOpenDialog={() => setIsDialogOpen(true)}
         isFinishing={isFinishing}
       />
 
@@ -125,7 +133,10 @@ const InterviewChatScreen = () => {
 
         {allCompleted && (
           <div className="px-4 pb-4">
-            <AllQuestionsCompletedBanner onFinish={handleFinish} isFinishing={isFinishing} />
+            <AllQuestionsCompletedBanner
+              onOpenDialog={() => setIsDialogOpen(true)}
+              isFinishing={isFinishing}
+            />
           </div>
         )}
 
@@ -137,6 +148,12 @@ const InterviewChatScreen = () => {
           />
         )}
       </div>
+
+      <FinishConfirmDialog
+        isOpen={isDialogOpen}
+        onConfirm={handleConfirmFinish}
+        onCancel={() => setIsDialogOpen(false)}
+      />
     </div>
   )
 }
