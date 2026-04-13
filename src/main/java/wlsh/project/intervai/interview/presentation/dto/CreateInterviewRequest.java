@@ -24,7 +24,9 @@ public record CreateInterviewRequest(
 
         List<@Valid CsSubjectRequest> csSubjects,
 
-        List<@NotBlank(message = "포트폴리오 링크는 비어있을 수 없습니다.") String> portfolioLinks
+        List<@NotBlank(message = "포트폴리오 링크는 비어있을 수 없습니다.") String> portfolioLinks,
+
+        List<String> techStacks
 ) {
     public CreateInterviewCommand toCommand() {
         return new CreateInterviewCommand(
@@ -35,7 +37,8 @@ public record CreateInterviewRequest(
                 csSubjects == null ? List.of() : csSubjects.stream()
                         .map(CsSubjectRequest::toCsSubject)
                         .toList(),
-                portfolioLinks == null ? List.of() : portfolioLinks
+                portfolioLinks == null ? List.of() : portfolioLinks,
+                techStacks
         );
     }
 }
