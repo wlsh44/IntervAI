@@ -32,6 +32,7 @@ const ChatInputArea = ({ onSubmit, isPending, disabled = false }: ChatInputAreaP
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="답변을 입력하세요..."
+          aria-label="답변 입력"
           disabled={isPending || disabled}
           rows={3}
           className="flex-1 resize-none bg-transparent text-sm text-[#131b2e] placeholder-[#767586] focus:outline-none disabled:opacity-50"
