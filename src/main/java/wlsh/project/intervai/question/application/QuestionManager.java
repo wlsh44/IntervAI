@@ -25,6 +25,7 @@ public class QuestionManager {
         return entity.toDomain();
     }
 
+    @Transactional
     public Optional<Question> createFollowUp(Long interviewId, Long sessionId, String content) {
         if (content == null || content.isBlank()) {
             return Optional.empty();
