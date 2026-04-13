@@ -105,7 +105,7 @@ class InterviewSessionManagerTest extends IntegrationTest {
     private Interview createInterview(Long userId) {
         CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
-                List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
+                List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of(), List.of());
         return interviewManager.create(userId, command);
     }
 }
