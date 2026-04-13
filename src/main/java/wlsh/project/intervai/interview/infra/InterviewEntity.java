@@ -1,6 +1,7 @@
 package wlsh.project.intervai.interview.infra;
 
 import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -67,14 +68,14 @@ public class InterviewEntity extends BaseEntity {
         );
     }
 
-    public Interview toDomain(List<CsSubject> csSubjects, List<String> portfolioLinks) {
+    public Interview toDomain(List<CsSubject> csSubjects, List<String> portfolioLinks, List<String> techStacks) {
         return Interview.of(id, userId, interviewType, difficulty, questionCount, maxFollowUpCount,
-                interviewerTone, csSubjects, portfolioLinks);
+                interviewerTone, csSubjects, portfolioLinks, techStacks);
     }
 
     public Interview toDomain() {
         return Interview.of(id, userId, interviewType, difficulty, questionCount, maxFollowUpCount,
-                interviewerTone, List.of(), List.of());
+                interviewerTone, List.of(), List.of(), List.of());
     }
 
     public boolean isOwner(Long userId) {

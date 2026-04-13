@@ -17,8 +17,7 @@ public class InterviewSessionService {
     }
 
     public void finish(Long userId, Long interviewId) {
-        interviewSessionValidator.validateInterviewOwner(interviewId, userId);
-        interviewSessionValidator.validateSessionInProgress(interviewId);
+        interviewSessionValidator.validateInterviewSession(interviewId, userId);
         interviewSessionManager.complete(interviewId);
     }
 }

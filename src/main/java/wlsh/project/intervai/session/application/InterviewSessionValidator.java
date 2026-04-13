@@ -17,6 +17,11 @@ public class InterviewSessionValidator {
     private final InterviewRepository interviewRepository;
     private final InterviewSessionRepository interviewSessionRepository;
 
+    public void validateInterviewSession(Long interviewId, Long userId) {
+        validateInterviewOwner(interviewId, userId);
+        validateSessionInProgress(interviewId);
+    }
+
     public void validateInterviewOwner(Long interviewId, Long userId) {
         InterviewEntity interviewEntity = interviewRepository.findByIdAndStatus(interviewId, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
@@ -25,7 +30,7 @@ public class InterviewSessionValidator {
         }
     }
 
-    public void validateSessionInProgress(Long interviewId) {
+    private void validateSessionInProgress(Long interviewId) {
         InterviewSessionEntity entity = interviewSessionRepository.findByInterviewIdAndStatus(interviewId, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new CustomException(ErrorCode.SESSION_NOT_FOUND));
         if (!entity.isInProgress()) {

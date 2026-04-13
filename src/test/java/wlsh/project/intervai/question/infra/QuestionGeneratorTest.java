@@ -48,6 +48,7 @@ class QuestionGeneratorTest {
                 5,
                 InterviewerTone.NORMAL,
                 List.of(CsSubject.of(CsCategory.NETWORK, List.of("전체"))),
+                null,
                 null));
         List<String> questions = generator.generateAll(interview);
 
