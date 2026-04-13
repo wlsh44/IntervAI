@@ -1,6 +1,6 @@
 import { httpClient } from '../../../shared/api/httpClient'
 import { API_PATHS } from '../../../shared/api/constants'
-import type { CsCategory, Difficulty, InterviewType, InterviewerTone } from '../../../shared/types/enums'
+import type { CsCategory, Difficulty, InterviewType, InterviewerTone, QuestionType } from '../../../shared/types/enums'
 
 export interface CsSubjectRequest {
   category: CsCategory
@@ -55,4 +55,37 @@ export const createSession = async (interviewId: number): Promise<CreateSessionR
 export const createQuestions = async (interviewId: number): Promise<CreateQuestionsResponse> => {
   const res = await httpClient.post<CreateQuestionsResponse>(API_PATHS.interviews.questions(interviewId))
   return res.data
+}
+
+export interface CurrentQuestionResponse {
+  questionId: number
+  question: string
+  questionType: QuestionType
+  hasNext: boolean
+}
+
+export interface SubmitAnswerRequest {
+  questionId: number
+  content: string
+}
+
+export interface SubmitAnswerResponse {
+  feedback: string
+}
+
+export const getCurrentQuestion = async (interviewId: number): Promise<CurrentQuestionResponse> => {
+  const res = await httpClient.get<CurrentQuestionResponse>(API_PATHS.interviews.currentQuestion(interviewId))
+  return res.data
+}
+
+export const submitAnswer = async (
+  interviewId: number,
+  body: SubmitAnswerRequest,
+): Promise<SubmitAnswerResponse> => {
+  const res = await httpClient.post<SubmitAnswerResponse>(API_PATHS.interviews.answers(interviewId), body)
+  return res.data
+}
+
+export const finishSession = async (interviewId: number): Promise<void> => {
+  await httpClient.post(API_PATHS.interviews.finish(interviewId))
 }
