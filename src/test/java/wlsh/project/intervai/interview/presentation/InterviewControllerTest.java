@@ -23,7 +23,6 @@ import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewSummary;
 import wlsh.project.intervai.interview.domain.InterviewType;
 import wlsh.project.intervai.interview.domain.InterviewerTone;
-import wlsh.project.intervai.interview.domain.SessionStatus;
 import wlsh.project.intervai.interview.presentation.dto.CreateInterviewRequest;
 import wlsh.project.intervai.interview.presentation.dto.CsSubjectRequest;
 import wlsh.project.intervai.session.application.InterviewSessionService;
@@ -54,7 +53,7 @@ class InterviewControllerTest extends AcceptanceTest {
                 CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map", "List")),
                 CsSubject.of(CsCategory.ALGORITHM, List.of("정렬", "dfs/bfs")));
         Interview interview = Interview.of(1L, userId, InterviewType.CS, Difficulty.JUNIOR,
-                7, 3, InterviewerTone.FRIENDLY, csSubjects, List.of());
+                7, 3, InterviewerTone.FRIENDLY, csSubjects, List.of(), List.of());
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
         given(interviewService.create(eq(userId), any(CreateInterviewCommand.class)))
@@ -65,6 +64,7 @@ class InterviewControllerTest extends AcceptanceTest {
                 List.of(
                         new CsSubjectRequest(CsCategory.DATA_STRUCTURE, List.of("Map", "List")),
                         new CsSubjectRequest(CsCategory.ALGORITHM, List.of("정렬", "dfs/bfs"))),
+                null,
                 null);
 
         RestAssuredMockMvc.given()
@@ -93,7 +93,7 @@ class InterviewControllerTest extends AcceptanceTest {
         Long userId = 1L;
         List<String> portfolioLinks = List.of("https://github.com/user/project");
         Interview interview = Interview.of(2L, userId, InterviewType.PORTFOLIO, Difficulty.SENIOR,
-                5, 3, InterviewerTone.AGGRESSIVE, List.of(), portfolioLinks);
+                5, 3, InterviewerTone.AGGRESSIVE, List.of(), portfolioLinks, List.of());
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
         given(interviewService.create(eq(userId), any(CreateInterviewCommand.class)))
@@ -101,7 +101,7 @@ class InterviewControllerTest extends AcceptanceTest {
 
         CreateInterviewRequest request = new CreateInterviewRequest(
                 InterviewType.PORTFOLIO, Difficulty.SENIOR, 5, InterviewerTone.AGGRESSIVE,
-                null, List.of("https://github.com/user/project"));
+                null, List.of("https://github.com/user/project"), null);
 
         RestAssuredMockMvc.given()
                 .header("Authorization", "Bearer valid-token")
@@ -127,7 +127,7 @@ class InterviewControllerTest extends AcceptanceTest {
         List<CsSubject> csSubjects = List.of(CsSubject.of(CsCategory.NETWORK, List.of("http/https")));
         List<String> portfolioLinks = List.of("https://github.com/user/project");
         Interview interview = Interview.of(3L, userId, InterviewType.ALL, Difficulty.ENTRY,
-                10, 3, InterviewerTone.NORMAL, csSubjects, portfolioLinks);
+                10, 3, InterviewerTone.NORMAL, csSubjects, portfolioLinks, List.of());
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
         given(interviewService.create(eq(userId), any(CreateInterviewCommand.class)))
@@ -136,7 +136,8 @@ class InterviewControllerTest extends AcceptanceTest {
         CreateInterviewRequest request = new CreateInterviewRequest(
                 InterviewType.ALL, Difficulty.ENTRY, 10, InterviewerTone.NORMAL,
                 List.of(new CsSubjectRequest(CsCategory.NETWORK, List.of("http/https"))),
-                List.of("https://github.com/user/project"));
+                List.of("https://github.com/user/project"),
+                null);
 
         RestAssuredMockMvc.given()
                 .header("Authorization", "Bearer valid-token")
@@ -254,6 +255,7 @@ class InterviewControllerTest extends AcceptanceTest {
         CreateInterviewRequest request = new CreateInterviewRequest(
                 InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
                 List.of(new CsSubjectRequest(CsCategory.DATA_STRUCTURE, List.of("Map"))),
+                null,
                 null);
 
         RestAssuredMockMvc.given()
