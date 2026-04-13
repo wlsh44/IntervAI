@@ -1,6 +1,7 @@
 package wlsh.project.intervai.interview.application;
 
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,7 @@ public class InterviewManager {
         savePortfolioLinks(interviewEntity.getId(), interview.getPortfolioLinks());
         saveTechStacks(interviewEntity.getId(), interview.getTechStacks());
 
-        return interviewEntity.toDomain(interview.getCsSubjects(), interview.getPortfolioLinks());
+        return interviewEntity.toDomain(interview.getCsSubjects(), interview.getPortfolioLinks(), interview.getTechStacks());
     }
 
     private void saveTechStacks(Long interviewId, List<String> techStacks) {
