@@ -15,7 +15,6 @@ import wlsh.project.intervai.session.infra.InterviewSessionRepository;
 public class InterviewSessionManager {
 
     private final InterviewSessionRepository interviewSessionRepository;
-    private final InterviewSessionFinder interviewSessionFinder;
 
     @Transactional
     public InterviewSession create(Long interviewId, Long userId) {
@@ -40,7 +39,8 @@ public class InterviewSessionManager {
 
     @Transactional
     public void complete(Long interviewId) {
-        InterviewSessionEntity entity = interviewSessionFinder.getEntityByInterviewId(interviewId);
+        InterviewSessionEntity entity = interviewSessionRepository.findByInterviewIdAndStatus(interviewId, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new CustomException(ErrorCode.SESSION_NOT_FOUND));
         entity.complete();
     }
 }
