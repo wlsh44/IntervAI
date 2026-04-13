@@ -19,8 +19,7 @@ public class AnswerValidator {
     private final QuestionRepository questionRepository;
 
     public void validate(Long userId, Long interviewId, Long questionId) {
-        interviewSessionValidator.validateInterviewOwner(interviewId, userId);
-        interviewSessionValidator.validateSessionInProgress(interviewId);
+        interviewSessionValidator.validateInterviewSession(interviewId, userId);
         validateQuestionInInterview(questionId, interviewId);
         validateNotAlreadyAnswered(questionId);
     }

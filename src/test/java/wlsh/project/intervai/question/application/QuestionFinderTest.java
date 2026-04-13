@@ -140,7 +140,7 @@ class QuestionFinderTest extends IntegrationTest {
     private Interview createInterview(Long userId, int questionCount) {
         CreateInterviewCommand command = new CreateInterviewCommand(
                 InterviewType.CS, Difficulty.JUNIOR, questionCount, InterviewerTone.FRIENDLY,
-                List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of());
+                List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of(), List.of());
         return interviewManager.create(userId, command);
     }
 }
