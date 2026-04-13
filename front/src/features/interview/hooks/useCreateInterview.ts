@@ -6,7 +6,7 @@ import { extractApiError, getErrorMessage } from '../../../shared/api/apiError'
 import { useToast } from '../../../shared/components/ui/toastStore'
 
 export const useCreateInterview = () => {
-  const { setInterview, setSession, setPhase } = useInterviewStore()
+  const { setInterview, setSession, setPhase, setQuestionCount } = useInterviewStore()
   const { toast } = useToast()
 
   const { mutate, isPending } = useMutation({
@@ -17,11 +17,12 @@ export const useCreateInterview = () => {
       const interview = await createInterview(body)
       const session = await createSession(interview.id)
       await createQuestions(interview.id)
-      return { interviewId: interview.id, sessionId: session.sessionId }
+      return { interviewId: interview.id, sessionId: session.sessionId, questionCount: interview.questionCount }
     },
-    onSuccess: ({ interviewId, sessionId }) => {
+    onSuccess: ({ interviewId, sessionId, questionCount }) => {
       setInterview(interviewId)
       setSession(sessionId)
+      setQuestionCount(questionCount)
       setPhase('chat')
     },
     onError: (error: unknown) => {
