@@ -1,24 +1,32 @@
 package wlsh.project.intervai.session.presentation.dto;
 
-import wlsh.project.intervai.session.application.dto.SessionHistoryResult;
-import wlsh.project.intervai.session.domain.SessionStatus;
+import wlsh.project.intervai.question.domain.QuestionType;
+import wlsh.project.intervai.session.domain.SessionHistory;
 
 import java.util.List;
 
 public record SessionHistoryResponse(
-        Long sessionId,
-        SessionStatus sessionStatus,
-        int questionCount,
-        List<SessionHistoryEntryResponse> entries
+        Long questionId,
+        Long answerId,
+        String questionContent,
+        String answerContent,
+        String feedbackContent,
+        QuestionType questionType,
+        Integer questionIndex
 ) {
-    public static SessionHistoryResponse from(SessionHistoryResult result) {
+    public static SessionHistoryResponse from(SessionHistory history) {
         return new SessionHistoryResponse(
-                result.sessionId(),
-                result.sessionStatus(),
-                result.questionCount(),
-                result.entries().stream()
-                        .map(SessionHistoryEntryResponse::from)
-                        .toList()
+                history.questionId(),
+                history.answerId(),
+                history.questionContent(),
+                history.answerContent(),
+                history.feedbackContent(),
+                history.getQuestionType(),
+                history.questionIndex()
         );
+    }
+
+    public static List<SessionHistoryResponse> from(List<SessionHistory> histories) {
+        return histories.stream().map(SessionHistoryResponse::from).toList();
     }
 }
