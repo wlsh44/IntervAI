@@ -61,7 +61,7 @@ public class SessionHistoryService {
 
         List<Long> answerIds = sortedAnswers.stream().map(AnswerEntity::getId).toList();
         // P2: use merge function to tolerate duplicate feedback rows
-        Map<Long, String> feedbackByAnswerId = feedbackRepository.findByAnswerIdIn(answerIds).stream()
+        Map<Long, String> feedbackByAnswerId = feedbackRepository.findByAnswerIdInAndStatus(answerIds, EntityStatus.ACTIVE).stream()
                 .collect(Collectors.toMap(
                         FeedbackEntity::getAnswerId,
                         FeedbackEntity::getFeedbackContent,
