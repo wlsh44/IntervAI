@@ -29,10 +29,13 @@ const InterviewChatScreen = () => {
   const [nextQuestionFetchFailed, setNextQuestionFetchFailed] = useState(false)
   // P3: ref로 중복 처리 방지 (React StrictMode에서 effect가 두 번 실행되어도 안전)
   const appendedQuestionIds = useRef(new Set<number>())
+  // hasNext: false인 질문(마지막 질문)에 답변하면 /questions/current 대신 /sessions/finish 호출
+  const isLastQuestion = useRef(false)
 
   const appendAiQuestion = useCallback(
     (currentInterviewId: number) => {
       setNextQuestionFetchFailed(false)
+      isLastQuestion.current = false
       queryClient
         .fetchQuery({
           queryKey: queryKeys.interview.currentQuestion(currentInterviewId),
@@ -53,12 +56,12 @@ const InterviewChatScreen = () => {
           }
           setMessages((prev) => [...prev, aiMsg])
           setPendingQuestionId(question.questionId)
-          // P2: 본 질문일 때만 카운터 증가 (꼬리 질문은 questionCount에 포함되지 않음)
+          // 본 질문일 때만 카운터 증가 (꼬리 질문은 questionCount에 포함되지 않음)
           if (question.questionType === QuestionType.QUESTION) {
             incrementQuestionIndex()
           }
-          // P1: hasNext: false는 "마지막 질문"을 의미하지 "완료"를 의미하지 않음.
-          //     allCompleted는 답변 제출 후 ALL_QUESTIONS_ANSWERED 에러 시에만 세팅.
+          // hasNext: false → 마지막 질문. 답변 후 /questions/current 대신 /sessions/finish 호출
+          isLastQuestion.current = !question.hasNext
         })
         .catch((err: unknown) => {
           const apiError = extractApiError(err)
@@ -99,7 +102,12 @@ const InterviewChatScreen = () => {
       setPendingQuestionId(null)
 
       if (interviewId !== null) {
-        appendAiQuestion(interviewId)
+        if (isLastQuestion.current) {
+          // 마지막 질문 답변 완료 → 바로 세션 종료
+          finish(interviewId)
+        } else {
+          appendAiQuestion(interviewId)
+        }
       }
     },
   })
