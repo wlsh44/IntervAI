@@ -1,9 +1,12 @@
-package wlsh.project.intervai.session.domain;
+package wlsh.project.intervai.session.application.dto;
 
-public interface SessionHistory {
+import wlsh.project.intervai.question.domain.QuestionType;
+
+public interface SessionHistoryDto {
     Long getQuestionId();
     Long getAnswerId();
-    String getFeedbackContent();
+    QuestionType getQuestionType();
+    Integer getQuestionIndex();
     String getQuestionContent();
-    String get
+    String getAnswerContent();
 }

@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import wlsh.project.intervai.common.auth.domain.UserInfo;
 import wlsh.project.intervai.interview.presentation.dto.CreateSessionResponse;
 import wlsh.project.intervai.session.application.InterviewSessionService;
-import wlsh.project.intervai.session.application.SessionHistoryService;
-import wlsh.project.intervai.session.application.dto.SessionHistoryResult;
 import wlsh.project.intervai.session.domain.InterviewSession;
+import wlsh.project.intervai.session.domain.SessionHistory;
 import wlsh.project.intervai.session.presentation.dto.SessionHistoryResponse;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/interviews/{interviewId}/sessions")
@@ -23,7 +24,6 @@ import wlsh.project.intervai.session.presentation.dto.SessionHistoryResponse;
 public class InterviewSessionController {
 
     private final InterviewSessionService interviewSessionService;
-    private final SessionHistoryService sessionHistoryService;
 
     @PostMapping
     public ResponseEntity<CreateSessionResponse> createSession(
@@ -43,10 +43,10 @@ public class InterviewSessionController {
     }
 
     @GetMapping("/history")
-    public ResponseEntity<SessionHistoryResponse> getHistory(
+    public ResponseEntity<List<SessionHistoryResponse>> getHistory(
             @AuthenticationPrincipal UserInfo userInfo,
             @PathVariable Long interviewId) {
-        SessionHistoryResult result = sessionHistoryService.getHistory(userInfo.userId(), interviewId);
+        List<SessionHistory> result = interviewSessionService.findSessionHistory(userInfo.userId(), interviewId);
         return ResponseEntity.ok(SessionHistoryResponse.from(result));
     }
 }
