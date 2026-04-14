@@ -678,6 +678,77 @@ POST /api/interviews/{interviewId}/sessions/finish
 
 ---
 
+### 세션 히스토리 조회
+
+```
+GET /api/interviews/{interviewId}/sessions/history
+```
+
+**인증**: 필요 (본인 면접만 가능)
+
+면접 세션의 질문/답변/피드백 전체 기록을 반환한다. IN_PROGRESS 및 COMPLETED 세션 모두 조회 가능하다.
+
+**Path Parameters**
+
+| 파라미터 | 타입 | 설명 |
+|---------|------|------|
+| `interviewId` | Long | 면접 ID |
+
+**Response** `200 OK`
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `sessionId` | Long | 세션 ID |
+| `sessionStatus` | SessionStatus | 세션 상태 (IN_PROGRESS / COMPLETED) |
+| `questionCount` | Integer | 면접 설정의 본 질문 수 |
+| `entries` | SessionHistoryEntry[] | 질문-답변-피드백 목록 (생성 순서) |
+
+**SessionHistoryEntry**
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `questionId` | Long | 질문 ID |
+| `question` | String | 질문 내용 |
+| `questionType` | QuestionType | QUESTION / FOLLOW_UP |
+| `answer` | String \| null | 답변 내용 (미답변 시 null) |
+| `feedback` | String \| null | 피드백 내용 (피드백 없는 경우 null) |
+
+**에러**
+
+| ErrorCode | HTTP | 설명 |
+|-----------|------|------|
+| `INTERVIEW_NOT_FOUND` | 404 | 면접 없음 |
+| `INTERVIEW_ACCESS_DENIED` | 403 | 타인 면접 접근 |
+| `SESSION_NOT_FOUND` | 404 | 세션 없음 |
+
+**예시**
+
+```json
+{
+  "sessionId": 1,
+  "sessionStatus": "IN_PROGRESS",
+  "questionCount": 5,
+  "entries": [
+    {
+      "questionId": 1,
+      "question": "Java의 GC 동작 방식을 설명해주세요.",
+      "questionType": "QUESTION",
+      "answer": "GC는 힙 메모리에서 사용되지 않는 객체를 자동으로 제거합니다.",
+      "feedback": "기본 개념은 맞지만 GC 알고리즘 종류(G1, ZGC 등)도 언급하면 좋겠습니다."
+    },
+    {
+      "questionId": 2,
+      "question": "Minor GC와 Major GC의 차이점은 무엇인가요?",
+      "questionType": "FOLLOW_UP",
+      "answer": null,
+      "feedback": null
+    }
+  ]
+}
+```
+
+---
+
 ## 면접 목록 조회
 
 ### 면접 목록 조회
