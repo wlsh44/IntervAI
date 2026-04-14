@@ -37,27 +37,36 @@ const RecentHistorySection = ({ items }: RecentHistorySectionProps) => {
         <p className="text-[#131b2e]/40 text-center py-8">아직 면접 기록이 없습니다</p>
       ) : (
         <ul className="space-y-3">
-          {items.map((item) => (
-            <li
-              key={item.id}
-              className="flex items-center justify-between p-4 bg-white rounded-xl border border-[#e2e7ff] hover:bg-[#faf8ff]"
-            >
-              <div>
-                <p className="text-[#131b2e] font-medium">
-                  {INTERVIEW_TYPE_LABEL[item.interviewType]}
-                </p>
-                <p className="text-sm text-[#131b2e]/50 mt-0.5">{formatDate(item.createdAt)}</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <span
-                  className={`text-xs font-medium px-2 py-1 rounded-full ${SESSION_STATUS_COLOR[item.sessionStatus]}`}
+          {items.map((item) => {
+            const to =
+              item.sessionStatus === SessionStatus.IN_PROGRESS
+                ? `/interview/${item.id}`
+                : `/interviews/${item.id}/result`
+
+            return (
+              <li key={item.id}>
+                <Link
+                  to={to}
+                  className="flex items-center justify-between p-4 bg-white rounded-xl border border-[#e2e7ff] hover:bg-[#faf8ff] transition-colors"
                 >
-                  {SESSION_STATUS_LABEL[item.sessionStatus]}
-                </span>
-                <span className="text-[#4648d4] text-lg">›</span>
-              </div>
-            </li>
-          ))}
+                  <div>
+                    <p className="text-[#131b2e] font-medium">
+                      {INTERVIEW_TYPE_LABEL[item.interviewType]}
+                    </p>
+                    <p className="text-sm text-[#131b2e]/50 mt-0.5">{formatDate(item.createdAt)}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`text-xs font-medium px-2 py-1 rounded-full ${SESSION_STATUS_COLOR[item.sessionStatus]}`}
+                    >
+                      {SESSION_STATUS_LABEL[item.sessionStatus]}
+                    </span>
+                    <span className="text-[#4648d4] text-lg">›</span>
+                  </div>
+                </Link>
+              </li>
+            )
+          })}
         </ul>
       )}
     </div>
