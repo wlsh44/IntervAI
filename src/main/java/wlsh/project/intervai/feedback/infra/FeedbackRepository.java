@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface FeedbackRepository extends JpaRepository<FeedbackEntity, Long> {
 
-    List<FeedbackEntity> findByAnswerIdInAndStatus(List<Long> answerIds, EntityStatus status);
+    List<FeedbackEntity> findByAnswerIdInAndStatusOrderByIdDesc(List<Long> answerIds, EntityStatus status);
 }
 
