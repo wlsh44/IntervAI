@@ -8,6 +8,7 @@ import InterviewPage from '../features/interview/pages/InterviewPage'
 import ProfilePage from '../features/profile/pages/ProfilePage'
 import NotFoundPage from '../shared/pages/NotFoundPage'
 import HistoryPage from '../shared/pages/HistoryPage'
+import InterviewResultPage from '../shared/pages/InterviewResultPage'
 
 const Router = () => {
   return (
@@ -21,6 +22,7 @@ const Router = () => {
           <Route path="/interview" element={<InterviewPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/history" element={<HistoryPage />} />
+          <Route path="/interviews/:interviewId/result" element={<InterviewResultPage />} />
         </Route>
       </Route>
 
