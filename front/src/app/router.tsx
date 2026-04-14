@@ -5,6 +5,7 @@ import LoginPage from '../features/auth/pages/LoginPage'
 import RegisterPage from '../features/auth/pages/RegisterPage'
 import DashboardPage from '../shared/pages/DashboardPage'
 import InterviewPage from '../features/interview/pages/InterviewPage'
+import InterviewSessionPage from '../features/interview/pages/InterviewSessionPage'
 import ProfilePage from '../features/profile/pages/ProfilePage'
 import NotFoundPage from '../shared/pages/NotFoundPage'
 import HistoryPage from '../shared/pages/HistoryPage'
@@ -20,6 +21,7 @@ const Router = () => {
         <Route element={<AppLayout />}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/interview" element={<InterviewPage />} />
+          <Route path="/interview/:interviewId" element={<InterviewSessionPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/interviews/:interviewId/result" element={<InterviewResultPage />} />
