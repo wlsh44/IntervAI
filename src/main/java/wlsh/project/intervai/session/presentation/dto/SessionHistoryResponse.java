@@ -21,7 +21,7 @@ public record SessionHistoryResponse(
                 history.questionContent(),
                 history.answerContent(),
                 history.feedbackContent(),
-                history.getQuestionType(),
+                history.questionType(),
                 history.questionIndex()
         );
     }
