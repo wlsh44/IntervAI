@@ -11,7 +11,7 @@ public record SessionHistory(
         String questionContent,
         String answerContent,
         String feedbackContent,
-        QuestionType getQuestionType,
+        QuestionType questionType,
         Integer questionIndex
 ) {
 

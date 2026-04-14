@@ -32,12 +32,12 @@ public class SessionHistoryFinder {
                 .map(SessionHistoryDto::getAnswerId)
                 .filter(Objects::nonNull)
                 .toList();
-        Map<Long, FeedbackEntity> feedbacks = feedbackRepository.findByAnswerIdInAndStatusOrderByIdDesc(answerIds, EntityStatus.ACTIVE)
+        Map<Long, FeedbackEntity> feedbacks = feedbackRepository.findByAnswerIdInAndStatus(answerIds, EntityStatus.ACTIVE)
                 .stream()
                 .collect(Collectors.toMap(
                         FeedbackEntity::getAnswerId,
                         Function.identity(),
-                        (mostRecent, older) -> mostRecent  // keep highest id (most recent) on duplicate
+                        (existing, duplicate) -> existing
                 ));
 
         return sessionQuestions.stream()
