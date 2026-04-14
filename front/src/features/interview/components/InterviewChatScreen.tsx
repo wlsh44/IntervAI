@@ -25,11 +25,14 @@ const InterviewChatScreen = () => {
   const [allCompleted, setAllCompleted] = useState(false)
   const [pendingQuestionId, setPendingQuestionId] = useState<number | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  // 다음 질문 로드 실패 시 재시도 버튼 표시용
+  const [nextQuestionFetchFailed, setNextQuestionFetchFailed] = useState(false)
   // P3: ref로 중복 처리 방지 (React StrictMode에서 effect가 두 번 실행되어도 안전)
   const appendedQuestionIds = useRef(new Set<number>())
 
   const appendAiQuestion = useCallback(
     (currentInterviewId: number) => {
+      setNextQuestionFetchFailed(false)
       queryClient
         .fetchQuery({
           queryKey: queryKeys.interview.currentQuestion(currentInterviewId),
@@ -64,8 +67,9 @@ const InterviewChatScreen = () => {
           } else if (apiError.code === ApiErrorCode.ALL_QUESTIONS_ANSWERED) {
             setAllCompleted(true)
           } else {
-            // P2: 그 외 에러(네트워크 오류, INTERVIEW_NOT_FOUND 등)는 토스트로 안내
+            // P1: 그 외 에러(네트워크 오류, INTERVIEW_NOT_FOUND 등) — 토스트 + 재시도 버튼 표시
             toast(getErrorMessage(apiError.code), 'error')
+            setNextQuestionFetchFailed(true)
           }
         })
     },
@@ -140,7 +144,18 @@ const InterviewChatScreen = () => {
           </div>
         )}
 
-        {!allCompleted && (
+        {!allCompleted && nextQuestionFetchFailed && (
+          <div className="px-4 pb-3 flex justify-center">
+            <button
+              onClick={() => interviewId !== null && appendAiQuestion(interviewId)}
+              className="text-sm text-[#4648d4] border border-[#4648d4] rounded px-4 py-2 hover:bg-[#eaedff] transition-colors"
+            >
+              다음 질문 다시 불러오기
+            </button>
+          </div>
+        )}
+
+        {!allCompleted && !nextQuestionFetchFailed && (
           <ChatInputArea
             onSubmit={handleSubmit}
             isPending={isSubmitting}
