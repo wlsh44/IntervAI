@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import wlsh.project.intervai.common.entity.EntityStatus;
 import wlsh.project.intervai.question.domain.QuestionType;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface QuestionRepository extends JpaRepository<QuestionEntity, Long> {
@@ -15,5 +16,7 @@ public interface QuestionRepository extends JpaRepository<QuestionEntity, Long> 
 
     Optional<QuestionEntity> findFirstBySessionIdAndQuestionTypeAndStatusOrderByIdDesc(
             Long sessionId, QuestionType questionType, EntityStatus status);
+
+    List<QuestionEntity> findBySessionIdAndStatusOrderByIdAsc(Long sessionId, EntityStatus status);
 
 }
