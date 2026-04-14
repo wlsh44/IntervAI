@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 import wlsh.project.intervai.common.auth.domain.UserInfo;
 import wlsh.project.intervai.interview.presentation.dto.CreateSessionResponse;
 import wlsh.project.intervai.session.application.InterviewSessionService;
+import wlsh.project.intervai.session.application.SessionHistoryService;
+import wlsh.project.intervai.session.application.dto.SessionHistoryResult;
 import wlsh.project.intervai.session.domain.InterviewSession;
+import wlsh.project.intervai.session.presentation.dto.SessionHistoryResponse;
 
 @RestController
 @RequestMapping("/api/interviews/{interviewId}/sessions")
@@ -19,6 +23,7 @@ import wlsh.project.intervai.session.domain.InterviewSession;
 public class InterviewSessionController {
 
     private final InterviewSessionService interviewSessionService;
+    private final SessionHistoryService sessionHistoryService;
 
     @PostMapping
     public ResponseEntity<CreateSessionResponse> createSession(
@@ -35,5 +40,13 @@ public class InterviewSessionController {
             @PathVariable Long interviewId) {
         interviewSessionService.finish(userInfo.userId(), interviewId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<SessionHistoryResponse> getHistory(
+            @AuthenticationPrincipal UserInfo userInfo,
+            @PathVariable Long interviewId) {
+        SessionHistoryResult result = sessionHistoryService.getHistory(userInfo.userId(), interviewId);
+        return ResponseEntity.ok(SessionHistoryResponse.from(result));
     }
 }
