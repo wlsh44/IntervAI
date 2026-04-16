@@ -13,11 +13,12 @@ const InterviewSessionPage = () => {
     const id = Number(interviewIdParam)
     if (!interviewIdParam || isNaN(id)) return
 
-    // 직접 URL 접근 시 store 초기화 후 chat 진입
     if (interviewId !== id) {
+      // 다른 세션으로 이동 시 항상 chat으로 초기화
       setInterview(id)
-    }
-    if (phase === 'setup' || phase === 'generating') {
+      setPhase('chat')
+    } else if (phase === 'setup' || phase === 'generating') {
+      // 동일 세션 직접 URL 접근 시 chat 진입
       setPhase('chat')
     }
   }, [interviewIdParam, interviewId, phase, setInterview, setPhase])

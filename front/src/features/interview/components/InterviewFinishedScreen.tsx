@@ -12,6 +12,7 @@ const InterviewFinishedScreen = () => {
 
   const handleNewInterview = () => {
     resetInterview()
+    navigate('/interview')
   }
 
   return (
