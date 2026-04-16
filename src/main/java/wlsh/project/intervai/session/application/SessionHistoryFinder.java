@@ -5,9 +5,9 @@ import org.springframework.stereotype.Component;
 import wlsh.project.intervai.common.entity.EntityStatus;
 import wlsh.project.intervai.feedback.infra.FeedbackEntity;
 import wlsh.project.intervai.feedback.infra.FeedbackRepository;
-import wlsh.project.intervai.question.infra.QuestionRepository;
 import wlsh.project.intervai.session.application.dto.SessionHistoryDto;
 import wlsh.project.intervai.session.domain.SessionHistory;
+import wlsh.project.intervai.session.infra.InterviewSessionRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SessionHistoryFinder {
 
-    private final QuestionRepository questionRepository;
     private final FeedbackRepository feedbackRepository;
+    private final InterviewSessionRepository interviewSessionRepository;
 
     public List<SessionHistory> findSessionHistories(Long interviewId) {
-        List<SessionHistoryDto> sessionQuestions = questionRepository.findSessionHistoryByInterviewId(interviewId, EntityStatus.ACTIVE);
+        List<SessionHistoryDto> sessionQuestions = interviewSessionRepository.findSessionHistoryByInterviewId(interviewId, EntityStatus.ACTIVE);
         if (sessionQuestions.isEmpty()) {
             return List.of();
         }

@@ -22,15 +22,13 @@ import wlsh.project.intervai.question.domain.QuestionType;
 import wlsh.project.intervai.session.application.InterviewSessionManager;
 import wlsh.project.intervai.session.application.dto.SessionHistoryDto;
 import wlsh.project.intervai.session.domain.InterviewSession;
+import wlsh.project.intervai.session.infra.InterviewSessionRepository;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class QuestionRepositoryTest extends IntegrationTest {
-
-    @Autowired
-    private QuestionRepository questionRepository;
 
     @Autowired
     private QuestionManager questionManager;
@@ -43,6 +41,8 @@ class QuestionRepositoryTest extends IntegrationTest {
 
     @Autowired
     private InterviewSessionManager interviewSessionManager;
+    @Autowired
+    private InterviewSessionRepository interviewSessionRepository;
 
     @Test
     @DisplayName("모든 질문에 답변이 있으면 answerId가 채워진다")
@@ -59,7 +59,7 @@ class QuestionRepositoryTest extends IntegrationTest {
         saveAnswer(userId, interview.getId(), session.getId(), q2.getId(), "답변2");
 
         // when
-        List<SessionHistoryDto> result = questionRepository.findSessionHistoryByInterviewId(
+        List<SessionHistoryDto> result = interviewSessionRepository.findSessionHistoryByInterviewId(
                 interview.getId(), EntityStatus.ACTIVE);
 
         // then
@@ -82,7 +82,7 @@ class QuestionRepositoryTest extends IntegrationTest {
         saveAnswer(userId, interview.getId(), session.getId(), q1.getId(), "답변1");
 
         // when
-        List<SessionHistoryDto> result = questionRepository.findSessionHistoryByInterviewId(
+        List<SessionHistoryDto> result = interviewSessionRepository.findSessionHistoryByInterviewId(
                 interview.getId(), EntityStatus.ACTIVE);
 
         // then
@@ -115,12 +115,12 @@ class QuestionRepositoryTest extends IntegrationTest {
         questionManager.create(interview2.getId(), session2.getId(), "면접2 질문", QuestionType.QUESTION, 0);
 
         // when
-        List<SessionHistoryDto> result = questionRepository.findSessionHistoryByInterviewId(
+        List<SessionHistoryDto> result = interviewSessionRepository.findSessionHistoryByInterviewId(
                 interview1.getId(), EntityStatus.ACTIVE);
 
         // then
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getQuestionContent()).isEqualTo("면접1 질문");
+        assertThat(result.getFirst().getQuestionContent()).isEqualTo("면접1 질문");
     }
 
     private Interview createInterview(Long userId) {
