@@ -13,15 +13,11 @@ const ChatMessageList = ({ messages, onToggleFeedback }: ChatMessageListProps) =
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+  }, [messages.length])
 
   return (
     <div
-      className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4"
-      style={{
-        scrollbarWidth: 'thin',
-        scrollbarColor: '#c7cbf5 #eaedff',
-      }}
+      className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4 [scrollbar-width:thin] [scrollbar-color:#c7cbf5_#eaedff] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-[#eaedff] [&::-webkit-scrollbar-thumb]:bg-[#c7cbf5] [&::-webkit-scrollbar-thumb]:rounded-full"
     >
       {messages.map((message) =>
         message.role === 'ai' ? (
