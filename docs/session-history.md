@@ -9,7 +9,16 @@
 
 | 단계 | 상태 |
 |------|------|
-| Stage 5 — 세션 기록 저장 및 히스토리 UI | ⬜ 예정 |
+| Stage 5 — 세션 기록 저장 및 히스토리 UI | 🟡 진행 중 |
+
+### 완료된 항목
+
+- [x] `GET /api/interviews/{interviewId}/sessions/history` — 세션 히스토리 조회 API 구현
+  - 질문/답변/피드백 JOIN 쿼리 (JPQL left join)
+  - soft-delete (`EntityStatus.ACTIVE`) 필터
+  - 꼬리 질문 포함 (`QuestionType.FOLLOW_UP`, `questionIndex = -1`)
+  - 미답변 질문 포함 (`answerId = null`)
+  - 중복 피드백 방지 (`Collectors.toMap` merge 처리)
 
 ## 요구사항
 ### 기능 요구사항
