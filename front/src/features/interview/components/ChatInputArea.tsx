@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Loader2, Send } from 'lucide-react'
 
 interface ChatInputAreaProps {
@@ -9,6 +9,14 @@ interface ChatInputAreaProps {
 
 const ChatInputArea = ({ onSubmit, isPending, disabled = false }: ChatInputAreaProps) => {
   const [value, setValue] = useState('')
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // isPending이 false로 전환되면 (API 응답 후) 포커스 복원
+  useEffect(() => {
+    if (!isPending && !disabled) {
+      textareaRef.current?.focus()
+    }
+  }, [isPending, disabled])
 
   const handleSubmit = () => {
     const trimmed = value.trim()
@@ -28,6 +36,7 @@ const ChatInputArea = ({ onSubmit, isPending, disabled = false }: ChatInputAreaP
     <div className="border-t border-[#c7cbf5] bg-white px-4 py-3">
       <div className="flex items-end gap-2 bg-[#faf8ff] border border-[#c7cbf5] rounded-xl px-4 py-3">
         <textarea
+          ref={textareaRef}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
