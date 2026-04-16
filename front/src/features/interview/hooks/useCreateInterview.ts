@@ -49,12 +49,8 @@ export const useCreateInterview = () => {
 
       if (partial) {
         // interview+session은 생성됐으나 createQuestions 실패
-        // 면접 페이지로 이동하여 상태 가시화 — 사용자가 재시도 가능
-        setInterview(partial.interviewId)
-        setSession(partial.sessionId)
-        setQuestionCount(partial.questionCount)
-        setPhase('chat')
-        navigate(`/interview/${partial.interviewId}`)
+        // 질문이 없는 채로 chat으로 이동하면 QUESTION_NOT_FOUND 루프에 빠지므로 setup으로 복귀
+        setPhase('setup')
         toast('질문 생성에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error')
       } else {
         // createInterview 또는 createSession 실패 — 생성된 서버 상태 없음
