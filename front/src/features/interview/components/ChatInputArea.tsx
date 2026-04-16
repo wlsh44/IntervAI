@@ -18,6 +18,14 @@ const ChatInputArea = ({ onSubmit, isPending, disabled = false }: ChatInputAreaP
     }
   }, [isPending, disabled])
 
+  // value 변경 시 textarea 높이 자동 조정 (최대 150px)
+  useEffect(() => {
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = Math.min(el.scrollHeight, 150) + 'px'
+  }, [value])
+
   const handleSubmit = () => {
     const trimmed = value.trim()
     if (!trimmed || isPending || disabled) return
@@ -43,8 +51,7 @@ const ChatInputArea = ({ onSubmit, isPending, disabled = false }: ChatInputAreaP
           placeholder="답변을 입력하세요..."
           aria-label="답변 입력"
           disabled={isPending || disabled}
-          rows={3}
-          className="flex-1 resize-none bg-transparent text-sm text-[#131b2e] placeholder-[#767586] focus:outline-none disabled:opacity-50"
+          className="flex-1 resize-none bg-transparent text-sm text-[#131b2e] placeholder-[#767586] focus:outline-none disabled:opacity-50 overflow-y-auto"
         />
         <button
           onClick={handleSubmit}
