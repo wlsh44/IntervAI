@@ -24,6 +24,9 @@ public class QuestionFinder {
 
     public NextQuestionResult findCurrent(Long sessionId, int currentMainQuestionIdx,
                                           int followUpCount, int totalQuestionCount) {
+        if (followUpCount == 0 && currentMainQuestionIdx >= totalQuestionCount) {
+            throw new CustomException(ErrorCode.ALL_QUESTIONS_ANSWERED);
+        }
         Question question = followUpCount > 0
                 ? findLatestFollowUp(sessionId)
                 : findMainQuestion(sessionId, currentMainQuestionIdx);
