@@ -102,9 +102,13 @@ const InterviewChatScreen = () => {
       .then((history) => {
         const restoredMessages: ChatMessage[] = []
         let mainQuestionCount = 0
+        let hasUnanswered = false
 
         for (const item of history) {
-          if (item.answerId === null) continue // 미답변 — appendAiQuestion이 처리
+          if (item.answerId === null) {
+            hasUnanswered = true
+            continue // 미답변 — appendAiQuestion이 처리
+          }
 
           appendedQuestionIds.current.add(item.questionId)
           restoredMessages.push({
@@ -128,11 +132,19 @@ const InterviewChatScreen = () => {
 
         if (restoredMessages.length > 0) setMessages(restoredMessages)
         if (mainQuestionCount > 0) setCurrentQuestionIndex(mainQuestionCount)
+
+        setIsLoadingHistory(false)
+
+        // 미답변 질문이 있거나 히스토리가 없으면 현재 질문 fetch
+        // 모두 답변됐으면 세션 미종료 상태 → 완료 배너 표시
+        if (history.length === 0 || hasUnanswered) {
+          appendAiQuestion(interviewId)
+        } else {
+          setAllCompleted(true)
+        }
       })
       .catch(() => {
         // 히스토리 로드 실패 시 빈 상태로 진행
-      })
-      .finally(() => {
         setIsLoadingHistory(false)
         appendAiQuestion(interviewId)
       })
