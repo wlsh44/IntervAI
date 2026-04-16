@@ -118,6 +118,53 @@ class InterviewSessionServiceTest extends IntegrationTest {
     }
 
     @Test
+    @DisplayName("히스토리는 부모 질문 다음에 꼬리 질문이 이어지도록 정렬된다")
+    void findSessionHistory_ordersFollowUpsAfterParentQuestion() {
+        Long userId = 1L;
+        Interview interview = createInterview(userId);
+        InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
+
+        Question q1 = questionManager.create(interview.getId(), session.getId(), "질문1", QuestionType.QUESTION, 0);
+        Question q2 = questionManager.create(interview.getId(), session.getId(), "질문2", QuestionType.QUESTION, 1);
+        Question followUp1 = questionManager.createFollowUp(interview.getId(), session.getId(), q1.getId(), "꼬리질문1")
+                .orElseThrow();
+        questionManager.createFollowUp(interview.getId(), session.getId(), followUp1.getId(), "꼬리질문2")
+                .orElseThrow();
+
+        List<SessionHistory> result = interviewSessionService.findSessionHistory(userId, interview.getId());
+
+        assertThat(result)
+                .extracting(SessionHistory::questionContent)
+                .containsExactly("질문1", "꼬리질문1", "꼬리질문2", "질문2");
+    }
+
+    @Test
+    @DisplayName("부모 정보가 없어도 answerId 순서대로 대화 흐름을 복원한다")
+    void findSessionHistory_ordersByAnswerIdWhenParentIsMissing() {
+        Long userId = 1L;
+        Interview interview = createInterview(userId);
+        InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
+
+        Question q1 = questionManager.create(interview.getId(), session.getId(), "질문1", QuestionType.QUESTION, 0);
+        Question q2 = questionManager.create(interview.getId(), session.getId(), "질문2", QuestionType.QUESTION, 1);
+        Question followUp1 = questionManager.createFollowUp(interview.getId(), session.getId(), null, "꼬리질문1")
+                .orElseThrow();
+        Question followUp2 = questionManager.createFollowUp(interview.getId(), session.getId(), null, "꼬리질문2")
+                .orElseThrow();
+
+        saveAnswer(userId, interview.getId(), session.getId(), q1.getId(), "답변1");
+        saveAnswer(userId, interview.getId(), session.getId(), followUp1.getId(), "답변1-1");
+        saveAnswer(userId, interview.getId(), session.getId(), followUp2.getId(), "답변1-2");
+        saveAnswer(userId, interview.getId(), session.getId(), q2.getId(), "답변2");
+
+        List<SessionHistory> result = interviewSessionService.findSessionHistory(userId, interview.getId());
+
+        assertThat(result)
+                .extracting(SessionHistory::questionContent)
+                .containsExactly("질문1", "꼬리질문1", "꼬리질문2", "질문2");
+    }
+
+    @Test
     @DisplayName("타인의 면접 히스토리 조회 시 INTERVIEW_ACCESS_DENIED 예외가 발생한다")
     void findSessionHistory_otherUserInterview_throwsAccessDenied() {
         // given

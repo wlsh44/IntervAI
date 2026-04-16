@@ -4,6 +4,7 @@ import wlsh.project.intervai.question.domain.QuestionType;
 
 public interface SessionHistoryDto {
     Long getQuestionId();
+    Long getParentQuestionId();
     Long getAnswerId();
     QuestionType getQuestionType();
     Integer getQuestionIndex();

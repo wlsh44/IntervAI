@@ -32,6 +32,8 @@ public class QuestionEntity extends BaseEntity {
     @Column(nullable = false)
     private Long sessionId;
 
+    private Long parentQuestionId;
+
     @Lob
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
@@ -43,10 +45,11 @@ public class QuestionEntity extends BaseEntity {
     @Column(nullable = false)
     private int questionIndex;
 
-    private QuestionEntity(Long interviewId, Long sessionId,
+    private QuestionEntity(Long interviewId, Long sessionId, Long parentQuestionId,
                            String content, QuestionType questionType, int questionIndex) {
         this.interviewId = interviewId;
         this.sessionId = sessionId;
+        this.parentQuestionId = parentQuestionId;
         this.content = content;
         this.questionType = questionType;
         this.questionIndex = questionIndex;
@@ -54,16 +57,17 @@ public class QuestionEntity extends BaseEntity {
 
     public static QuestionEntity from(Question question) {
         return new QuestionEntity(question.getInterviewId(),
-                question.getSessionId(), question.getContent(), question.getQuestionType(),
+                question.getSessionId(), question.getParentQuestionId(),
+                question.getContent(), question.getQuestionType(),
                 question.getQuestionIndex());
     }
 
-    public static QuestionEntity createFollowUp(Long interviewId, Long sessionId,
+    public static QuestionEntity createFollowUp(Long interviewId, Long sessionId, Long parentQuestionId,
                                                 String content) {
-        return new QuestionEntity(interviewId, sessionId, content, QuestionType.FOLLOW_UP, -1);
+        return new QuestionEntity(interviewId, sessionId, parentQuestionId, content, QuestionType.FOLLOW_UP, -1);
     }
 
     public Question toDomain() {
-        return Question.of(id, interviewId, sessionId, content, questionType, questionIndex);
+        return Question.of(id, interviewId, sessionId, parentQuestionId, content, questionType, questionIndex);
     }
 }

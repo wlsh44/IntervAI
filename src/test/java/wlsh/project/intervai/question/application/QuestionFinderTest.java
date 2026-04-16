@@ -65,7 +65,7 @@ class QuestionFinderTest extends IntegrationTest {
         Interview interview = createInterview(userId, 5);
         InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
         questionManager.create(interview.getId(), session.getId(), "본 질문 내용", QuestionType.QUESTION, 0);
-        questionManager.createFollowUp(interview.getId(), session.getId(), "꼬리 질문 내용");
+        questionManager.createFollowUp(interview.getId(), session.getId(), null, "꼬리 질문 내용");
 
         // when
         NextQuestionResult result = questionFinder.findCurrent(session.getId(), 0, 1, 5);
@@ -83,8 +83,8 @@ class QuestionFinderTest extends IntegrationTest {
         Interview interview = createInterview(userId, 5);
         InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
         questionManager.create(interview.getId(), session.getId(), "본 질문", QuestionType.QUESTION, 0);
-        questionManager.createFollowUp(interview.getId(), session.getId(), "꼬리 질문 1");
-        questionManager.createFollowUp(interview.getId(), session.getId(), "꼬리 질문 2");
+        questionManager.createFollowUp(interview.getId(), session.getId(), null, "꼬리 질문 1");
+        questionManager.createFollowUp(interview.getId(), session.getId(), null, "꼬리 질문 2");
 
         // when
         NextQuestionResult result = questionFinder.findCurrent(session.getId(), 0, 2, 5);
