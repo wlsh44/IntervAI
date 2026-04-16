@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
 import { useInterviewStore } from '../stores/interviewStore'
 import { useSubmitAnswer } from '../hooks/useSubmitAnswer'
 import { useFinishSession } from '../hooks/useFinishSession'
@@ -7,7 +8,7 @@ import { ApiErrorCode, extractApiError, getErrorMessage } from '../../../shared/
 import { useToast } from '../../../shared/components/ui/toastStore'
 import { queryKeys } from '../../../shared/types/queryKeys'
 import { QuestionType } from '../../../shared/types/enums'
-import { getCurrentQuestion } from '../api/interviewApi'
+import { getCurrentQuestion, getSessionHistory } from '../api/interviewApi'
 import ChatHeader from './ChatHeader'
 import ChatMessageList from './ChatMessageList'
 import ChatInputArea from './ChatInputArea'
@@ -16,8 +17,14 @@ import FinishConfirmDialog from './FinishConfirmDialog'
 import type { ChatMessage } from '../types/chat'
 
 const InterviewChatScreen = () => {
-  const { interviewId, questionCount, currentQuestionIndex, setPhase, incrementQuestionIndex } =
-    useInterviewStore()
+  const {
+    interviewId,
+    questionCount,
+    currentQuestionIndex,
+    setPhase,
+    incrementQuestionIndex,
+    setCurrentQuestionIndex,
+  } = useInterviewStore()
   const queryClient = useQueryClient()
   const { toast } = useToast()
 
@@ -25,6 +32,7 @@ const InterviewChatScreen = () => {
   const [allCompleted, setAllCompleted] = useState(false)
   const [pendingQuestionId, setPendingQuestionId] = useState<number | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true)
   // 다음 질문 로드 실패 시 재시도 버튼 표시용
   const [nextQuestionFetchFailed, setNextQuestionFetchFailed] = useState(false)
   // P3: ref로 중복 처리 방지 (React StrictMode에서 effect가 두 번 실행되어도 안전)
@@ -81,8 +89,46 @@ const InterviewChatScreen = () => {
 
   useEffect(() => {
     if (interviewId === null) return
-    appendAiQuestion(interviewId)
-    // 마운트 시 한 번만 실행 — interviewId는 chat phase 진입 시 고정됨
+
+    getSessionHistory(interviewId)
+      .then((history) => {
+        const restoredMessages: ChatMessage[] = []
+        let mainQuestionCount = 0
+
+        for (const item of history) {
+          if (item.answerId === null) continue // 미답변 — appendAiQuestion이 처리
+
+          appendedQuestionIds.current.add(item.questionId)
+          restoredMessages.push({
+            id: `ai-${item.questionId}`,
+            role: 'ai',
+            content: item.questionContent,
+            questionType: item.questionType,
+            questionId: item.questionId,
+          })
+          restoredMessages.push({
+            id: `candidate-${item.answerId}`,
+            role: 'candidate',
+            content: item.answerContent!,
+            feedback: item.feedbackContent ?? undefined,
+            isFeedbackOpen: false,
+          })
+          if (item.questionType === QuestionType.QUESTION) {
+            mainQuestionCount++
+          }
+        }
+
+        if (restoredMessages.length > 0) setMessages(restoredMessages)
+        if (mainQuestionCount > 0) setCurrentQuestionIndex(mainQuestionCount)
+      })
+      .catch(() => {
+        // 히스토리 로드 실패 시 빈 상태로 진행
+      })
+      .finally(() => {
+        setIsLoadingHistory(false)
+        appendAiQuestion(interviewId)
+      })
+    // 마운트 시 한 번만 실행
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -129,6 +175,15 @@ const InterviewChatScreen = () => {
     setIsDialogOpen(false)
     if (interviewId === null) return
     finish(interviewId)
+  }
+
+  if (isLoadingHistory) {
+    return (
+      <div className="flex flex-col items-center justify-center flex-1 gap-3">
+        <Loader2 size={36} className="animate-spin text-[#4648d4]" />
+        <p className="text-sm text-[#767586]">이전 대화 내역을 불러오는 중...</p>
+      </div>
+    )
   }
 
   return (
