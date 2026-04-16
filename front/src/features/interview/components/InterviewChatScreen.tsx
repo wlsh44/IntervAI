@@ -90,6 +90,8 @@ const InterviewChatScreen = () => {
   useEffect(() => {
     if (interviewId === null) return
 
+    let cancelled = false
+
     // interviewId 변경 시 상태 초기화
     setMessages([])
     setAllCompleted(false)
@@ -100,6 +102,8 @@ const InterviewChatScreen = () => {
 
     getSessionHistory(interviewId)
       .then((history) => {
+        if (cancelled) return
+
         const restoredMessages: ChatMessage[] = []
         let mainQuestionCount = 0
         let hasUnanswered = false
@@ -132,7 +136,6 @@ const InterviewChatScreen = () => {
 
         if (restoredMessages.length > 0) setMessages(restoredMessages)
         if (mainQuestionCount > 0) setCurrentQuestionIndex(mainQuestionCount)
-
         setIsLoadingHistory(false)
 
         // 미답변 질문이 있거나 히스토리가 없으면 현재 질문 fetch
@@ -144,10 +147,14 @@ const InterviewChatScreen = () => {
         }
       })
       .catch(() => {
-        // 히스토리 로드 실패 시 빈 상태로 진행
+        if (cancelled) return
         setIsLoadingHistory(false)
         appendAiQuestion(interviewId)
       })
+
+    return () => {
+      cancelled = true
+    }
   }, [interviewId, appendAiQuestion, setCurrentQuestionIndex])
 
   const { mutate: finish, isPending: isFinishing } = useFinishSession()
