@@ -11,7 +11,7 @@
 |------|------|------|
 | Stage 3 — LLM 연동 기본 채팅 | ✅ 완료 | |
 | Stage 4 — 꼬리 질문 + 피드백 | 🔧 진행 중 | followUpQuestion 응답 미포함 |
-| Stage 5 — 세션 기록 저장 | ⬜ 예정 | |
+| Stage 5 — 세션 기록 저장 | 🔧 진행 중 | GET /sessions/history 백엔드 완료, 프런트 복구 UI 예정 |
 
 ## 요구사항
 ### 기능 요구사항
@@ -41,6 +41,11 @@
   - [x] 면접 소유자 검증
   - [x] 세션 IN_PROGRESS 상태 검증 (COMPLETED인 경우 `SESSION_ALREADY_COMPLETED` 400)
   - [x] 세션 상태를 COMPLETED로 업데이트
+- [x] 세션 히스토리 조회 (`GET /api/interviews/{interviewId}/sessions/history`)
+  - [x] 면접 소유자 검증
+  - [x] 세션의 모든 질문/답변/피드백을 생성 순서로 반환
+  - [x] IN_PROGRESS, COMPLETED 모두 조회 가능
+  - [x] 미답변 질문은 answer/feedback null로 반환
 
 ### 비기능 요구사항
 - [x] 질문 목록은 세션 생성 후 별도 API 호출로 전체 생성 후 DB 저장, 프론트에는 1개씩 노출

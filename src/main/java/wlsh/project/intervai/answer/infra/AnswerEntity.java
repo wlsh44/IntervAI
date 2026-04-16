@@ -15,7 +15,9 @@ import wlsh.project.intervai.common.entity.BaseEntity;
 
 @Getter
 @Entity
-@Table(name = "answers")
+@Table(name = "answers", uniqueConstraints = {
+        @jakarta.persistence.UniqueConstraint(name = "uk_answers_question_id", columnNames = {"question_id"})
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AnswerEntity extends BaseEntity {
 

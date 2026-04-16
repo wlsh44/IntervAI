@@ -15,5 +15,4 @@ public interface QuestionRepository extends JpaRepository<QuestionEntity, Long> 
 
     Optional<QuestionEntity> findFirstBySessionIdAndQuestionTypeAndStatusOrderByIdDesc(
             Long sessionId, QuestionType questionType, EntityStatus status);
-
 }

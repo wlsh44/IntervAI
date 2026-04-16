@@ -15,7 +15,9 @@ import wlsh.project.intervai.feedback.domain.Feedback;
 
 @Getter
 @Entity
-@Table(name = "feedbacks")
+@Table(name = "feedbacks", uniqueConstraints = {
+        @jakarta.persistence.UniqueConstraint(name = "uk_feedbacks_answer_id", columnNames = {"answer_id"})
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FeedbackEntity extends BaseEntity {
 
