@@ -75,7 +75,12 @@ const InterviewChatScreen = () => {
           const apiError = extractApiError(err)
           if (apiError.code === ApiErrorCode.SESSION_ALREADY_COMPLETED) {
             setPhase('finished')
-          } else if (apiError.code === ApiErrorCode.ALL_QUESTIONS_ANSWERED) {
+          } else if (
+            apiError.code === ApiErrorCode.ALL_QUESTIONS_ANSWERED ||
+            apiError.code === ApiErrorCode.QUESTION_NOT_FOUND
+          ) {
+            // ALL_QUESTIONS_ANSWERED: 정상 완료 신호
+            // QUESTION_NOT_FOUND: 모든 질문에 답변했지만 세션을 종료하지 않은 채 재진입한 경우 (백엔드 방어 처리 전 fallback)
             setAllCompleted(true)
           } else {
             // P1: 그 외 에러(네트워크 오류, INTERVIEW_NOT_FOUND 등) — 토스트 + 재시도 버튼 표시
