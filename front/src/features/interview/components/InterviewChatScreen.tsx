@@ -15,6 +15,7 @@ import ChatInputArea from './ChatInputArea'
 import AllQuestionsCompletedBanner from './AllQuestionsCompletedBanner'
 import FinishConfirmDialog from './FinishConfirmDialog'
 import type { ChatMessage } from '../types/chat'
+import { orderSessionHistory } from '../utils/sessionHistory'
 
 const InterviewChatScreen = () => {
   const {
@@ -109,10 +110,13 @@ const InterviewChatScreen = () => {
       .then((history) => {
         if (cancelled) return
 
+        const orderedHistory = orderSessionHistory(history)
+        const historyForRestore =
+          orderedHistory.length === history.length ? orderedHistory : history
         const restoredMessages: ChatMessage[] = []
         let mainQuestionCount = 0
 
-        for (const item of history) {
+        for (const item of historyForRestore) {
           if (item.answerId === null) {
             continue // 미답변 — appendAiQuestion이 처리
           }

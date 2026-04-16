@@ -17,12 +17,12 @@ public interface InterviewSessionRepository extends JpaRepository<InterviewSessi
     List<InterviewSessionEntity> findByInterviewIdInAndStatus(List<Long> interviewIds, EntityStatus status);
 
     @Query("""
-            select q.id as questionId, q.content as questionContent,
+            select q.id as questionId, q.parentQuestionId as parentQuestionId, q.content as questionContent,
                    q.questionType as questionType, q.questionIndex as questionIndex,
                    a.id as answerId, a.content as answerContent
             from QuestionEntity q left join AnswerEntity a on q.id = a.questionId and a.status = :status
             where q.interviewId = :interviewId and q.status = :status
-            order by q.id asc
+            order by q.questionIndex asc, q.id asc
             """)
     List<SessionHistoryDto> findSessionHistoryByInterviewId(@Param("interviewId") Long interviewId, @Param("status") EntityStatus status);
 }

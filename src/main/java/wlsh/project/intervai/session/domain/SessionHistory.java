@@ -7,6 +7,7 @@ import wlsh.project.intervai.session.application.dto.SessionHistoryDto;
 
 public record SessionHistory(
         Long questionId,
+        Long parentQuestionId,
         Long answerId,
         String questionContent,
         String answerContent,
@@ -18,6 +19,7 @@ public record SessionHistory(
     public static SessionHistory createSessionHistory(SessionHistoryDto sessionHistoryDto, @Nullable FeedbackEntity feedback) {
         return new SessionHistory(
                 sessionHistoryDto.getQuestionId(),
+                sessionHistoryDto.getParentQuestionId(),
                 sessionHistoryDto.getAnswerId(),
                 sessionHistoryDto.getQuestionContent(),
                 sessionHistoryDto.getAnswerContent(),
