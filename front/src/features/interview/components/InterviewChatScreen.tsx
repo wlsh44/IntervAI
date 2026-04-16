@@ -90,6 +90,14 @@ const InterviewChatScreen = () => {
   useEffect(() => {
     if (interviewId === null) return
 
+    // interviewId 변경 시 상태 초기화
+    setMessages([])
+    setAllCompleted(false)
+    setNextQuestionFetchFailed(false)
+    appendedQuestionIds.current.clear()
+    isLastQuestion.current = false
+    setIsLoadingHistory(true)
+
     getSessionHistory(interviewId)
       .then((history) => {
         const restoredMessages: ChatMessage[] = []
@@ -128,9 +136,7 @@ const InterviewChatScreen = () => {
         setIsLoadingHistory(false)
         appendAiQuestion(interviewId)
       })
-    // 마운트 시 한 번만 실행
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [interviewId, appendAiQuestion, setCurrentQuestionIndex])
 
   const { mutate: finish, isPending: isFinishing } = useFinishSession()
 
@@ -138,7 +144,7 @@ const InterviewChatScreen = () => {
     interviewId,
     onSuccess: (data, content) => {
       const candidateMsg: ChatMessage = {
-        id: crypto.randomUUID(),
+        id: crypto.randomUUID?.() ?? `candidate-${Date.now()}`,
         role: 'candidate',
         content,
         feedback: data.feedback,
@@ -149,8 +155,8 @@ const InterviewChatScreen = () => {
 
       if (interviewId !== null) {
         if (isLastQuestion.current) {
-          // 마지막 질문 답변 완료 → 바로 세션 종료
-          finish(interviewId)
+          // 마지막 질문 답변 완료 → 완료 배너 표시 (피드백 확인 후 사용자가 종료)
+          setAllCompleted(true)
         } else {
           appendAiQuestion(interviewId)
         }
