@@ -42,21 +42,6 @@ export interface CreateQuestionsResponse {
   questions: QuestionItem[]
 }
 
-export const createInterview = async (body: CreateInterviewRequest): Promise<CreateInterviewResponse> => {
-  const res = await httpClient.post<CreateInterviewResponse>(API_PATHS.interviews.create, body)
-  return res.data
-}
-
-export const createSession = async (interviewId: number): Promise<CreateSessionResponse> => {
-  const res = await httpClient.post<CreateSessionResponse>(API_PATHS.interviews.sessions(interviewId))
-  return res.data
-}
-
-export const createQuestions = async (interviewId: number): Promise<CreateQuestionsResponse> => {
-  const res = await httpClient.post<CreateQuestionsResponse>(API_PATHS.interviews.questions(interviewId))
-  return res.data
-}
-
 export interface CurrentQuestionResponse {
   questionId: number
   question: string
@@ -73,6 +58,35 @@ export interface SubmitAnswerResponse {
   feedback: string
 }
 
+export interface SessionHistoryItem {
+  questionId: number
+  answerId: number | null
+  questionContent: string
+  answerContent: string | null
+  feedbackContent: string | null
+  questionType: QuestionType
+  questionIndex: number
+}
+
+export const createInterview = async (body: CreateInterviewRequest): Promise<CreateInterviewResponse> => {
+  const res = await httpClient.post<CreateInterviewResponse>(API_PATHS.interviews.create, body)
+  return res.data
+}
+
+export const createSession = async (interviewId: number): Promise<CreateSessionResponse> => {
+  const res = await httpClient.post<CreateSessionResponse>(API_PATHS.interviews.sessions(interviewId))
+  return res.data
+}
+
+export const finishSession = async (interviewId: number): Promise<void> => {
+  await httpClient.post(API_PATHS.interviews.finishSession(interviewId))
+}
+
+export const createQuestions = async (interviewId: number): Promise<CreateQuestionsResponse> => {
+  const res = await httpClient.post<CreateQuestionsResponse>(API_PATHS.interviews.questions(interviewId))
+  return res.data
+}
+
 export const getCurrentQuestion = async (interviewId: number): Promise<CurrentQuestionResponse> => {
   const res = await httpClient.get<CurrentQuestionResponse>(API_PATHS.interviews.currentQuestion(interviewId))
   return res.data
@@ -86,6 +100,7 @@ export const submitAnswer = async (
   return res.data
 }
 
-export const finishSession = async (interviewId: number): Promise<void> => {
-  await httpClient.post(API_PATHS.interviews.finish(interviewId))
+export const getSessionHistory = async (interviewId: number): Promise<SessionHistoryItem[]> => {
+  const res = await httpClient.get<SessionHistoryItem[]>(API_PATHS.interviews.history(interviewId))
+  return res.data
 }

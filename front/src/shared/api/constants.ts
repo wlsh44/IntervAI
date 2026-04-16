@@ -14,10 +14,12 @@ export const API_PATHS = {
   interviews: {
     list: '/api/interviews',
     create: '/api/interviews',
+    finish: (interviewId: number) => `/api/interviews/${interviewId}/finish`,
     sessions: (interviewId: number) => `/api/interviews/${interviewId}/sessions`,
+    finishSession: (interviewId: number) => `/api/interviews/${interviewId}/sessions/finish`,
+    history: (interviewId: number) => `/api/interviews/${interviewId}/sessions/history`,
     questions: (interviewId: number) => `/api/interviews/${interviewId}/questions`,
     currentQuestion: (interviewId: number) => `/api/interviews/${interviewId}/questions/current`,
     answers: (interviewId: number) => `/api/interviews/${interviewId}/answers`,
-    finish: (interviewId: number) => `/api/interviews/${interviewId}/sessions/finish`,
   },
 } as const
