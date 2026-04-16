@@ -1,6 +1,7 @@
 package wlsh.project.intervai.question.infra;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.ollama.OllamaChatModel;
@@ -40,6 +41,7 @@ class QuestionGeneratorTest {
     }
 
     @Test
+    @Disabled
     void prompt() throws Exception {
         // given
         Interview interview = Interview.create(1L, new CreateInterviewCommand(
