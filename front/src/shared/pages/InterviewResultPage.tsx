@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { getSessionHistory } from '../../features/interview/api/interviewApi'
 import { useInterviewReport } from '../../features/interview/hooks/useInterviewReport'
 import { QuestionType } from '../types/enums'
+import { queryKeys } from '../types/queryKeys'
 import type { OrderedSessionHistoryItem } from '../../features/interview/utils/sessionHistory'
 import { orderSessionHistory } from '../../features/interview/utils/sessionHistory'
 import { ApiErrorCode, extractApiError } from '../api/apiError'
@@ -75,7 +76,7 @@ const InterviewResultPage = () => {
   const id = Number(interviewId)
 
   const { data: history, isLoading: historyLoading, isError: historyError } = useQuery({
-    queryKey: ['interviews', id, 'history'],
+    queryKey: queryKeys.interview.history(id),
     queryFn: () => getSessionHistory(id),
     enabled: !isNaN(id),
   })
