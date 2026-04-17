@@ -13,9 +13,6 @@ import wlsh.project.intervai.session.infra.InterviewSessionRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -44,86 +41,9 @@ public class SessionHistoryFinder {
                         (existing, duplicate) -> existing
                 ));
 
-        List<SessionHistory> histories = sessionQuestions.stream()
+        return sessionQuestions.stream()
                 .map(sessionHistoryDto ->
                         SessionHistory.createSessionHistory(sessionHistoryDto, feedbacks.get(sessionHistoryDto.getAnswerId())))
                 .toList();
-        return sortByConversationFlow(histories);
-    }
-
-    private List<SessionHistory> sortByConversationFlow(List<SessionHistory> histories) {
-        List<SessionHistory> answered = histories.stream()
-                .filter(history -> history.answerId() != null)
-                .sorted(Comparator.comparing(SessionHistory::answerId))
-                .toList();
-
-        List<SessionHistory> unanswered = sortUnansweredByStructure(histories.stream()
-                .filter(history -> history.answerId() == null)
-                .toList());
-
-        List<SessionHistory> ordered = new ArrayList<>(answered.size() + unanswered.size());
-        ordered.addAll(answered);
-        ordered.addAll(unanswered);
-        return ordered;
-    }
-
-    private List<SessionHistory> sortUnansweredByStructure(List<SessionHistory> unanswered) {
-        if (unanswered.isEmpty()) {
-            return List.of();
-        }
-
-        Set<Long> unansweredQuestionIds = unanswered.stream()
-                .map(SessionHistory::questionId)
-                .collect(Collectors.toSet());
-
-        Map<Long, List<SessionHistory>> childrenByParentId = unanswered.stream()
-                .filter(history -> history.parentQuestionId() != null
-                        && unansweredQuestionIds.contains(history.parentQuestionId()))
-                .collect(Collectors.groupingBy(SessionHistory::parentQuestionId));
-
-        childrenByParentId.values()
-                .forEach(children -> children.sort(Comparator.comparing(SessionHistory::questionId)));
-
-        List<SessionHistory> roots = unanswered.stream()
-                .filter(history -> history.parentQuestionId() == null
-                        || !unansweredQuestionIds.contains(history.parentQuestionId()))
-                .sorted(Comparator
-                        .comparingInt((SessionHistory history) -> history.questionType() == QuestionType.QUESTION ? 0 : 1)
-                        .thenComparing(history -> history.questionType() == QuestionType.QUESTION
-                                ? history.questionIndex()
-                                : Integer.MAX_VALUE)
-                        .thenComparing(SessionHistory::questionId))
-                .toList();
-
-        List<SessionHistory> ordered = new ArrayList<>(unanswered.size());
-        Set<Long> visitedQuestionIds = new java.util.HashSet<>();
-        for (SessionHistory root : roots) {
-            appendDepthFirst(root, childrenByParentId, ordered, visitedQuestionIds);
-        }
-
-        Set<Long> orderedQuestionIds = ordered.stream()
-                .map(SessionHistory::questionId)
-                .collect(Collectors.toSet());
-        unanswered.stream()
-                .filter(history -> !orderedQuestionIds.contains(history.questionId()))
-                .sorted(Comparator.comparing(SessionHistory::questionId))
-                .forEach(ordered::add);
-
-        return ordered;
-    }
-
-    private void appendDepthFirst(
-            SessionHistory current,
-            Map<Long, List<SessionHistory>> childrenByParentId,
-            List<SessionHistory> ordered,
-            Set<Long> visitedQuestionIds
-    ) {
-        if (!visitedQuestionIds.add(current.questionId())) {
-            return;
-        }
-        ordered.add(current);
-        for (SessionHistory child : childrenByParentId.getOrDefault(current.questionId(), List.of())) {
-            appendDepthFirst(child, childrenByParentId, ordered, visitedQuestionIds);
-        }
     }
 }

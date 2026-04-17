@@ -118,8 +118,8 @@ class InterviewSessionServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("히스토리는 부모 질문 다음에 꼬리 질문이 이어지도록 정렬된다")
-    void findSessionHistory_ordersFollowUpsAfterParentQuestion() {
+    @DisplayName("히스토리는 질문 생성 순서대로 반환된다")
+    void findSessionHistory_returnsQuestionsInCreationOrder() {
         Long userId = 1L;
         Interview interview = createInterview(userId);
         InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
@@ -135,12 +135,12 @@ class InterviewSessionServiceTest extends IntegrationTest {
 
         assertThat(result)
                 .extracting(SessionHistory::questionContent)
-                .containsExactly("질문1", "꼬리질문1", "꼬리질문2", "질문2");
+                .containsExactly("질문1", "질문2", "꼬리질문1", "꼬리질문2");
     }
 
     @Test
-    @DisplayName("부모 정보가 없어도 answerId 순서대로 대화 흐름을 복원한다")
-    void findSessionHistory_ordersByAnswerIdWhenParentIsMissing() {
+    @DisplayName("부모 정보가 없어도 히스토리는 생성 순서를 유지한다")
+    void findSessionHistory_keepsCreationOrderWhenParentIsMissing() {
         Long userId = 1L;
         Interview interview = createInterview(userId);
         InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
@@ -161,7 +161,7 @@ class InterviewSessionServiceTest extends IntegrationTest {
 
         assertThat(result)
                 .extracting(SessionHistory::questionContent)
-                .containsExactly("질문1", "꼬리질문1", "꼬리질문2", "질문2");
+                .containsExactly("질문1", "질문2", "꼬리질문1", "꼬리질문2");
     }
 
     @Test
