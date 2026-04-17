@@ -7,6 +7,7 @@ export const queryKeys = {
     all: ['interview'] as const,
     currentQuestion: (interviewId: number) =>
       ['interview', interviewId, 'currentQuestion'] as const,
+    report: (interviewId: number) => ['interview', interviewId, 'report'] as const,
   },
   interviews: {
     all: ['interviews'] as const,

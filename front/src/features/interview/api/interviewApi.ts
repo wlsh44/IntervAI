@@ -105,3 +105,34 @@ export const getSessionHistory = async (interviewId: number): Promise<SessionHis
   const res = await httpClient.get<SessionHistoryItem[]>(API_PATHS.interviews.history(interviewId))
   return res.data
 }
+
+export interface DetailScores {
+  conceptUnderstanding: number
+  problemSolving: number
+  communication: number
+}
+
+export interface ScoreReport {
+  totalScore: number
+  scores: DetailScores
+  strengths: string[]
+  improvements: string[]
+  overallComment: string
+}
+
+export interface ReportQuestionItem {
+  questionId: number
+  question: string
+  answer: string | null
+  feedback: string | null
+}
+
+export interface InterviewReport {
+  scoreReport: ScoreReport
+  questions: ReportQuestionItem[]
+}
+
+export const getInterviewReport = async (interviewId: number): Promise<InterviewReport> => {
+  const res = await httpClient.get<InterviewReport>(API_PATHS.interviews.report(interviewId))
+  return res.data
+}

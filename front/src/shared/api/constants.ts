@@ -21,5 +21,6 @@ export const API_PATHS = {
     questions: (interviewId: number) => `/api/interviews/${interviewId}/questions`,
     currentQuestion: (interviewId: number) => `/api/interviews/${interviewId}/questions/current`,
     answers: (interviewId: number) => `/api/interviews/${interviewId}/answers`,
+    report: (interviewId: number) => `/api/interviews/${interviewId}/report`,
   },
 } as const
