@@ -11,7 +11,8 @@ const ResultItem = ({ item }: { item: OrderedSessionHistoryItem }) => {
   const [feedbackOpen, setFeedbackOpen] = useState(false)
   const isFollowUp = item.questionType === QuestionType.FOLLOW_UP
   const depthClass = item.depth > 0 ? 'ml-6 border-l-4 border-[#d7dcff]' : ''
-  const label = isFollowUp ? `Q${item.mainQuestionOrder} 꼬리 질문` : `Q${item.mainQuestionOrder}`
+  const displayOrder = Math.max(1, item.mainQuestionOrder)
+  const label = isFollowUp ? `Q${displayOrder} 꼬리 질문` : `Q${displayOrder}`
 
   return (
     <div className={`bg-white rounded-xl border border-[#c7cbf5] overflow-hidden ${depthClass}`}>
