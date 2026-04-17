@@ -16,6 +16,8 @@ export const ApiErrorCode = {
   INTERVIEW_ACCESS_DENIED: 'INTERVIEW_ACCESS_DENIED',
   SESSION_NOT_FOUND: 'SESSION_NOT_FOUND',
   QUESTION_NOT_FOUND: 'QUESTION_NOT_FOUND',
+  SESSION_NOT_COMPLETED: 'SESSION_NOT_COMPLETED',
+  REPORT_NOT_FOUND: 'REPORT_NOT_FOUND',
 } as const
 
 export const ERROR_MESSAGES: Record<string, string> = {
@@ -38,6 +40,8 @@ export const ERROR_MESSAGES: Record<string, string> = {
   SESSION_ALREADY_COMPLETED: '이미 종료된 면접입니다.',
   ALL_QUESTIONS_ANSWERED: '모든 질문이 완료되었습니다.',
   ANSWER_ALREADY_EXISTS: '이미 답변한 질문입니다.',
+  SESSION_NOT_COMPLETED: '면접이 아직 완료되지 않았습니다.',
+  REPORT_NOT_FOUND: '리포트를 아직 사용할 수 없습니다.',
   // 공통
   UNKNOWN_ERROR: '알 수 없는 오류가 발생했습니다.',
 }

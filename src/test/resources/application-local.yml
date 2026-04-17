@@ -1,0 +1,32 @@
+spring:
+  ai:
+    anthropic:
+      api-key: ${ANTHROPIC_API_KEY:}
+      chat:
+        options:
+          model: claude-sonnet-4-20250514
+          max-tokens: 1024
+  data:
+    redis:
+      host: localhost
+      port: 6378
+  datasource:
+    url: jdbc:h2:mem:intervai
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
+jwt:
+  access:
+    secret: ${JWT_ACCESS_SECRET}
+    expiration: 86400000
+  refresh:
+    secret: ${JWT_REFRESH_SECRET}
+    expiration: 604800000
