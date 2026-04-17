@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import wlsh.project.intervai.common.entity.EntityStatus;
 import wlsh.project.intervai.feedback.infra.FeedbackEntity;
 import wlsh.project.intervai.feedback.infra.FeedbackRepository;
+import wlsh.project.intervai.question.domain.QuestionType;
 import wlsh.project.intervai.session.application.dto.SessionHistoryDto;
 import wlsh.project.intervai.session.domain.SessionHistory;
 import wlsh.project.intervai.session.infra.InterviewSessionRepository;

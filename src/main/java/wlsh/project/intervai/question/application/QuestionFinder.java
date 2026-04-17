@@ -23,7 +23,7 @@ public class QuestionFinder {
     }
 
     public NextQuestionResult findCurrent(Long sessionId, int currentMainQuestionIdx,
-                                          int followUpCount, int totalQuestionCount) {
+                                          int followUpCount, int totalQuestionCount, int maxFollowUpCount) {
         if (followUpCount == 0 && currentMainQuestionIdx >= totalQuestionCount) {
             throw new CustomException(ErrorCode.ALL_QUESTIONS_ANSWERED);
         }
@@ -31,8 +31,16 @@ public class QuestionFinder {
                 ? findLatestFollowUp(sessionId)
                 : findMainQuestion(sessionId, currentMainQuestionIdx);
 
-        boolean hasNext = currentMainQuestionIdx < totalQuestionCount - 1;
+        boolean hasNext = hasNextQuestion(currentMainQuestionIdx, followUpCount, totalQuestionCount, maxFollowUpCount);
         return new NextQuestionResult(question, hasNext);
+    }
+
+    private boolean hasNextQuestion(int currentMainQuestionIdx, int followUpCount, int totalQuestionCount, int maxFollowUpCount) {
+        boolean hasRemainingMainQuestion = currentMainQuestionIdx < totalQuestionCount - 1;
+        if (hasRemainingMainQuestion) {
+            return true;
+        }
+        return followUpCount < maxFollowUpCount;
     }
 
     private Question findLatestFollowUp(Long sessionId) {

@@ -60,6 +60,7 @@ export interface SubmitAnswerResponse {
 
 export interface SessionHistoryItem {
   questionId: number
+  parentQuestionId: number | null
   answerId: number | null
   questionContent: string
   answerContent: string | null

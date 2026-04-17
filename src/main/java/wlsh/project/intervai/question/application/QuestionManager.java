@@ -26,11 +26,11 @@ public class QuestionManager {
     }
 
     @Transactional
-    public Optional<Question> createFollowUp(Long interviewId, Long sessionId, String content) {
+    public Optional<Question> createFollowUp(Long interviewId, Long sessionId, Long parentQuestionId, String content) {
         if (content == null || content.isBlank()) {
             return Optional.empty();
         }
-        Question question = Question.create(interviewId, sessionId, content, QuestionType.FOLLOW_UP, -1);
+        Question question = Question.createFollowUp(interviewId, sessionId, parentQuestionId, content);
         QuestionEntity entity = questionRepository.save(QuestionEntity.from(question));
         return Optional.of(entity.toDomain());
     }

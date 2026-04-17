@@ -47,7 +47,12 @@ public class AnswerService {
         boolean withinLimit = session.getFollowUpCount() < interview.getMaxFollowUpCount();
 
         if (hasFollowUp && withinLimit) {
-            questionManager.createFollowUp(answer.getInterviewId(), answer.getSessionId(), followUpQuestion);
+            questionManager.createFollowUp(
+                    answer.getInterviewId(),
+                    answer.getSessionId(),
+                    answer.getQuestionId(),
+                    followUpQuestion
+            );
             interviewSessionManager.addFollowUpCount(session.getId());
         } else {
             interviewSessionManager.advanceToNext(session.getId());
