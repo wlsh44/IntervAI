@@ -1,9 +1,9 @@
 package wlsh.project.intervai.common.config;
 
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.concurrent.atomic.AtomicBoolean;
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import redis.embedded.RedisServer;
@@ -12,19 +12,45 @@ import redis.embedded.RedisServer;
 @Profile("local")
 public class EmbeddedRedisConfig {
 
-    private final RedisServer redisServer;
+    private static final Object LOCK = new Object();
+    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
+    private static final int PORT = findAvailablePort();
+    private static RedisServer redisServer;
 
-    public EmbeddedRedisConfig(@Value("${spring.data.redis.port}") int port) throws IOException {
-        this.redisServer = new RedisServer(port);
+    static {
+        System.setProperty("spring.data.redis.port", String.valueOf(PORT));
     }
 
     @PostConstruct
     public void start() throws IOException {
-        redisServer.start();
+        synchronized (LOCK) {
+            if (STARTED.get()) {
+                return;
+            }
+
+            redisServer = new RedisServer(PORT);
+            redisServer.start();
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                synchronized (LOCK) {
+                    if (redisServer != null) {
+                        try {
+                            redisServer.stop();
+                        } catch (IOException ignored) {
+                        }
+                    }
+                }
+            }));
+            STARTED.set(true);
+        }
+
     }
 
-    @PreDestroy
-    public void stop() throws IOException {
-        redisServer.stop();
+    private static int findAvailablePort() {
+        try (ServerSocket socket = new ServerSocket(0)) {
+            socket.setReuseAddress(true);
+            return socket.getLocalPort();
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to allocate Redis port for tests", e);
+        }
     }
 }
