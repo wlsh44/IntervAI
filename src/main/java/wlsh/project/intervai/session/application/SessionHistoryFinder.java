@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -67,15 +68,25 @@ public class SessionHistoryFinder {
     }
 
     private List<SessionHistory> sortUnansweredByStructure(List<SessionHistory> unanswered) {
+        if (unanswered.isEmpty()) {
+            return List.of();
+        }
+
+        Set<Long> unansweredQuestionIds = unanswered.stream()
+                .map(SessionHistory::questionId)
+                .collect(Collectors.toSet());
+
         Map<Long, List<SessionHistory>> childrenByParentId = unanswered.stream()
-                .filter(history -> history.parentQuestionId() != null)
+                .filter(history -> history.parentQuestionId() != null
+                        && unansweredQuestionIds.contains(history.parentQuestionId()))
                 .collect(Collectors.groupingBy(SessionHistory::parentQuestionId));
 
         childrenByParentId.values()
                 .forEach(children -> children.sort(Comparator.comparing(SessionHistory::questionId)));
 
         List<SessionHistory> roots = unanswered.stream()
-                .filter(history -> history.parentQuestionId() == null)
+                .filter(history -> history.parentQuestionId() == null
+                        || !unansweredQuestionIds.contains(history.parentQuestionId()))
                 .sorted(Comparator
                         .comparingInt((SessionHistory history) -> history.questionType() == QuestionType.QUESTION ? 0 : 1)
                         .thenComparing(history -> history.questionType() == QuestionType.QUESTION
@@ -88,6 +99,15 @@ public class SessionHistoryFinder {
         for (SessionHistory root : roots) {
             appendDepthFirst(root, childrenByParentId, ordered);
         }
+
+        Set<Long> orderedQuestionIds = ordered.stream()
+                .map(SessionHistory::questionId)
+                .collect(Collectors.toSet());
+        unanswered.stream()
+                .filter(history -> !orderedQuestionIds.contains(history.questionId()))
+                .sorted(Comparator.comparing(SessionHistory::questionId))
+                .forEach(ordered::add);
+
         return ordered;
     }
 
