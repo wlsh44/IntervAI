@@ -96,8 +96,9 @@ public class SessionHistoryFinder {
                 .toList();
 
         List<SessionHistory> ordered = new ArrayList<>(unanswered.size());
+        Set<Long> visitedQuestionIds = new java.util.HashSet<>();
         for (SessionHistory root : roots) {
-            appendDepthFirst(root, childrenByParentId, ordered);
+            appendDepthFirst(root, childrenByParentId, ordered, visitedQuestionIds);
         }
 
         Set<Long> orderedQuestionIds = ordered.stream()
@@ -114,11 +115,15 @@ public class SessionHistoryFinder {
     private void appendDepthFirst(
             SessionHistory current,
             Map<Long, List<SessionHistory>> childrenByParentId,
-            List<SessionHistory> ordered
+            List<SessionHistory> ordered,
+            Set<Long> visitedQuestionIds
     ) {
+        if (!visitedQuestionIds.add(current.questionId())) {
+            return;
+        }
         ordered.add(current);
         for (SessionHistory child : childrenByParentId.getOrDefault(current.questionId(), List.of())) {
-            appendDepthFirst(child, childrenByParentId, ordered);
+            appendDepthFirst(child, childrenByParentId, ordered, visitedQuestionIds);
         }
     }
 }
