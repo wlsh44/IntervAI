@@ -678,6 +678,100 @@ POST /api/interviews/{interviewId}/sessions/finish
 
 ---
 
+### 종합 리포트 조회
+
+```
+GET /api/interviews/{interviewId}/report
+```
+
+**인증**: 필요 (본인 면접만 가능)
+
+세션이 COMPLETED 상태인 면접의 AI 종합 평가 리포트를 반환한다.
+
+**Path Parameters**
+
+| 파라미터 | 타입 | 설명 |
+|---------|------|------|
+| `interviewId` | Long | 면접 ID |
+
+**Response** `200 OK`
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `scoreReport` | ScoreReport | 종합 평가 결과 |
+| `questions` | ReportQuestionItem[] | 질문별 Q&A 요약 목록 |
+
+**ScoreReport 구조**
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `totalScore` | Integer | 종합 점수 (0~100) |
+| `scores` | DetailScores | 세부 항목 점수 |
+| `strengths` | String[] | 강점 목록 |
+| `improvements` | String[] | 개선 방향 목록 |
+| `overallComment` | String | 종합 코멘트 |
+
+**DetailScores 구조**
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `conceptUnderstanding` | Integer | 개념 이해도 (0~100) |
+| `problemSolving` | Integer | 문제 해결력 (0~100) |
+| `communication` | Integer | 커뮤니케이션 (0~100) |
+
+**ReportQuestionItem 구조**
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `questionId` | Long | 질문 ID |
+| `question` | String | 질문 내용 |
+| `answer` | String \| null | 답변 내용 |
+| `feedback` | String \| null | 피드백 내용 |
+
+**에러**
+
+| ErrorCode | HTTP | 설명 |
+|-----------|------|------|
+| `INTERVIEW_NOT_FOUND` | 404 | 면접 없음 |
+| `INTERVIEW_ACCESS_DENIED` | 403 | 타인 면접 접근 |
+| `SESSION_NOT_FOUND` | 404 | 세션 없음 |
+| `SESSION_NOT_COMPLETED` | 400 | 미완료 세션 (COMPLETED 상태만 조회 가능) |
+
+**예시**
+
+```json
+// Response 200
+{
+  "scoreReport": {
+    "totalScore": 82,
+    "scores": {
+      "conceptUnderstanding": 85,
+      "problemSolving": 80,
+      "communication": 80
+    },
+    "strengths": [
+      "핵심 개념을 정확히 이해하고 있습니다.",
+      "구체적인 예시를 잘 활용했습니다."
+    ],
+    "improvements": [
+      "알고리즘 시간 복잡도 분석을 보완하면 좋겠습니다.",
+      "네트워크 계층 구조에 대한 설명을 더 자세히 다루어 보세요."
+    ],
+    "overallComment": "전반적으로 기본기가 탄탄하며 논리적인 답변을 잘 구성했습니다. 세부 항목에서 더 깊이 있는 이해를 보여준다면 더욱 우수한 결과를 기대할 수 있습니다."
+  },
+  "questions": [
+    {
+      "questionId": 1,
+      "question": "Java의 GC 동작 방식을 설명해주세요.",
+      "answer": "GC는 힙 메모리에서 사용되지 않는 객체를 자동으로 제거합니다.",
+      "feedback": "기본 개념은 맞지만 GC 알고리즘 종류도 언급하면 좋겠습니다."
+    }
+  ]
+}
+```
+
+---
+
 ### 세션 히스토리 조회
 
 ```
@@ -845,6 +939,12 @@ GET /api/interviews
 | `SESSION_ALREADY_COMPLETED` | 400 | 종료된 세션 |
 | `SESSION_ACCESS_DENIED` | 401 | 접근 불가 세션 |
 | `SESSION_NOT_COMPLETED` | 400 | 미완료 세션 (리포트 생성 시) |
+
+### 리포트
+
+| ErrorCode | HTTP | 설명 |
+|-----------|------|------|
+| `REPORT_NOT_FOUND` | 404 | 리포트 없음 (아직 생성되지 않음) |
 
 ### 질문 / 답변
 
