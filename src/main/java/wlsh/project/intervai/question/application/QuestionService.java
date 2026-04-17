@@ -38,7 +38,8 @@ public class QuestionService {
                 session.getId(),
                 session.getCurrentMainQuestionIdx(),
                 session.getFollowUpCount(),
-                interview.getQuestionCount()
+                interview.getQuestionCount(),
+                interview.getMaxFollowUpCount()
         );
     }
 
