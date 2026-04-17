@@ -110,9 +110,7 @@ const InterviewChatScreen = () => {
       .then((history) => {
         if (cancelled) return
 
-        const orderedHistory = orderSessionHistory(history)
-        const historyForRestore =
-          orderedHistory.length === history.length ? orderedHistory : history
+        const historyForRestore = orderSessionHistory(history)
         const restoredMessages: ChatMessage[] = []
         let mainQuestionCount = 0
 
