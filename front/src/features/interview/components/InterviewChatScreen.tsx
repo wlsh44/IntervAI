@@ -99,6 +99,7 @@ const InterviewChatScreen = () => {
     let cancelled = false
 
     // interviewId 변경 시 상태 초기화
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMessages([])
     setAllCompleted(false)
     setNextQuestionFetchFailed(false)
