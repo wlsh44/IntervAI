@@ -49,7 +49,7 @@ class QuestionFinderTest extends IntegrationTest {
         Question question = questionManager.create(interview.getId(), session.getId(), "본 질문 내용", QuestionType.QUESTION, 0);
 
         // when
-        NextQuestionResult result = questionFinder.findCurrent(session.getId(), 0, 0, 5);
+        NextQuestionResult result = questionFinder.findCurrent(session.getId(), 0, 0, 5, interview.getMaxFollowUpCount());
 
         // then
         assertThat(result.question().getId()).isEqualTo(question.getId());
@@ -65,10 +65,10 @@ class QuestionFinderTest extends IntegrationTest {
         Interview interview = createInterview(userId, 5);
         InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
         questionManager.create(interview.getId(), session.getId(), "본 질문 내용", QuestionType.QUESTION, 0);
-        questionManager.createFollowUp(interview.getId(), session.getId(), "꼬리 질문 내용");
+        questionManager.createFollowUp(interview.getId(), session.getId(), null, "꼬리 질문 내용");
 
         // when
-        NextQuestionResult result = questionFinder.findCurrent(session.getId(), 0, 1, 5);
+        NextQuestionResult result = questionFinder.findCurrent(session.getId(), 0, 1, 5, interview.getMaxFollowUpCount());
 
         // then
         assertThat(result.question().getQuestionType()).isEqualTo(QuestionType.FOLLOW_UP);
@@ -83,19 +83,19 @@ class QuestionFinderTest extends IntegrationTest {
         Interview interview = createInterview(userId, 5);
         InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
         questionManager.create(interview.getId(), session.getId(), "본 질문", QuestionType.QUESTION, 0);
-        questionManager.createFollowUp(interview.getId(), session.getId(), "꼬리 질문 1");
-        questionManager.createFollowUp(interview.getId(), session.getId(), "꼬리 질문 2");
+        questionManager.createFollowUp(interview.getId(), session.getId(), null, "꼬리 질문 1");
+        questionManager.createFollowUp(interview.getId(), session.getId(), null, "꼬리 질문 2");
 
         // when
-        NextQuestionResult result = questionFinder.findCurrent(session.getId(), 0, 2, 5);
+        NextQuestionResult result = questionFinder.findCurrent(session.getId(), 0, 2, 5, interview.getMaxFollowUpCount());
 
         // then
         assertThat(result.question().getContent()).isEqualTo("꼬리 질문 2");
     }
 
     @Test
-    @DisplayName("마지막 질문이면 hasNext가 false이다")
-    void findCurrentLastQuestionHasNoNext() {
+    @DisplayName("마지막 본 질문이어도 꼬리 질문 여지가 있으면 hasNext가 true이다")
+    void findCurrentLastMainQuestionStillHasNext() {
         // given
         Long userId = 1L;
         Interview interview = createInterview(userId, 3);
@@ -103,9 +103,34 @@ class QuestionFinderTest extends IntegrationTest {
         questionManager.create(interview.getId(), session.getId(), "마지막 질문", QuestionType.QUESTION, 2);
 
         // when
-        NextQuestionResult result = questionFinder.findCurrent(session.getId(), 2, 0, 3);
+        NextQuestionResult result = questionFinder.findCurrent(session.getId(), 2, 0, 3, interview.getMaxFollowUpCount());
 
         // then
+        assertThat(result.hasNext()).isTrue();
+    }
+
+    @Test
+    @DisplayName("마지막 질문의 마지막 꼬리 질문이면 hasNext가 false이다")
+    void findCurrentLastFollowUpHasNoNext() {
+        Long userId = 1L;
+        Interview interview = createInterview(userId, 3);
+        InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
+        Question mainQuestion = questionManager.create(interview.getId(), session.getId(), "마지막 질문", QuestionType.QUESTION, 2);
+        Question followUp1 = questionManager.createFollowUp(interview.getId(), session.getId(), mainQuestion.getId(), "꼬리 질문 1")
+                .orElseThrow();
+        Question followUp2 = questionManager.createFollowUp(interview.getId(), session.getId(), followUp1.getId(), "꼬리 질문 2")
+                .orElseThrow();
+        questionManager.createFollowUp(interview.getId(), session.getId(), followUp2.getId(), "꼬리 질문 3")
+                .orElseThrow();
+
+        NextQuestionResult result = questionFinder.findCurrent(
+                session.getId(),
+                2,
+                interview.getMaxFollowUpCount(),
+                3,
+                interview.getMaxFollowUpCount()
+        );
+
         assertThat(result.hasNext()).isFalse();
     }
 
@@ -118,7 +143,7 @@ class QuestionFinderTest extends IntegrationTest {
         InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
 
         // when & then
-        assertThatThrownBy(() -> questionFinder.findCurrent(session.getId(), 0, 0, 5))
+        assertThatThrownBy(() -> questionFinder.findCurrent(session.getId(), 0, 0, 5, interview.getMaxFollowUpCount()))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorCode.QUESTION_NOT_FOUND.getMessage());
     }
@@ -132,7 +157,7 @@ class QuestionFinderTest extends IntegrationTest {
         InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
 
         // when & then
-        assertThatThrownBy(() -> questionFinder.findCurrent(session.getId(), 0, 1, 5))
+        assertThatThrownBy(() -> questionFinder.findCurrent(session.getId(), 0, 1, 5, interview.getMaxFollowUpCount()))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorCode.QUESTION_NOT_FOUND.getMessage());
     }

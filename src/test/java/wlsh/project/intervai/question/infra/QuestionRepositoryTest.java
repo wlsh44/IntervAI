@@ -66,6 +66,7 @@ class QuestionRepositoryTest extends IntegrationTest {
         assertThat(result).hasSize(2);
         assertThat(result).allMatch(dto -> dto.getAnswerId() != null);
         assertThat(result).allMatch(dto -> dto.getAnswerContent() != null);
+        assertThat(result).allMatch(dto -> dto.getParentQuestionId() == null);
     }
 
     @Test
@@ -121,6 +122,27 @@ class QuestionRepositoryTest extends IntegrationTest {
         // then
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().getQuestionContent()).isEqualTo("면접1 질문");
+    }
+
+    @Test
+    @DisplayName("꼬리 질문은 부모 questionId를 함께 조회한다")
+    void findSessionHistory_followUpIncludesParentQuestionId() {
+        Long userId = 1L;
+        Interview interview = createInterview(userId);
+        InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
+
+        Question main = questionManager.create(interview.getId(), session.getId(), "질문1", QuestionType.QUESTION, 0);
+        Question followUp = questionManager.createFollowUp(interview.getId(), session.getId(), main.getId(), "꼬리질문1")
+                .orElseThrow();
+
+        List<SessionHistoryDto> result = interviewSessionRepository.findSessionHistoryByInterviewId(
+                interview.getId(), EntityStatus.ACTIVE);
+
+        SessionHistoryDto followUpHistory = result.stream()
+                .filter(dto -> dto.getQuestionId().equals(followUp.getId()))
+                .findFirst()
+                .orElseThrow();
+        assertThat(followUpHistory.getParentQuestionId()).isEqualTo(main.getId());
     }
 
     private Interview createInterview(Long userId) {

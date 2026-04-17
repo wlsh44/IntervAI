@@ -9,7 +9,7 @@ spring:
   data:
     redis:
       host: localhost
-      port: 6379
+      port: 6378
   datasource:
     url: jdbc:h2:mem:intervai
     driver-class-name: org.h2.Driver

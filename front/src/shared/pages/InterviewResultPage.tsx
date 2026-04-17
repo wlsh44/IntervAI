@@ -3,20 +3,29 @@ import { useQuery } from '@tanstack/react-query'
 import { Loader2, ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
 import { getSessionHistory } from '../../features/interview/api/interviewApi'
-import type { SessionHistoryItem } from '../../features/interview/api/interviewApi'
 import { QuestionType } from '../types/enums'
+import type { OrderedSessionHistoryItem } from '../../features/interview/utils/sessionHistory'
+import { orderSessionHistory } from '../../features/interview/utils/sessionHistory'
 
-const ResultItem = ({ item, index }: { item: SessionHistoryItem; index: number }) => {
+const ResultItem = ({ item }: { item: OrderedSessionHistoryItem }) => {
   const [feedbackOpen, setFeedbackOpen] = useState(false)
   const isFollowUp = item.questionType === QuestionType.FOLLOW_UP
+  const depthClass = item.depth > 0 ? 'ml-6 border-l-4 border-[#d7dcff]' : ''
+  const displayOrder = Math.max(1, item.mainQuestionOrder)
+  const label = isFollowUp ? `Q${displayOrder} 꼬리 질문` : `Q${displayOrder}`
 
   return (
-    <div className="bg-white rounded-xl border border-[#c7cbf5] overflow-hidden">
+    <div className={`bg-white rounded-xl border border-[#c7cbf5] overflow-hidden ${depthClass}`}>
       <div className="px-5 py-4 border-b border-[#eaedff]">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xs font-medium text-[#4648d4] bg-[#eaedff] px-2 py-0.5 rounded-full">
-            {isFollowUp ? '꼬리 질문' : `Q${index + 1}`}
+            {label}
           </span>
+          {isFollowUp && item.parentQuestionId !== null && (
+            <span className="text-[11px] font-medium text-[#767586]">
+              이전 질문에 대한 추가 질문
+            </span>
+          )}
         </div>
         <p className="text-sm font-medium text-[#131b2e]">{item.questionContent}</p>
       </div>
@@ -88,8 +97,7 @@ const InterviewResultPage = () => {
 
   const mainQuestions = history.filter((item) => item.questionType === QuestionType.QUESTION)
   const answeredCount = history.filter((item) => item.answerId !== null).length
-
-  let mainIndex = -1
+  const orderedHistory = orderSessionHistory(history)
 
   return (
     <div className="min-h-screen bg-[#faf8ff]">
@@ -120,16 +128,9 @@ const InterviewResultPage = () => {
         </div>
 
         <div className="flex flex-col gap-4">
-          {history.map((item) => {
-            if (item.questionType === QuestionType.QUESTION) mainIndex++
-            return (
-              <ResultItem
-                key={item.questionId}
-                item={item}
-                index={mainIndex}
-              />
-            )
-          })}
+          {orderedHistory.map((item) => (
+            <ResultItem key={item.questionId} item={item} />
+          ))}
         </div>
       </div>
     </div>

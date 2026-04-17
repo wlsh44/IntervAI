@@ -7,6 +7,7 @@ import java.util.List;
 
 public record SessionHistoryResponse(
         Long questionId,
+        Long parentQuestionId,
         Long answerId,
         String questionContent,
         String answerContent,
@@ -17,6 +18,7 @@ public record SessionHistoryResponse(
     public static SessionHistoryResponse from(SessionHistory history) {
         return new SessionHistoryResponse(
                 history.questionId(),
+                history.parentQuestionId(),
                 history.answerId(),
                 history.questionContent(),
                 history.answerContent(),
