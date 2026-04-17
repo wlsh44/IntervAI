@@ -165,6 +165,33 @@ class InterviewSessionServiceTest extends IntegrationTest {
     }
 
     @Test
+    @DisplayName("답변된 부모를 가진 미답변 꼬리 질문도 히스토리에서 누락되지 않는다")
+    void findSessionHistory_unansweredFollowUpWithAnsweredParent_isNotDropped() {
+        Long userId = 1L;
+        Interview interview = createInterview(userId);
+        InterviewSession session = interviewSessionManager.create(interview.getId(), userId);
+
+        Question q1 = questionManager.create(interview.getId(), session.getId(), "질문1", QuestionType.QUESTION, 0);
+        Question q2 = questionManager.create(interview.getId(), session.getId(), "질문2", QuestionType.QUESTION, 1);
+        Question followUp = questionManager.createFollowUp(interview.getId(), session.getId(), q1.getId(), "꼬리질문1")
+                .orElseThrow();
+
+        saveAnswer(userId, interview.getId(), session.getId(), q1.getId(), "답변1");
+
+        List<SessionHistory> result = interviewSessionService.findSessionHistory(userId, interview.getId());
+
+        assertThat(result)
+                .extracting(SessionHistory::questionContent)
+                .containsExactly("질문1", "질문2", "꼬리질문1");
+
+        SessionHistory unansweredFollowUp = result.stream()
+                .filter(history -> history.questionId().equals(followUp.getId()))
+                .findFirst()
+                .orElseThrow();
+        assertThat(unansweredFollowUp.answerId()).isNull();
+    }
+
+    @Test
     @DisplayName("타인의 면접 히스토리 조회 시 INTERVIEW_ACCESS_DENIED 예외가 발생한다")
     void findSessionHistory_otherUserInterview_throwsAccessDenied() {
         // given

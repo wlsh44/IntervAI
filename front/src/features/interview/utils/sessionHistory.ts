@@ -9,35 +9,39 @@ export interface OrderedSessionHistoryItem extends SessionHistoryItem {
 export const orderSessionHistory = (
   history: SessionHistoryItem[],
 ): OrderedSessionHistoryItem[] => {
-  const sortNaturally = (items: SessionHistoryItem[]) =>
+  const sortRoots = (items: SessionHistoryItem[]) =>
     [...items].sort((a, b) => {
+      const aGroup = a.questionType === QuestionType.QUESTION ? 0 : 1
+      const bGroup = b.questionType === QuestionType.QUESTION ? 0 : 1
+      if (aGroup !== bGroup) return aGroup - bGroup
+
       const aIndex = a.questionType === QuestionType.QUESTION ? a.questionIndex : Number.MAX_SAFE_INTEGER
       const bIndex = b.questionType === QuestionType.QUESTION ? b.questionIndex : Number.MAX_SAFE_INTEGER
       const byIndex = aIndex - bIndex
       return byIndex !== 0 ? byIndex : a.questionId - b.questionId
     })
 
-  const byQuestionId = [...history].sort((a, b) => a.questionId - b.questionId)
   const effectiveParentByQuestionId = new Map<number, number | null>()
-  let previousByCreationOrder: SessionHistoryItem | null = null
+  let previousInResponse: SessionHistoryItem | null = null
 
-  for (const item of byQuestionId) {
+  for (const item of history) {
     if (item.parentQuestionId !== null) {
       effectiveParentByQuestionId.set(item.questionId, item.parentQuestionId)
-    } else if (item.questionType === QuestionType.FOLLOW_UP && previousByCreationOrder !== null) {
-      effectiveParentByQuestionId.set(item.questionId, previousByCreationOrder.questionId)
+    } else if (item.questionType === QuestionType.FOLLOW_UP && previousInResponse !== null) {
+      effectiveParentByQuestionId.set(item.questionId, previousInResponse.questionId)
     } else {
       effectiveParentByQuestionId.set(item.questionId, null)
     }
 
-    previousByCreationOrder = item
+    previousInResponse = item
   }
 
   const childrenByParentId = new Map<number, SessionHistoryItem[]>()
+  const questionIds = new Set(history.map((item) => item.questionId))
 
   for (const item of history) {
     const effectiveParentQuestionId = effectiveParentByQuestionId.get(item.questionId) ?? null
-    if (effectiveParentQuestionId === null) continue
+    if (effectiveParentQuestionId === null || !questionIds.has(effectiveParentQuestionId)) continue
     const children = childrenByParentId.get(effectiveParentQuestionId) ?? []
     children.push(item)
     childrenByParentId.set(effectiveParentQuestionId, children)
@@ -47,8 +51,10 @@ export const orderSessionHistory = (
     children.sort((a, b) => a.questionId - b.questionId)
   }
 
-  const rootQuestions = sortNaturally(history)
-    .filter((item) => (effectiveParentByQuestionId.get(item.questionId) ?? null) === null)
+  const rootQuestions = sortRoots(history).filter((item) => {
+    const effectiveParentQuestionId = effectiveParentByQuestionId.get(item.questionId) ?? null
+    return effectiveParentQuestionId === null || !questionIds.has(effectiveParentQuestionId)
+  })
 
   const ordered: OrderedSessionHistoryItem[] = []
   const visitedQuestionIds = new Set<number>()
@@ -81,7 +87,7 @@ export const orderSessionHistory = (
     mainQuestionOrder = nextMainQuestionOrder
   }
 
-  const remainingItems = sortNaturally(history).filter((item) => !visitedQuestionIds.has(item.questionId))
+  const remainingItems = history.filter((item) => !visitedQuestionIds.has(item.questionId))
   for (const item of remainingItems) {
     const nextMainQuestionOrder =
       item.questionType === QuestionType.QUESTION ? mainQuestionOrder + 1 : mainQuestionOrder
