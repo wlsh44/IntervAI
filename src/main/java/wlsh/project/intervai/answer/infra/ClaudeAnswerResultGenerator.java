@@ -56,7 +56,7 @@ public class ClaudeAnswerResultGenerator implements AnswerResultGenerator {
         try {
             return objectMapper.readValue(response.trim(), AnswerResultDto.class);
         } catch (JsonProcessingException e) {
-            return new AnswerResultDto(response.trim(), "");
+            return new AnswerResultDto(response.trim(), 0, "");
         } catch (Exception e) {
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
