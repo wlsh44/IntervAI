@@ -212,6 +212,7 @@ class InterviewSequenceIntegrationTest extends ApiIntegrationTest {
 
                 return new AnswerResultDto(
                         "[Test] feedback for " + question.getContent(),
+                        80,
                         followUpQuestion
                 );
             };

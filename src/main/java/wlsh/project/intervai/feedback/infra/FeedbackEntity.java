@@ -32,20 +32,20 @@ public class FeedbackEntity extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String feedbackContent;
 
-    private FeedbackEntity(Long answerId, String feedbackContent) {
+    @Column(nullable = false)
+    private int score;
+
+    private FeedbackEntity(Long answerId, String feedbackContent, int score) {
         this.answerId = answerId;
         this.feedbackContent = feedbackContent;
+        this.score = score;
     }
 
     public static FeedbackEntity from(Feedback feedback) {
-        return new FeedbackEntity(feedback.getAnswerId(), feedback.getFeedbackContent());
-    }
-
-    public static FeedbackEntity create(Long answerId, String feedbackContent) {
-        return new FeedbackEntity(answerId, feedbackContent);
+        return new FeedbackEntity(feedback.getAnswerId(), feedback.getFeedbackContent(), feedback.getScore());
     }
 
     public Feedback toDomain() {
-        return Feedback.of(id, answerId, feedbackContent);
+        return Feedback.of(id, answerId, feedbackContent, score);
     }
 }

@@ -33,7 +33,7 @@ class AnswerControllerTest extends AcceptanceTest {
     void answer() throws Exception {
         Long userId = 1L;
         Long interviewId = 10L;
-        AnswerResult result = AnswerResult.of("좋은 답변입니다. 핵심을 잘 짚었습니다.");
+        AnswerResult result = AnswerResult.of("좋은 답변입니다. 핵심을 잘 짚었습니다.", 85);
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
         given(answerService.answer(eq(userId), eq(interviewId), eq(1L), any(CreateAnswerCommand.class)))
@@ -45,11 +45,12 @@ class AnswerControllerTest extends AcceptanceTest {
                 .header("Authorization", "Bearer valid-token")
                 .contentType(ContentType.JSON)
                 .body(mapper.writeValueAsString(request))
-        .when()
+                .when()
                 .post("/api/interviews/{interviewId}/answers", interviewId)
-        .then()
+                .then()
                 .statusCode(201)
-                .body("feedback", equalTo("좋은 답변입니다. 핵심을 잘 짚었습니다."));
+                .body("feedback", equalTo("좋은 답변입니다. 핵심을 잘 짚었습니다."))
+                .body("score", equalTo(85));
     }
 
     @Test
@@ -68,9 +69,9 @@ class AnswerControllerTest extends AcceptanceTest {
                 .header("Authorization", "Bearer valid-token")
                 .contentType(ContentType.JSON)
                 .body(mapper.writeValueAsString(request))
-        .when()
+                .when()
                 .post("/api/interviews/{interviewId}/answers", interviewId)
-        .then()
+                .then()
                 .statusCode(409)
                 .body("code", equalTo("ANSWER_ALREADY_EXISTS"))
                 .body("message", equalTo(ErrorCode.ANSWER_ALREADY_EXISTS.getMessage()));
@@ -92,9 +93,9 @@ class AnswerControllerTest extends AcceptanceTest {
                 .header("Authorization", "Bearer valid-token")
                 .contentType(ContentType.JSON)
                 .body(mapper.writeValueAsString(request))
-        .when()
+                .when()
                 .post("/api/interviews/{interviewId}/answers", interviewId)
-        .then()
+                .then()
                 .statusCode(400)
                 .body("code", equalTo("SESSION_ALREADY_COMPLETED"))
                 .body("message", equalTo(ErrorCode.SESSION_ALREADY_COMPLETED.getMessage()));
@@ -111,9 +112,9 @@ class AnswerControllerTest extends AcceptanceTest {
                 .header("Authorization", "Bearer valid-token")
                 .contentType(ContentType.JSON)
                 .body(body)
-        .when()
+                .when()
                 .post("/api/interviews/{interviewId}/answers", 10L)
-        .then()
+                .then()
                 .statusCode(400);
     }
 
@@ -132,9 +133,9 @@ class AnswerControllerTest extends AcceptanceTest {
                 .header("Authorization", "Bearer valid-token")
                 .contentType(ContentType.JSON)
                 .body(body)
-        .when()
+                .when()
                 .post("/api/interviews/{interviewId}/answers", 10L)
-        .then()
+                .then()
                 .statusCode(400);
     }
 
@@ -146,9 +147,9 @@ class AnswerControllerTest extends AcceptanceTest {
         RestAssuredMockMvc.given()
                 .contentType(ContentType.JSON)
                 .body(mapper.writeValueAsString(request))
-        .when()
+                .when()
                 .post("/api/interviews/{interviewId}/answers", 10L)
-        .then()
+                .then()
                 .statusCode(403);
     }
 }
