@@ -1,6 +1,5 @@
-package wlsh.project.intervai.answer.infra;
+package wlsh.project.intervai.report.infra;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -9,38 +8,37 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
-import wlsh.project.intervai.answer.application.AnswerResultGenerator;
-import wlsh.project.intervai.answer.application.dto.AnswerResultDto;
-import wlsh.project.intervai.answer.domain.Answer;
 import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
 import wlsh.project.intervai.interview.domain.Interview;
-import wlsh.project.intervai.question.domain.Question;
+import wlsh.project.intervai.report.application.ReportGenerator;
+import wlsh.project.intervai.report.application.dto.ReportGenerationResultDto;
 
 import java.util.Map;
 
 @Component
 @Profile("prod")
-public class ClaudeAnswerResultGenerator implements AnswerResultGenerator {
+public class ClaudeReportGenerator implements ReportGenerator {
 
     private final ChatClient chatClient;
     private final Resource promptResource;
     private final ObjectMapper objectMapper;
 
-    public ClaudeAnswerResultGenerator(ChatClient chatClient,
-                                       @Value("classpath:prompts/feedback-followup.st") Resource promptResource,
-                                       ObjectMapper objectMapper) {
+    public ClaudeReportGenerator(ChatClient chatClient,
+                                 @Value("classpath:prompts/summary.st") Resource promptResource,
+                                 ObjectMapper objectMapper) {
         this.chatClient = chatClient;
         this.promptResource = promptResource;
         this.objectMapper = objectMapper;
     }
 
     @Override
-    public AnswerResultDto generate(String sessionId, Interview interview, Question question, Answer answer) {
+    public ReportGenerationResultDto generate(String sessionId, Interview interview, String jobCategory) {
         PromptTemplate template = new PromptTemplate(promptResource);
         String userPrompt = template.render(Map.of(
-                "question", question.getContent(),
-                "answerText", answer.getContent()
+                "interviewType", interview.getInterviewType().name(),
+                "difficulty", interview.getDifficulty().name(),
+                "jobCategory", jobCategory
         ));
 
         String response = chatClient.prompt()
@@ -49,14 +47,12 @@ public class ClaudeAnswerResultGenerator implements AnswerResultGenerator {
                 .call()
                 .content();
 
-        return parseFeedbackResult(response);
+        return parseResult(response);
     }
 
-    private AnswerResultDto parseFeedbackResult(String response) {
+    private ReportGenerationResultDto parseResult(String response) {
         try {
-            return objectMapper.readValue(response.trim(), AnswerResultDto.class);
-        } catch (JsonProcessingException e) {
-            return new AnswerResultDto(response.trim(), 0, "");
+            return objectMapper.readValue(response.trim(), ReportGenerationResultDto.class);
         } catch (Exception e) {
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
