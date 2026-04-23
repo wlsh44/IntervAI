@@ -366,6 +366,7 @@ POST /api/interviews
 
 | 필드 | 타입 | 필수 | 제약 |
 |------|------|------|------|
+| `jobCategory` | JobCategory | O | Enum 값 |
 | `interviewType` | InterviewType | O | `CS` / `PORTFOLIO` / `ALL` |
 | `difficulty` | Difficulty | O | `ENTRY` / `JUNIOR` / `SENIOR` |
 | `questionCount` | Integer | O | 5~10 |
@@ -386,6 +387,7 @@ POST /api/interviews
 | 필드 | 타입 | 설명 |
 |------|------|------|
 | `id` | Long | 면접 ID |
+| `jobCategory` | JobCategory | 직군 |
 | `interviewType` | InterviewType | 면접 유형 |
 | `difficulty` | Difficulty | 난이도 |
 | `questionCount` | Integer | 질문 수 |

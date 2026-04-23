@@ -1,6 +1,6 @@
 import { httpClient } from '../../../shared/api/httpClient'
 import { API_PATHS } from '../../../shared/api/constants'
-import type { CsCategory, Difficulty, InterviewType, InterviewerTone, QuestionType } from '../../../shared/types/enums'
+import type { CsCategory, Difficulty, InterviewType, InterviewerTone, JobCategory, QuestionType } from '../../../shared/types/enums'
 
 export interface CsSubjectRequest {
   category: CsCategory
@@ -8,6 +8,7 @@ export interface CsSubjectRequest {
 }
 
 export interface CreateInterviewRequest {
+  jobCategory: JobCategory
   interviewType: InterviewType
   difficulty: Difficulty
   questionCount: number
@@ -19,6 +20,7 @@ export interface CreateInterviewRequest {
 
 export interface CreateInterviewResponse {
   id: number
+  jobCategory: JobCategory
   interviewType: InterviewType
   difficulty: Difficulty
   questionCount: number
@@ -56,6 +58,7 @@ export interface SubmitAnswerRequest {
 
 export interface SubmitAnswerResponse {
   feedback: string
+  score: number
 }
 
 export interface SessionHistoryItem {
@@ -106,29 +109,33 @@ export const getSessionHistory = async (interviewId: number): Promise<SessionHis
   return res.data
 }
 
-export interface DetailScores {
-  conceptUnderstanding: number
-  problemSolving: number
-  communication: number
-}
-
-export interface ScoreReport {
-  totalScore: number
-  scores: DetailScores
-  strengths: string[]
-  improvements: string[]
-  overallComment: string
+export interface FollowUpQuestionItem {
+  questionId: number
+  questionContent: string
+  answerContent: string | null
+  feedbackContent: string | null
 }
 
 export interface ReportQuestionItem {
   questionId: number
-  question: string
-  answer: string | null
-  feedback: string | null
+  questionIndex: number
+  questionContent: string
+  answerContent: string | null
+  feedbackContent: string | null
+  score: number | null
+  keywords: string[]
+  followUps: FollowUpQuestionItem[]
 }
 
 export interface InterviewReport {
-  scoreReport: ScoreReport
+  interviewId: number
+  interviewType: string
+  jobCategory: string
+  difficulty: string
+  questionCount: number
+  completedAt: string
+  totalScore: number
+  overallComment: string
   questions: ReportQuestionItem[]
 }
 

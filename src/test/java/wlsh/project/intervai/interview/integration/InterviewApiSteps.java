@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import wlsh.project.intervai.common.ApiIntegrationTest;
 import wlsh.project.intervai.common.ApiSteps;
+import wlsh.project.intervai.common.domain.JobCategory;
 import wlsh.project.intervai.interview.domain.CsCategory;
 import wlsh.project.intervai.interview.domain.Difficulty;
 import wlsh.project.intervai.interview.domain.InterviewType;
@@ -25,6 +26,7 @@ public class InterviewApiSteps extends ApiSteps {
 
     public CreateInterviewResponse createInterview(String accessToken) throws IOException, InterruptedException {
         CreateInterviewRequest request = new CreateInterviewRequest(
+                JobCategory.BACKEND,
                 InterviewType.CS,
                 Difficulty.JUNIOR,
                 5,

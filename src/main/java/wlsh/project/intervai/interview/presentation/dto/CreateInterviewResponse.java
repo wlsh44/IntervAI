@@ -1,6 +1,7 @@
 package wlsh.project.intervai.interview.presentation.dto;
 
 import java.util.List;
+import wlsh.project.intervai.common.domain.JobCategory;
 import wlsh.project.intervai.interview.domain.Difficulty;
 import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewType;
@@ -8,6 +9,7 @@ import wlsh.project.intervai.interview.domain.InterviewerTone;
 
 public record CreateInterviewResponse(
         Long id,
+        JobCategory jobCategory,
         InterviewType interviewType,
         Difficulty difficulty,
         int questionCount,
@@ -21,6 +23,7 @@ public record CreateInterviewResponse(
                 .toList();
         return new CreateInterviewResponse(
                 interview.getId(),
+                interview.getJobCategory(),
                 interview.getInterviewType(),
                 interview.getDifficulty(),
                 interview.getQuestionCount(),

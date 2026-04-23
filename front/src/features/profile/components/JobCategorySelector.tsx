@@ -14,10 +14,12 @@ const JOB_CATEGORY_LABELS: Record<JobCategory, string> = {
 interface JobCategorySelectorProps {
   value: JobCategory | null
   onChange: (value: JobCategory) => void
+  error?: string
 }
 
-const JobCategorySelector = ({ value, onChange }: JobCategorySelectorProps) => {
+const JobCategorySelector = ({ value, onChange, error }: JobCategorySelectorProps) => {
   return (
+    <div className="space-y-2">
     <div className="flex flex-wrap gap-2">
       {(Object.keys(JobCategory) as JobCategory[]).map((category) => {
         const isSelected = value === category
@@ -36,6 +38,8 @@ const JobCategorySelector = ({ value, onChange }: JobCategorySelectorProps) => {
           </button>
         )
       })}
+    </div>
+    {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   )
 }
