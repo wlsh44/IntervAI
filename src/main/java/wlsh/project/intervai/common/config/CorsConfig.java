@@ -16,8 +16,9 @@ public class CorsConfig {
     public UrlBasedCorsConfigurationSource corsConfigurationSourceProd() {
         CorsConfiguration configuration = getCorsConfiguration();
         configuration.setAllowedOrigins(
-                List.of(
-                )
+			List.of(
+				"http://localhost:5173"
+			)
         );
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

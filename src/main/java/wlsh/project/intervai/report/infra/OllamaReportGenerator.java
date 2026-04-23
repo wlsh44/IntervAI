@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
@@ -18,13 +19,13 @@ import java.util.Map;
 
 @Component
 @Profile("prod")
-public class ClaudeReportGenerator implements ReportGenerator {
+public class OllamaReportGenerator implements ReportGenerator {
 
     private final ChatClient chatClient;
     private final Resource promptResource;
     private final ObjectMapper objectMapper;
 
-    public ClaudeReportGenerator(ChatClient chatClient,
+    public OllamaReportGenerator(@Qualifier("ollamaChatClient") ChatClient chatClient,
                                  @Value("classpath:prompts/summary.st") Resource promptResource,
                                  ObjectMapper objectMapper) {
         this.chatClient = chatClient;

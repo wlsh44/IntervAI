@@ -19,17 +19,17 @@
 - 출력은 아래 JSON 스키마를 엄격히 준수하고, 추가 필드나 설명 텍스트를 포함하지 마세요.
 
 출력 형식:
-{
+\{
   "totalScore": 88,
   "overallComment": "전반적으로 기술적 기초가 탄탄하며, 특히 React 생태계에 대한 이해도가 높습니다. 다만 일부 CS 구조 개념에서는 핵심 키워드를 더 정확히 짚어 설명하면 좋겠습니다.",
   "questions": [
-    {
+    \{
       "questionId": 1,
       "keywords": ["VIRTUALDOM", "DIFFING", "RECONCILIATION"]
-    },
-    {
+    \},
+    \{
       "questionId": 2,
       "keywords": ["SCOPE", "ENCAPSULATION", "LEXICALENV"]
-    }
+    \}
   ]
-}
+\}

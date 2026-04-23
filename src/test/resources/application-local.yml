@@ -25,8 +25,8 @@ spring:
 
 jwt:
   access:
-    secret: ${JWT_ACCESS_SECRET}
+    secret: ${JWT_ACCESS_SECRET:testAccessSecretKeyForTestingOnlyDoNotUseInProduction12345}
     expiration: 86400000
   refresh:
-    secret: ${JWT_REFRESH_SECRET}
+    secret: ${JWT_REFRESH_SECRET:testRefreshSecretKeyForTestingOnlyDoNotUseInProduction1234}
     expiration: 604800000
