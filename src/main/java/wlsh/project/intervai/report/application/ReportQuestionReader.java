@@ -16,4 +16,10 @@ public class ReportQuestionReader {
                 .sorted(Comparator.comparing(SessionHistory::questionIndex))
                 .toList();
     }
+
+    public List<SessionHistory> readFollowUpQuestions(List<SessionHistory> histories) {
+        return histories.stream()
+                .filter(history -> history.questionType() == QuestionType.FOLLOW_UP)
+                .toList();
+    }
 }

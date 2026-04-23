@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wlsh.project.intervai.common.entity.EntityStatus;
 import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
+import wlsh.project.intervai.report.application.dto.ReportGenerationResultDto.QuestionKeywords;
 import wlsh.project.intervai.report.domain.InterviewReport;
 import wlsh.project.intervai.report.domain.ReportQuestion;
 import wlsh.project.intervai.report.infra.InterviewReportEntity;
@@ -26,13 +27,16 @@ public class InterviewReportManager {
         if (interviewReportRepository.existsByInterviewIdAndStatus(report.interviewId(), EntityStatus.ACTIVE)) {
             throw new CustomException(ErrorCode.REPORT_ALREADY_EXISTS);
         }
-        String questionsJson = writeQuestions(report.questions());
+        String questionsJson = writeKeywords(report.questions());
         interviewReportRepository.save(InterviewReportEntity.from(report, questionsJson));
     }
 
-    private String writeQuestions(List<ReportQuestion> questions) {
+    private String writeKeywords(List<ReportQuestion> questions) {
         try {
-            return objectMapper.writeValueAsString(questions);
+            List<QuestionKeywords> kws = questions.stream()
+                    .map(q -> new QuestionKeywords(q.questionId(), q.keywords()))
+                    .toList();
+            return objectMapper.writeValueAsString(kws);
         } catch (JsonProcessingException e) {
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }

@@ -54,6 +54,15 @@ public class InterviewReportService {
         interviewSessionValidator.validateInterviewOwner(interviewId, userId);
         InterviewSession session = interviewReportContextFinder.find(interviewId).session();
         interviewReportSessionValidator.validateCompleted(session);
-        return interviewReportFinder.find(interviewId);
+        StoredInterviewReport stored = interviewReportFinder.find(interviewId);
+        ReportGenerationResultDto dto = new ReportGenerationResultDto(
+                stored.totalScore(), stored.overallComment(), stored.keywords()
+        );
+        List<ReportQuestion> questions = reportQuestionAssembler.assemble(interviewId, dto);
+        return new InterviewReport(
+                stored.id(), stored.interviewId(), stored.interviewType(), stored.jobCategory(),
+                stored.difficulty(), stored.questionCount(), stored.completedAt(),
+                stored.totalScore(), stored.overallComment(), questions
+        );
     }
 }

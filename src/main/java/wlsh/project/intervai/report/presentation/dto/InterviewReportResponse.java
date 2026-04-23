@@ -43,9 +43,12 @@ public record InterviewReportResponse(
             String answerContent,
             String feedbackContent,
             Integer score,
-            List<String> keywords
+            List<String> keywords,
+            List<FollowUpQuestionResponse> followUps
     ) {
         public static QuestionReportResponse from(ReportQuestion q) {
+            List<FollowUpQuestionResponse> followUps = q.followUps() == null ? List.of() :
+                    q.followUps().stream().map(FollowUpQuestionResponse::from).toList();
             return new QuestionReportResponse(
                     q.questionId(),
                     q.questionIndex(),
@@ -53,7 +56,24 @@ public record InterviewReportResponse(
                     q.answerContent(),
                     q.feedbackContent(),
                     q.score(),
-                    q.keywords()
+                    q.keywords(),
+                    followUps
+            );
+        }
+    }
+
+    public record FollowUpQuestionResponse(
+            Long questionId,
+            String questionContent,
+            String answerContent,
+            String feedbackContent
+    ) {
+        public static FollowUpQuestionResponse from(ReportQuestion.FollowUpQuestion f) {
+            return new FollowUpQuestionResponse(
+                    f.questionId(),
+                    f.questionContent(),
+                    f.answerContent(),
+                    f.feedbackContent()
             );
         }
     }
