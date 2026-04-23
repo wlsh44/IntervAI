@@ -11,7 +11,7 @@ import wlsh.project.intervai.interview.domain.InterviewType;
 @RequiredArgsConstructor
 public class InterviewValidator {
 
-    private static final int MINIMUM_QUESTION = 5;
+    private static final int MINIMUM_QUESTION = 2;
     private static final int MAXIMUM_QUESTION = 10;
 
     public void validate(CreateInterviewCommand command) {

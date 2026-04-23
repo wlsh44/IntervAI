@@ -8,6 +8,7 @@ import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaChatOptions;
 import org.springframework.core.io.ClassPathResource;
+import wlsh.project.intervai.common.domain.JobCategory;
 import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.CsCategory;
 import wlsh.project.intervai.interview.domain.CsSubject;
@@ -45,6 +46,7 @@ class QuestionGeneratorTest {
     void prompt() throws Exception {
         // given
         Interview interview = Interview.create(1L, new CreateInterviewCommand(
+                JobCategory.BACKEND,
                 InterviewType.CS,
                 Difficulty.ENTRY,
                 5,

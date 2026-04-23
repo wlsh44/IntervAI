@@ -4,7 +4,7 @@ interface QuestionCountInputProps {
   error?: string
 }
 
-const MIN = 5
+const MIN = 2
 const MAX = 10
 
 const QuestionCountInput = ({ value, onChange, error }: QuestionCountInputProps) => {

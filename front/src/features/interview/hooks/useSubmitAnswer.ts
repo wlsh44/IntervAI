@@ -32,7 +32,7 @@ export const useSubmitAnswer = ({ interviewId, onSuccess }: UseSubmitAnswerOptio
               (item) => item.questionId === variables.questionId && item.answerId !== null,
             )
             if (answered) {
-              onSuccess({ feedback: answered.feedbackContent ?? '' }, variables.content)
+              onSuccess({ feedback: answered.feedbackContent ?? '', score: 0 }, variables.content)
             }
           })
           .catch(() => {

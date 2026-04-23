@@ -11,10 +11,12 @@ import DifficultySelector from './DifficultySelector'
 import QuestionCountInput from './QuestionCountInput'
 import InterviewerToneSelector from './InterviewerToneSelector'
 import InterviewSetupSummary from './InterviewSetupSummary'
+import JobCategorySelector from '../../profile/components/JobCategorySelector'
 
 import { useCreateInterview } from '../hooks/useCreateInterview'
 import { useLoadProfile } from '../hooks/useLoadProfile'
 import type { CsSubjectRequest } from '../api/interviewApi'
+import { JobCategory } from '../../../shared/types/enums'
 import type { InterviewType, Difficulty, InterviewerTone } from '../../../shared/types/enums'
 
 const csSubjectSchema = z.object({
@@ -24,9 +26,12 @@ const csSubjectSchema = z.object({
 
 const interviewSetupSchema = z
   .object({
+    jobCategory: z.enum(['FRONTEND', 'BACKEND', 'FULLSTACK', 'ML_ENGINEER', 'ANDROID', 'IOS', 'DATA_ENGINEER', 'DEVOPS'], {
+      error: '직군을 선택해주세요.',
+    }),
     interviewType: z.enum(['CS', 'PORTFOLIO', 'ALL']),
     difficulty: z.enum(['ENTRY', 'JUNIOR', 'SENIOR']),
-    questionCount: z.number().int().min(5, '5개 이상').max(10, '10개 이하'),
+    questionCount: z.number().int().min(2, '2개 이상').max(10, '10개 이하'),
     interviewerTone: z.enum(['FRIENDLY', 'NORMAL', 'AGGRESSIVE']),
     csSubjects: z.array(csSubjectSchema),
     portfolioLinks: z.array(z.string()),
@@ -67,10 +72,10 @@ const InterviewSetupForm = () => {
   } = useForm<InterviewSetupFormValues>({
     resolver: zodResolver(interviewSetupSchema),
     defaultValues: {
-      interviewType: 'CS',
-      difficulty: 'ENTRY',
-      questionCount: 7,
-      interviewerTone: 'NORMAL',
+      interviewType: 'CS' as const,
+      difficulty: 'ENTRY' as const,
+      questionCount: 5,
+      interviewerTone: 'NORMAL' as const,
       csSubjects: [],
       portfolioLinks: [],
       techStacks: [],
@@ -83,6 +88,7 @@ const InterviewSetupForm = () => {
 
     const currentType = getValues('interviewType')
 
+    if (data.jobCategory) setValue('jobCategory', data.jobCategory as JobCategory)
     if (data.careerLevel) setValue('difficulty', data.careerLevel)
 
     if (currentType === 'PORTFOLIO' || currentType === 'ALL') {
@@ -104,6 +110,7 @@ const InterviewSetupForm = () => {
         : undefined
 
     mutate({
+      jobCategory: data.jobCategory as JobCategory,
       interviewType: data.interviewType as InterviewType,
       difficulty: data.difficulty as Difficulty,
       questionCount: data.questionCount,
@@ -137,6 +144,22 @@ const InterviewSetupForm = () => {
           프로필 불러오기
         </button>
       </div>
+
+      {/* 직군 */}
+      <section className="space-y-3">
+        <h2 className="text-base font-semibold text-[#131b2e]">직군</h2>
+        <Controller
+          control={control}
+          name="jobCategory"
+          render={({ field }) => (
+            <JobCategorySelector
+              value={field.value as JobCategory}
+              onChange={field.onChange}
+              error={errors.jobCategory?.message}
+            />
+          )}
+        />
+      </section>
 
       {/* 면접 유형 */}
       <section className="space-y-3">
@@ -260,9 +283,10 @@ const InterviewSetupForm = () => {
       {/* 설정 요약 */}
       <InterviewSetupSummary
         formValues={{
+          jobCategory: (watchedValues.jobCategory as JobCategory) ?? null,
           interviewType: (watchedValues.interviewType as InterviewType) ?? null,
           difficulty: (watchedValues.difficulty as Difficulty) ?? null,
-          questionCount: watchedValues.questionCount ?? 7,
+          questionCount: watchedValues.questionCount ?? 5,
           interviewerTone: (watchedValues.interviewerTone as InterviewerTone) ?? null,
           csSubjects: (watchedValues.csSubjects as CsSubjectRequest[]) ?? [],
           portfolioLinks: watchedValues.portfolioLinks ?? [],

@@ -10,9 +10,6 @@ import type { OrderedSessionHistoryItem } from '../../features/interview/utils/s
 import { orderSessionHistory } from '../../features/interview/utils/sessionHistory'
 import { ApiErrorCode, extractApiError } from '../api/apiError'
 import ScoreBadge from '../../features/interview/components/report/ScoreBadge'
-import ScoreProgressBar from '../../features/interview/components/report/ScoreProgressBar'
-import StrengthsCard from '../../features/interview/components/report/StrengthsCard'
-import ImprovementsCard from '../../features/interview/components/report/ImprovementsCard'
 import OverallCommentCard from '../../features/interview/components/report/OverallCommentCard'
 import ReportQuestionListItem from '../../features/interview/components/report/ReportQuestionListItem'
 
@@ -105,7 +102,7 @@ const InterviewResultPage = () => {
 
   // 리포트 정상 수신 시 리포트 뷰
   if (report.data) {
-    const { scoreReport, questions } = report.data
+    const { totalScore, overallComment, questions } = report.data
     return (
       <div className="min-h-screen bg-[#faf8ff]">
         <div className="max-w-2xl mx-auto px-4 py-8 flex flex-col gap-6">
@@ -119,18 +116,8 @@ const InterviewResultPage = () => {
             </button>
           </div>
 
-          <ScoreBadge score={scoreReport.totalScore} />
-
-          <div className="bg-white rounded-xl border border-[#c7cbf5] px-5 py-4 flex flex-col gap-4">
-            <p className="text-base font-semibold text-[#131b2e]">세부 점수</p>
-            <ScoreProgressBar label="개념 이해도" score={scoreReport.scores.conceptUnderstanding} />
-            <ScoreProgressBar label="문제 해결력" score={scoreReport.scores.problemSolving} />
-            <ScoreProgressBar label="커뮤니케이션" score={scoreReport.scores.communication} />
-          </div>
-
-          <StrengthsCard items={scoreReport.strengths} />
-          <ImprovementsCard items={scoreReport.improvements} />
-          <OverallCommentCard comment={scoreReport.overallComment} />
+          <ScoreBadge score={totalScore} />
+          <OverallCommentCard comment={overallComment} />
 
           <div className="flex flex-col gap-4">
             <p className="text-base font-semibold text-[#131b2e]">질문별 상세</p>
