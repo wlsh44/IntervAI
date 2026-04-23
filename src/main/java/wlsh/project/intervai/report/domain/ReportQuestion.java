@@ -9,6 +9,13 @@ public record ReportQuestion(
         String answerContent,
         String feedbackContent,
         Integer score,
-        List<String> keywords
+        List<String> keywords,
+        List<FollowUpQuestion> followUps
 ) {
+    public record FollowUpQuestion(
+            Long questionId,
+            String questionContent,
+            String answerContent,
+            String feedbackContent
+    ) {}
 }

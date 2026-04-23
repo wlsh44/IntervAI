@@ -10,8 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wlsh.project.intervai.common.entity.EntityStatus;
 import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
-import wlsh.project.intervai.report.domain.InterviewReport;
-import wlsh.project.intervai.report.domain.ReportQuestion;
+import wlsh.project.intervai.report.application.dto.ReportGenerationResultDto.QuestionKeywords;
 import wlsh.project.intervai.report.infra.InterviewReportEntity;
 import wlsh.project.intervai.report.infra.InterviewReportRepository;
 
@@ -23,15 +22,15 @@ public class InterviewReportFinder {
     private final ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
-    public InterviewReport find(Long interviewId) {
+    public StoredInterviewReport find(Long interviewId) {
         InterviewReportEntity entity = interviewReportRepository
                 .findByInterviewIdAndStatus(interviewId, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new CustomException(ErrorCode.REPORT_NOT_FOUND));
-        List<ReportQuestion> questions = readQuestions(entity.getQuestionsJson());
-        return entity.toDomain(questions);
+        List<QuestionKeywords> keywords = readKeywords(entity.getQuestionsJson());
+        return entity.toStoredReport(keywords);
     }
 
-    private List<ReportQuestion> readQuestions(String json) {
+    private List<QuestionKeywords> readKeywords(String json) {
         try {
             return objectMapper.readValue(json, new TypeReference<>() {
             });

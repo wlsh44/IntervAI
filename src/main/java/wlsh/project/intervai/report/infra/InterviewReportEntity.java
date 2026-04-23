@@ -15,8 +15,9 @@ import lombok.NoArgsConstructor;
 import wlsh.project.intervai.common.entity.BaseEntity;
 import wlsh.project.intervai.interview.domain.Difficulty;
 import wlsh.project.intervai.interview.domain.InterviewType;
+import wlsh.project.intervai.report.application.StoredInterviewReport;
+import wlsh.project.intervai.report.application.dto.ReportGenerationResultDto.QuestionKeywords;
 import wlsh.project.intervai.report.domain.InterviewReport;
-import wlsh.project.intervai.report.domain.ReportQuestion;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -90,10 +91,10 @@ public class InterviewReportEntity extends BaseEntity {
         );
     }
 
-    public InterviewReport toDomain(List<ReportQuestion> questions) {
-        return new InterviewReport(
+    public StoredInterviewReport toStoredReport(List<QuestionKeywords> keywords) {
+        return new StoredInterviewReport(
                 id, interviewId, interviewType, jobCategory, difficulty,
-                questionCount, completedAt, totalScore, overallComment, questions
+                questionCount, completedAt, totalScore, overallComment, keywords
         );
     }
 }
