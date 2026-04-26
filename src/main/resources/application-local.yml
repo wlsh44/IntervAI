@@ -1,4 +1,7 @@
 spring:
+  ai:
+    model:
+      chat: none
 #  ai:
 #    anthropic:
 #      api-key: ${ANTHROPIC_API_KEY:}
