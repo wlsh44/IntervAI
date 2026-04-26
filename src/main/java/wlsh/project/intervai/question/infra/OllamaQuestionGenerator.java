@@ -26,7 +26,7 @@ public class OllamaQuestionGenerator implements QuestionGenerator {
     private final Resource promptResource;
     private final ObjectMapper objectMapper;
 
-    public OllamaQuestionGenerator(@Qualifier("ollamaChatClient") ChatClient chatClient,
+    public OllamaQuestionGenerator(@Qualifier("geminiChatClient") ChatClient chatClient,
                                    @Value("classpath:prompts/question-generator.st") Resource promptResource,
                                    ObjectMapper objectMapper) {
         this.chatClient = chatClient;

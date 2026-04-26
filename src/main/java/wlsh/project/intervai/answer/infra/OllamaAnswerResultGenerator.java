@@ -28,7 +28,7 @@ public class OllamaAnswerResultGenerator implements AnswerResultGenerator {
     private final Resource promptResource;
     private final ObjectMapper objectMapper;
 
-    public OllamaAnswerResultGenerator(@Qualifier("ollamaChatClient") ChatClient chatClient,
+    public OllamaAnswerResultGenerator(@Qualifier("geminiChatClient") ChatClient chatClient,
                                        @Value("classpath:prompts/feedback-followup.st") Resource promptResource,
                                        ObjectMapper objectMapper) {
         this.chatClient = chatClient;
