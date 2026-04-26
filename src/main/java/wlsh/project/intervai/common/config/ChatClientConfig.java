@@ -4,6 +4,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.InMemoryChatMemoryRepository;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaChatOptions;
@@ -12,10 +13,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile("prod")
 public class ChatClientConfig {
 
     @Bean
+    @Profile("prod")
+    public ChatClient geminiChatClient(ChatModel chatModel) {
+        return ChatClient.builder(chatModel)
+                .defaultAdvisors(chatMemoryAdvisor())
+                .build();
+    }
+
+    @Bean
+    @Profile("local-ollama")
     public ChatClient ollamaChatClient() {
         OllamaApi ollamaApi = OllamaApi.builder()
                 .baseUrl("http://localhost:11434")
@@ -30,11 +39,14 @@ public class ChatClientConfig {
                 )
                 .build();
         return ChatClient.builder(builder)
-                .defaultAdvisors(
-                        MessageChatMemoryAdvisor.builder(
-                                        MessageWindowChatMemory.builder()
-                                                .chatMemoryRepository(new InMemoryChatMemoryRepository())
-                                                .build())
+                .defaultAdvisors(chatMemoryAdvisor())
+                .build();
+    }
+
+    private MessageChatMemoryAdvisor chatMemoryAdvisor() {
+        return MessageChatMemoryAdvisor.builder(
+                        MessageWindowChatMemory.builder()
+                                .chatMemoryRepository(new InMemoryChatMemoryRepository())
                                 .build())
                 .build();
     }

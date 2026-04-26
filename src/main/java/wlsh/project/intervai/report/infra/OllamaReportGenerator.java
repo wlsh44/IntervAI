@@ -25,7 +25,7 @@ public class OllamaReportGenerator implements ReportGenerator {
     private final Resource promptResource;
     private final ObjectMapper objectMapper;
 
-    public OllamaReportGenerator(@Qualifier("ollamaChatClient") ChatClient chatClient,
+    public OllamaReportGenerator(@Qualifier("geminiChatClient") ChatClient chatClient,
                                  @Value("classpath:prompts/summary.st") Resource promptResource,
                                  ObjectMapper objectMapper) {
         this.chatClient = chatClient;
