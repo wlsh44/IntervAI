@@ -18,6 +18,7 @@ import wlsh.project.intervai.answer.infra.AnswerRepository;
 import wlsh.project.intervai.answer.presentation.dto.CreateAnswerResponse;
 import wlsh.project.intervai.common.ApiIntegrationTest;
 import wlsh.project.intervai.feedback.infra.FeedbackRepository;
+import wlsh.project.intervai.report.infra.InterviewReportRepository;
 import wlsh.project.intervai.interview.infra.InterviewCsSubjectRepository;
 import wlsh.project.intervai.interview.infra.InterviewPortfolioLinkRepository;
 import wlsh.project.intervai.interview.infra.InterviewRepository;
@@ -81,8 +82,12 @@ class InterviewSequenceIntegrationTest extends ApiIntegrationTest {
     @Autowired
     private FeedbackRepository feedbackRepository;
 
+    @Autowired
+    private InterviewReportRepository interviewReportRepository;
+
     @AfterEach
     void tearDown() {
+        interviewReportRepository.deleteAllInBatch();
         feedbackRepository.deleteAllInBatch();
         answerRepository.deleteAllInBatch();
         questionRepository.deleteAllInBatch();
@@ -212,6 +217,7 @@ class InterviewSequenceIntegrationTest extends ApiIntegrationTest {
 
                 return new AnswerResultDto(
                         "[Test] feedback for " + question.getContent(),
+                        80,
                         followUpQuestion
                 );
             };

@@ -13,9 +13,9 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import wlsh.project.intervai.common.domain.JobCategory;
 import wlsh.project.intervai.common.entity.BaseEntity;
 import wlsh.project.intervai.profile.domain.CareerLevel;
-import wlsh.project.intervai.profile.domain.JobCategory;
 import wlsh.project.intervai.profile.domain.Profile;
 
 @Getter

@@ -1,6 +1,6 @@
 import { httpClient } from '../../../shared/api/httpClient'
 import { API_PATHS } from '../../../shared/api/constants'
-import type { CsCategory, Difficulty, InterviewType, InterviewerTone, QuestionType } from '../../../shared/types/enums'
+import type { CsCategory, Difficulty, InterviewType, InterviewerTone, JobCategory, QuestionType } from '../../../shared/types/enums'
 
 export interface CsSubjectRequest {
   category: CsCategory
@@ -8,6 +8,7 @@ export interface CsSubjectRequest {
 }
 
 export interface CreateInterviewRequest {
+  jobCategory: JobCategory
   interviewType: InterviewType
   difficulty: Difficulty
   questionCount: number
@@ -19,6 +20,7 @@ export interface CreateInterviewRequest {
 
 export interface CreateInterviewResponse {
   id: number
+  jobCategory: JobCategory
   interviewType: InterviewType
   difficulty: Difficulty
   questionCount: number
@@ -56,6 +58,7 @@ export interface SubmitAnswerRequest {
 
 export interface SubmitAnswerResponse {
   feedback: string
+  score: number
 }
 
 export interface SessionHistoryItem {
@@ -103,5 +106,40 @@ export const submitAnswer = async (
 
 export const getSessionHistory = async (interviewId: number): Promise<SessionHistoryItem[]> => {
   const res = await httpClient.get<SessionHistoryItem[]>(API_PATHS.interviews.history(interviewId))
+  return res.data
+}
+
+export interface FollowUpQuestionItem {
+  questionId: number
+  questionContent: string
+  answerContent: string | null
+  feedbackContent: string | null
+}
+
+export interface ReportQuestionItem {
+  questionId: number
+  questionIndex: number
+  questionContent: string
+  answerContent: string | null
+  feedbackContent: string | null
+  score: number | null
+  keywords: string[]
+  followUps: FollowUpQuestionItem[]
+}
+
+export interface InterviewReport {
+  interviewId: number
+  interviewType: string
+  jobCategory: string
+  difficulty: string
+  questionCount: number
+  completedAt: string
+  totalScore: number
+  overallComment: string
+  questions: ReportQuestionItem[]
+}
+
+export const getInterviewReport = async (interviewId: number): Promise<InterviewReport> => {
+  const res = await httpClient.get<InterviewReport>(API_PATHS.interviews.report(interviewId))
   return res.data
 }

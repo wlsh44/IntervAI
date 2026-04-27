@@ -1,4 +1,4 @@
-package wlsh.project.intervai.profile.domain;
+package wlsh.project.intervai.common.domain;
 
 public enum JobCategory {
     FRONTEND,
