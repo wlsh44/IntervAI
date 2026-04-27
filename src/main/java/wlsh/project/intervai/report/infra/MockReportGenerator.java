@@ -12,8 +12,15 @@ import java.util.List;
 @Profile("!prod")
 public class MockReportGenerator implements ReportGenerator {
 
+    private final ReportPromptBuilder promptBuilder;
+
+    public MockReportGenerator(ReportPromptBuilder promptBuilder) {
+        this.promptBuilder = promptBuilder;
+    }
+
     @Override
     public ReportGenerationResultDto generate(String sessionId, Interview interview, String jobCategory) {
+        promptBuilder.build(interview, jobCategory);
         return new ReportGenerationResultDto(
                 82,
                 "전반적으로 기본기가 탄탄하며 논리적인 답변을 잘 구성했습니다. 세부 항목에서 더 깊이 있는 이해를 보여준다면 더욱 우수한 결과를 기대할 수 있습니다.",

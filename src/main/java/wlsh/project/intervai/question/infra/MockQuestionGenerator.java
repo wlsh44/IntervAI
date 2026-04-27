@@ -11,8 +11,15 @@ import wlsh.project.intervai.question.application.QuestionGenerator;
 @Profile("!prod")
 public class MockQuestionGenerator implements QuestionGenerator {
 
+    private final QuestionPromptBuilder promptBuilder;
+
+    public MockQuestionGenerator(QuestionPromptBuilder promptBuilder) {
+        this.promptBuilder = promptBuilder;
+    }
+
     @Override
     public List<String> generateAll(Interview interview) {
+        promptBuilder.build(interview);
         List<String> questions = new ArrayList<>();
         for (int i = 0; i < interview.getQuestionCount(); i++) {
             questions.add("[Mock] " + interview.getInterviewType().getKo()
