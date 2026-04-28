@@ -31,9 +31,11 @@ export const useSubmitAnswer = ({ interviewId, onSuccess }: UseSubmitAnswerOptio
             const answered = history.find(
               (item) => item.questionId === variables.questionId && item.answerId !== null,
             )
-            if (answered) {
-              onSuccess({ feedback: answered.feedbackContent ?? '', score: 0 }, variables.content)
+            if (answered?.score !== null && answered?.score !== undefined) {
+              onSuccess({ feedback: answered.feedbackContent ?? '', score: answered.score }, variables.content)
+              return
             }
+            toast('답변 점수를 불러오지 못했습니다. 페이지를 새로고침해주세요.', 'error')
           })
           .catch(() => {
             toast('답변 상태를 불러오지 못했습니다. 페이지를 새로고침해주세요.', 'error')
