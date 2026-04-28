@@ -44,7 +44,11 @@ public class ApiReportGenerator implements ReportGenerator {
         try {
             return objectMapper.readValue(response.trim(), ReportGenerationResultDto.class);
         } catch (Exception e) {
-            log.warn("[ApiReportGenerator.parseResult] JSON 파싱 실패, 응답:\n{}", response);
+            log.warn(
+                    "[ApiReportGenerator.parseResult] JSON 파싱 실패 - responseLength={}, cause={}",
+                    response == null ? 0 : response.length(),
+                    e.toString()
+            );
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
