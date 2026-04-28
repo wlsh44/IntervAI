@@ -35,7 +35,7 @@ public class OllamaAnswerResultGenerator implements AnswerResultGenerator {
     public AnswerResultDto generate(String sessionId, Interview interview, Question question, Answer answer) {
         log.info("[OllamaAnswerResultGenerator.generate] 피드백 생성 시작 - sessionId={}, questionId={}",
                 sessionId, question.getId());
-        String prompt = promptBuilder.build(question, answer);
+        String prompt = promptBuilder.build(question, answer, interview);
         String response = aiChatCaller.callWithSession(sessionId, prompt);
         AnswerResultDto result = parseFeedbackResult(response);
         log.info("[OllamaAnswerResultGenerator.generate] 피드백 생성 완료 - score={}", result.score());

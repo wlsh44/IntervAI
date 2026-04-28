@@ -3,6 +3,12 @@
 [현재 질문]
 {question}
 
+[직군]
+{jobCategory}
+
+[난이도]
+{difficulty}
+
 [지원자 답변]
 {answerText}
 

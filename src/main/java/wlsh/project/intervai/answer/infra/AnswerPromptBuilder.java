@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import wlsh.project.intervai.answer.domain.Answer;
+import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.question.domain.Question;
 
 import java.util.Map;
@@ -18,11 +19,13 @@ public class AnswerPromptBuilder {
         this.promptResource = promptResource;
     }
 
-    public String build(Question question, Answer answer) {
+    public String build(Question question, Answer answer, Interview interview) {
         PromptTemplate template = new PromptTemplate(promptResource);
         return template.render(Map.of(
                 "question", question.getContent(),
-                "answerText", answer.getContent()
+                "answerText", answer.getContent(),
+                "difficulty", interview.getDifficulty().getKo(),
+                "jobCategory", interview.getJobCategory().name()
         ));
     }
 }
