@@ -37,14 +37,14 @@ git checkout fe/feat/{domain} 2>/dev/null || git checkout -b fe/feat/{domain}
 - 입력 필드 / 버튼 / 레이블 텍스트
 - 카드/컨테이너 스타일
 
-### Step 4: fe-dev-planner 에이전트 호출
-다음 정보를 전달하여 `fe-dev-planner` 에이전트를 호출한다:
+### Step 4: front/PLAN.md 직접 작성
+에이전트 호출 없이 다음 정보를 기준으로 `front/PLAN.md`를 작성한다:
 - 도메인명: `{domain}`
 - 도메인 문서 경로: `docs/{domain}.md`
 - Stitch 스크린 ID + 추출된 디자인 요약
 - 백엔드 관련 코드 경로: `src/main/java/wlsh/project/intervai/{domain}/`
 - 프런트 피처 경로: `front/src/features/{domain}/`
-- 출력 위치: `front/PLAN.md`
+- 적용 기준: `.agent/skills/intervai-fe/SKILL.md`
 
 ### Step 5: 플랜 요약 출력
 `front/PLAN.md` 생성 후:

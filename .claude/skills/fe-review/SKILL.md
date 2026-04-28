@@ -51,11 +51,12 @@ gh api graphql -f query='
 "🔧 수정 필요" 항목이 있으면 목록을 보여주고 **수정 진행 여부를 사용자에게 확인**한다.
 
 ### Step 5: 수정 구현
-수정 진행 시 `fe-plan-executor` 에이전트를 호출하여 각 수정 사항을 구현한다.
-에이전트에 전달할 내용:
+수정 진행 시 에이전트 호출 없이 `.agent/skills/intervai-fe/SKILL.md` 기준으로 각 수정 사항을 직접 구현한다.
+
+구현 시 확인할 내용:
 - 수정 필요 thread 내용 전체
 - 관련 파일 경로
-- 수정 후 `npm run typecheck` 실행 지시
+- 수정 후 `npm run typecheck` 실행
 
 ### Step 6: Codex 코드 리뷰
 수정 구현 완료 후 `codex:review --background`를 실행한다:
