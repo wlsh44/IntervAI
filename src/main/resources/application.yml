@@ -23,4 +23,4 @@
 #    expiration: 604800000
 spring:
   profiles:
-    active: prod
+    active: local
