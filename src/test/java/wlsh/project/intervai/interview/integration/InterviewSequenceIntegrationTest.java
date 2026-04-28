@@ -153,7 +153,7 @@ class InterviewSequenceIntegrationTest extends ApiIntegrationTest {
 
         assertThat(askedQuestions).hasSizeLessThanOrEqualTo(MAX_SEQUENCE_ROUNDS);
         assertThat(askedQuestions).isNotEmpty();
-        assertThat(askedQuestions.getLast().questionType()).isEqualTo(QuestionType.QUESTION);
+        assertThat(askedQuestions.getLast().questionType()).isEqualTo(QuestionType.FOLLOW_UP);
         assertThat(askedQuestions.getLast().hasNext()).isFalse();
         assertThat(answers).allSatisfy(answer -> assertThat(answer.feedback()).isNotBlank());
         return askedQuestions;
@@ -170,7 +170,7 @@ class InterviewSequenceIntegrationTest extends ApiIntegrationTest {
                 .count();
 
         assertThat(mainQuestionCount).isEqualTo(5);
-        assertThat(followUpQuestionCount).isEqualTo(4);
+        assertThat(followUpQuestionCount).isEqualTo(15);
 
         var savedSession = interviewSessionRepository.findByInterviewIdAndStatus(interview.id(), ACTIVE)
                 .orElseThrow();
@@ -184,9 +184,9 @@ class InterviewSequenceIntegrationTest extends ApiIntegrationTest {
                 .filter(question -> question.getInterviewId().equals(interview.id()))
                 .count();
 
-        assertThat(savedQuestionCount).isEqualTo(9);
-        assertThat(answerRepository.findAll()).hasSize(9);
-        assertThat(feedbackRepository.findAll()).hasSize(9);
+        assertThat(savedQuestionCount).isEqualTo(20);
+        assertThat(answerRepository.findAll()).hasSize(20);
+        assertThat(feedbackRepository.findAll()).hasSize(20);
     }
 
     private String uniqueNickname() {
@@ -207,20 +207,11 @@ class InterviewSequenceIntegrationTest extends ApiIntegrationTest {
         @Bean
         @Primary
         AnswerResultGenerator answerResultGenerator() {
-            return (conversationId, interview, question, answer) -> {
-                boolean shouldCreateFollowUp = question.getQuestionType() == QuestionType.QUESTION
-                        && question.getQuestionIndex() < interview.getQuestionCount() - 1;
-
-                String followUpQuestion = shouldCreateFollowUp
-                        ? "[Test] follow-up for main question " + (question.getQuestionIndex() + 1)
-                        : "";
-
-                return new AnswerResultDto(
-                        "[Test] feedback for " + question.getContent(),
-                        80,
-                        followUpQuestion
-                );
-            };
+            return (conversationId, interview, question, answer) -> new AnswerResultDto(
+                    "[Test] feedback for " + question.getContent(),
+                    80,
+                    "[Test] follow-up for " + question.getContent()
+            );
         }
     }
 }
