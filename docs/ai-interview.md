@@ -17,12 +17,12 @@
 ### 기능 요구사항
 
 #### 질문 생성
-- [x] CS 기초 질문 생성: CsCategory(DATA_STRUCTURE, ALGORITHM, NETWORK, LANGUAGE, DATABASE) 및 세부 토픽 기반
+- [x] CS 기초 질문 생성: `CsSubject`(DATA_STRUCTURE, ALGORITHM, NETWORK, LANGUAGE, DATABASE) 및 세부 토픽 기반
 - [x] 포트폴리오 기반 질문 생성: portfolioLinks를 시스템 프롬프트에 주입하여 맞춤 질문 생성
 - [x] 종합(ALL) 유형: CS + 포트폴리오 기반 질문을 혼합하여 생성
 - [x] 면접 생성할 때, 사용자의 프로필 설정을 기반으로 '프로필 불러오기' 호출을 통해 면접 생성의 값 세팅을 프로필 기반 세팅으로 설정
   - CS 면접 생성의 페이지에서 '프로필 불러오기'를 눌렀을 경우: 난이도 설정
-  - 포트폴리 면접 생성 페이지 또는 종합 면접 생성 페이지에서 '프로필 불러오기'를 눌렀을 경우: 포트폴리오 링크, 기술 스택, 난이도 설정
+  - 포트폴리오 면접 생성 페이지 또는 종합 면접 생성 페이지에서 '프로필 불러오기'를 눌렀을 경우: 포트폴리오 링크, 기술 스택, 난이도 설정
 - [x] 세션 생성 후 별도 API 호출로 질문 일괄 생성하여 DB에 저장 (`POST /api/interviews/{interviewId}/questions`)
 - [ ] GitHub 레포지토리의 기술 스택, 커밋 패턴, README 분석을 통한 고도화된 포트폴리오 질문 (Stage 6)
 
@@ -31,17 +31,19 @@
 - [x] 꼬리 질문 수 제한 준수 (maxFollowUpCount, 기본값 3 — `Interview.DEFAULT_MAX_FOLLOW_UP_COUNT`)
 - [x] 꼬리 질문 초과 또는 LLM이 꼬리 질문 없음 판단 시 다음 본 질문으로 자동 진행
 - [x] 꼬리 질문은 `QuestionType.FOLLOW_UP`으로 저장, 본 질문은 `QuestionType.QUESTION`으로 구분
+- [x] 꼬리 질문은 `parentQuestionId`로 부모 질문과 연결 (체인 구조)
 - [ ] 본 질문 변경 시 꼬리 질문 컨텍스트 분리 (conversationId 재발급 — 미구현)
 
 #### 답변 피드백
 - [x] 답변 후 피드백 생성 (Claude API `feedback-followup.st` 프롬프트 사용)
-- [x] 피드백은 답변 제출 응답(`CreateAnswerResponse`)에 포함하여 반환
-- [ ] 피드백에 이상적인 모범 답변 예시 포함 (현재 단순 텍스트 피드백만 반환)
+- [x] 피드백은 답변 제출 응답(`CreateAnswerResponse`)에 포함하여 반환 — `feedback`, `score` (0~100) 포함
+- [x] `Feedback` 도메인에 `feedbackContent`와 `score` 저장
+- [ ] 피드백에 핵심 키워드, 논리 구조, 깊이 평가 항목 구조화 (현재 텍스트 + 점수만 반환)
 
 #### LLM 컨텍스트 관리
 - [x] 시스템 프롬프트에 면접관 페르소나 설정 (FRIENDLY / NORMAL / AGGRESSIVE)
-- [x] Spring AI ChatClient 기반 LLM 호출 (`AnswerResultGenerator` 인터페이스)
-- [x] conversationId로 세션 단위 대화 히스토리 관리 (sessionId를 conversationId로 사용)
+- [x] `AiChatCaller` 기반 LLM 호출, `conversationId`로 세션 단위 대화 히스토리 관리
+- [x] sessionId를 conversationId로 사용하여 세션 전체 대화 컨텍스트 유지
 - [ ] 본 질문 변경 시 conversationId 재발급으로 꼬리 질문 컨텍스트 분리 (미구현)
 - [ ] GitHub 분석 결과를 시스템 프롬프트에 주입 (Stage 6)
 
@@ -49,10 +51,10 @@
 - [x] LLM 프롬프트 파일은 외부 `.st` 파일로 분리 관리
   - `resources/prompts/question-generator.st` — 질문 생성
   - `resources/prompts/feedback-followup.st` — 피드백 + 꼬리 질문
-  - `resources/prompts/summary.st` — 세션 요약 (Stage 6 예정)
+  - `resources/prompts/summary.st` — 세션 요약 (리포트 생성용)
 - [x] `QuestionGenerator` / `AnswerResultGenerator` 인터페이스로 LLM 구현체 교체 가능하게 설계
-  - Mock 구현체: `MockQuestionGenerator`, `MockAnswerResultGenerator`
-  - 실제 구현체: `OllamaQuestionGenerator` (Claude API 연동), `ClaudeAnswerResultGenerator`
+  - Mock 구현체: `MockQuestionGenerator`, `MockAnswerResultGenerator` (`@Profile("!prod")`)
+  - 실제 구현체: `ApiQuestionGenerator`, `OllamaAnswerResultGenerator` (`@Profile("prod")`)
 
 ## 사용자 스토리
 - As a 면접 연습 중인 사용자, I want to 내 포트폴리오에 기반한 맞춤형 질문을 받고 싶다 so that 실제 면접에서 받을 수 있는 질문을 미리 연습할 수 있다.
@@ -65,31 +67,32 @@
 ### 질문 생성 플로우 (세션 생성 후)
 1. 사용자가 면접 설정 완료 후 세션 생성 요청 (`POST /api/interviews/{interviewId}/sessions`)
 2. 세션 생성 후 프론트엔드가 질문 생성 요청 (`POST /api/interviews/{interviewId}/questions`)
-3. Backend가 `question-generator.st` 프롬프트로 Claude API에 질문 생성 요청
-   - 변수: `{ interviewType, difficulty, questionCount, interviewerTone, csSubjects, portfolioLinks }`
-4. Claude API가 질문 배열 반환
+3. Backend가 `question-generator.st` 프롬프트로 LLM에 질문 생성 요청
+   - 프롬프트 변수: `{ count, interviewType, level, interviewerTone, topic }`
+   - `QuestionPromptBuilder`가 `Interview` 도메인 기반으로 변수 조립
+4. LLM이 질문 배열을 JSON 형태로 반환 (`["질문1", "질문2", ...]`)
 5. Backend가 질문을 `QuestionType.QUESTION`으로 DB에 저장하고 응답 반환
 
 ### 피드백 + 꼬리 질문 플로우 (답변 제출 시)
 1. 사용자가 답변 제출 (`POST /api/interviews/{interviewId}/answers`)
    - body: `{ questionId, content }`
 2. Backend가 `AnswerHandler`를 통해 `AnswerResultGenerator`에 피드백 + 꼬리 질문 요청
-   - `feedback-followup.st` 프롬프트, sessionId를 conversationId로 사용
-3. Claude API가 `{ feedback, followUpQuestion }` 반환
-4. Backend가 답변 및 피드백을 DB에 저장
+   - `feedback-followup.st` 프롬프트, `String.valueOf(sessionId)`를 conversationId로 사용
+3. LLM이 `{ feedback, score, followUpQuestion }` JSON 반환
+4. Backend가 답변(`Answer`), 피드백(`Feedback`)을 DB에 저장
 5. followUpQuestion 존재 여부 + maxFollowUpCount 비교로 다음 질문 결정:
-   - 꼬리 질문 있음 + 한도 미달 → 꼬리 질문 저장 후 세션 followUpCount 증가
-   - 꼬리 질문 없음 또는 한도 초과 → 세션 currentMainQuestionIdx 증가
-6. 응답: `{ feedback }` — 프론트엔드는 피드백 숨김 처리 후 사용자 요청 시 표시
+   - 꼬리 질문 있음 + 한도 미달 → `QuestionType.FOLLOW_UP`으로 저장, followUpCount 증가
+   - 꼬리 질문 없음 또는 한도 초과 → currentMainQuestionIdx 증가
+6. 응답: `{ feedback, score }` — 프론트엔드는 피드백 숨김 처리 후 사용자 요청 시 표시
 
 ## 수용 기준 (Acceptance Criteria)
-- [x] CS 기초 질문이 선택한 CsCategory 및 토픽에 맞게 생성됨
+- [x] CS 기초 질문이 선택한 CsSubject 및 토픽에 맞게 생성됨
 - [x] 포트폴리오 기반 질문이 portfolioLinks를 반영하여 생성됨
 - [x] 꼬리 질문이 사용자 답변 내용을 참조하여 생성됨
 - [x] 꼬리 질문은 maxFollowUpCount(기본 3) 초과 시 생성되지 않음
 - [x] 면접관 페르소나(FRIENDLY / NORMAL / AGGRESSIVE)에 따라 응답 톤이 달라짐
-- [x] 피드백이 답변 제출 응답에 포함됨
-- [ ] 피드백에 핵심 키워드, 논리 구조, 깊이 평가 항목이 구조화되어 포함됨 (현재 단순 텍스트)
+- [x] 피드백과 점수(0~100)가 답변 제출 응답에 포함됨
+- [ ] 피드백에 핵심 키워드, 논리 구조, 깊이 평가 항목이 구조화되어 포함됨 (현재 텍스트 + 점수)
 - [ ] 본 질문 변경 시 꼬리 질문 컨텍스트가 분리됨 (conversationId 재발급)
 
 ## 범위 외 (Out of Scope)
@@ -106,16 +109,22 @@
 - 본 질문 이동 시 conversationId 재발급 구현 방법 (Redis 기반 ChatMemory 전환 여부)
 
 ## 관련 도메인/엔티티
-- `Interview` — interviewType, difficulty, questionCount, maxFollowUpCount, interviewerTone, csSubjects, portfolioLinks
-- `Question` — id, interviewId, sessionId, content, questionType (QUESTION / FOLLOW_UP), questionIndex
-- `Answer` — id, questionId, sessionId, interviewId, content
-- `Feedback` — id, answerId, content
+- `Interview` — id, userId, jobCategory, interviewType, difficulty, questionCount, maxFollowUpCount, interviewerTone, csSubjects(`List<CsSubject>`), portfolioLinks, techStacks
+- `InterviewSession` — id, interviewId, userId, sessionStatus, currentMainQuestionIdx, followUpCount, completedAt
+- `Question` — id, interviewId, sessionId, parentQuestionId, content, questionType (QUESTION / FOLLOW_UP), questionIndex
+- `Answer` — id, userId, interviewId, sessionId, questionId, content
+- `Feedback` — id, answerId, feedbackContent, score (0~100)
 - `InterviewerTone`: FRIENDLY, NORMAL, AGGRESSIVE
 - `QuestionType`: QUESTION, FOLLOW_UP
-- `CsCategory`: DATA_STRUCTURE, ALGORITHM, NETWORK, LANGUAGE, DATABASE
+- `CsSubject`: DATA_STRUCTURE, ALGORITHM, NETWORK, LANGUAGE, DATABASE
+- `InterviewType`: CS, PORTFOLIO, ALL
+- `Difficulty`: ENTRY, JUNIOR, SENIOR
+- `JobCategory`: FRONTEND, BACKEND, FULLSTACK, ML_ENGINEER, ANDROID, IOS, DATA_ENGINEER, DEVOPS
 - 프롬프트 파일:
-  - `resources/prompts/question-generator.st` — 질문 생성
-  - `resources/prompts/feedback-followup.st` — 피드백 + 꼬리 질문
-  - `resources/prompts/summary.st` — 세션 요약 (예정)
-- `QuestionGenerator` 인터페이스 — `OllamaQuestionGenerator`(실제), `MockQuestionGenerator`(테스트)
-- `AnswerResultGenerator` 인터페이스 — `ClaudeAnswerResultGenerator`(실제), `MockAnswerResultGenerator`(테스트)
+  - `resources/prompts/question-generator.st` — 질문 생성 (변수: count, interviewType, level, interviewerTone, topic)
+  - `resources/prompts/feedback-followup.st` — 피드백 + 꼬리 질문 (변수: question, jobCategory, difficulty, answerText)
+  - `resources/prompts/summary.st` — 세션 요약·종합 리포트 (변수: interviewType, difficulty, jobCategory)
+- `QuestionGenerator` 인터페이스 — `ApiQuestionGenerator`(prod), `MockQuestionGenerator`(!prod)
+- `AnswerResultGenerator` 인터페이스 — `OllamaAnswerResultGenerator`(prod), `MockAnswerResultGenerator`(!prod)
+- `QuestionPromptBuilder` — `Interview` 도메인으로부터 질문 생성 프롬프트 조립
+- `AnswerPromptBuilder` — `Question`, `Answer`, `Interview` 도메인으로부터 피드백 프롬프트 조립
