@@ -47,7 +47,17 @@ public class ReportQuestionAssembler {
 
     private Map<Long, List<String>> mapKeywordsByQuestionId(List<QuestionKeywords> questions) {
         return questions.stream()
-                .collect(Collectors.toMap(QuestionKeywords::questionId, QuestionKeywords::keywords));
+                .collect(Collectors.toMap(
+                        QuestionKeywords::questionId,
+                        QuestionKeywords::keywords,
+                        this::mergeKeywords
+                ));
+    }
+
+    private List<String> mergeKeywords(List<String> first, List<String> second) {
+        return java.util.stream.Stream.concat(first.stream(), second.stream())
+                .distinct()
+                .toList();
     }
 
     private Map<Long, Integer> findScoresByAnswerIds(List<SessionHistory> mainQuestions) {

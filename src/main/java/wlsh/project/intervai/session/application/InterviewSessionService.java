@@ -25,7 +25,7 @@ public class InterviewSessionService {
     public void finish(Long userId, Long interviewId) {
         interviewSessionValidator.validateInterviewSession(interviewId, userId);
         interviewSessionManager.complete(interviewId);
-        interviewReportService.generateReport(interviewId);
+        interviewReportService.requestGeneration(interviewId);
     }
 
     public List<SessionHistory> findSessionHistory(Long userId, Long interviewId) {

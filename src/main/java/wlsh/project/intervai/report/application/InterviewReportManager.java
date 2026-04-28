@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import wlsh.project.intervai.common.entity.EntityStatus;
@@ -28,7 +29,11 @@ public class InterviewReportManager {
             throw new CustomException(ErrorCode.REPORT_ALREADY_EXISTS);
         }
         String questionsJson = writeKeywords(report.questions());
-        interviewReportRepository.save(InterviewReportEntity.from(report, questionsJson));
+        try {
+            interviewReportRepository.save(InterviewReportEntity.from(report, questionsJson));
+        } catch (DataIntegrityViolationException e) {
+            throw new CustomException(ErrorCode.REPORT_ALREADY_EXISTS);
+        }
     }
 
     private String writeKeywords(List<ReportQuestion> questions) {

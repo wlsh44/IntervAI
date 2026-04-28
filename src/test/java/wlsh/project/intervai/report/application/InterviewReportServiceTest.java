@@ -168,6 +168,19 @@ class InterviewReportServiceTest extends IntegrationTest {
     }
 
     @Test
+    @DisplayName("generateReport는 세션이 미완료 상태면 SESSION_NOT_COMPLETED 예외를 던진다")
+    void generateReport_whenSessionNotCompleted_throwsException() {
+        Long userId = 1L;
+        Interview interview = createInterview(userId);
+        createProfile(userId);
+        interviewSessionManager.create(interview.getId(), userId);
+
+        assertThatThrownBy(() -> interviewReportService.generateReport(interview.getId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ErrorCode.SESSION_NOT_COMPLETED.getMessage());
+    }
+
+    @Test
     @DisplayName("getReport는 리포트가 없으면 REPORT_NOT_FOUND 예외를 던진다")
     void getReport_whenReportMissing_throwsException() {
         Long userId = 1L;
