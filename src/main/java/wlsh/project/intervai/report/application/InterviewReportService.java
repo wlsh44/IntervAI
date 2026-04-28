@@ -3,6 +3,8 @@ package wlsh.project.intervai.report.application;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.report.application.InterviewReportContextFinder.InterviewReportContext;
@@ -14,6 +16,7 @@ import wlsh.project.intervai.session.domain.InterviewSession;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InterviewReportService {
 
     private final InterviewSessionValidator interviewSessionValidator;
@@ -24,10 +27,20 @@ public class InterviewReportService {
     private final InterviewReportFinder interviewReportFinder;
     private final InterviewReportManager interviewReportManager;
 
+    @Async
+    public void requestGeneration(Long interviewId) {
+        try {
+            generateReport(interviewId);
+        } catch (Exception e) {
+            log.error("[InterviewReportService.requestGeneration] 리포트 생성 실패 - interviewId={}", interviewId, e);
+        }
+    }
+
     public void generateReport(Long interviewId) {
         InterviewReportContext context = interviewReportContextFinder.find(interviewId);
         Interview interview = context.interview();
         InterviewSession session = context.session();
+        interviewReportSessionValidator.validateCompleted(session);
 
         ReportGenerationResultDto result = reportGenerator.generate(
                 String.valueOf(session.getId()),
