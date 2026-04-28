@@ -68,6 +68,7 @@ export interface SessionHistoryItem {
   questionContent: string
   answerContent: string | null
   feedbackContent: string | null
+  score: number | null
   questionType: QuestionType
   questionIndex: number
 }

@@ -12,6 +12,7 @@ public record SessionHistory(
         String questionContent,
         String answerContent,
         String feedbackContent,
+        Integer score,
         QuestionType questionType,
         Integer questionIndex
 ) {
@@ -24,6 +25,7 @@ public record SessionHistory(
                 sessionHistoryDto.getQuestionContent(),
                 sessionHistoryDto.getAnswerContent(),
                 feedback != null ? feedback.getFeedbackContent() : null,
+                feedback != null ? feedback.getScore() : null,
                 sessionHistoryDto.getQuestionType(),
                 sessionHistoryDto.getQuestionIndex()
         );
