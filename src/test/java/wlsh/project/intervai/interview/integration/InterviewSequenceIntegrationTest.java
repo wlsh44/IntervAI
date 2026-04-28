@@ -199,7 +199,7 @@ class InterviewSequenceIntegrationTest extends ApiIntegrationTest {
         @Bean
         @Primary
         QuestionGenerator questionGenerator() {
-            return interview -> java.util.stream.IntStream.range(0, interview.getQuestionCount())
+            return (interview, session) -> java.util.stream.IntStream.range(0, interview.getQuestionCount())
                     .mapToObj(index -> "[Test] main question " + (index + 1))
                     .toList();
         }

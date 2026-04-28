@@ -18,6 +18,7 @@ import wlsh.project.intervai.interview.domain.Difficulty;
 import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewType;
 import wlsh.project.intervai.interview.domain.InterviewerTone;
+import wlsh.project.intervai.session.domain.InterviewSession;
 
 import java.util.List;
 
@@ -57,8 +58,9 @@ class QuestionGeneratorTest {
                 List.of(CsSubject.of(CsCategory.NETWORK, List.of("전체"))),
                 null,
                 null));
+        InterviewSession session = InterviewSession.create(interview.getId(), 1L);
 
-        List<String> questions = generator.generateAll(interview);
+        List<String> questions = generator.generateAll(interview, session);
 
         System.out.println("questions = " + questions);
     }
