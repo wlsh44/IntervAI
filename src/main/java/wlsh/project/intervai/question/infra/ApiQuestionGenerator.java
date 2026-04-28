@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import wlsh.project.intervai.common.ai.AiChatCaller;
 import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.question.application.QuestionGenerator;
+import wlsh.project.intervai.session.domain.InterviewSession;
 
 import java.util.List;
 
@@ -30,11 +31,11 @@ public class ApiQuestionGenerator implements QuestionGenerator {
     }
 
     @Override
-    public List<String> generateAll(Interview interview) {
+    public List<String> generateAll(Interview interview, InterviewSession session) {
         log.info("[ApiQuestionGenerator.generateAll] 질문 생성 시작 - interviewType={}, difficulty={}, count={}",
                 interview.getInterviewType(), interview.getDifficulty(), interview.getQuestionCount());
         String prompt = promptBuilder.build(interview);
-        String response = aiChatCaller.call(prompt);
+        String response = aiChatCaller.callWithSession(String.valueOf(session.getId()), prompt);
         List<String> questions = parseQuestions(response);
         log.info("[ApiQuestionGenerator.generateAll] 질문 {}개 생성 완료", questions.size());
         return questions;

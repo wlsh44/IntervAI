@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.question.application.QuestionGenerator;
+import wlsh.project.intervai.session.domain.InterviewSession;
 
 @Slf4j
 @Component
@@ -21,7 +22,7 @@ public class MockQuestionGenerator implements QuestionGenerator {
     }
 
     @Override
-    public List<String> generateAll(Interview interview) {
+    public List<String> generateAll(Interview interview, InterviewSession session) {
         log.debug("[MockQuestionGenerator.generateAll] 질문 생성 시작 - interviewType={}, difficulty={}, count={}",
                 interview.getInterviewType(), interview.getDifficulty(), interview.getQuestionCount());
         promptBuilder.build(interview);
