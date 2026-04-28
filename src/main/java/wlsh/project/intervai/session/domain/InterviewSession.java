@@ -1,6 +1,7 @@
 package wlsh.project.intervai.session.domain;
 
 import java.time.LocalDateTime;
+
 import lombok.Getter;
 
 @Getter
@@ -32,5 +33,9 @@ public class InterviewSession {
     public static InterviewSession of(Long id, Long interviewId, Long userId, SessionStatus sessionStatus,
                                       int currentMainQuestionIdx, int followUpCount, LocalDateTime completedAt) {
         return new InterviewSession(id, interviewId, userId, sessionStatus, currentMainQuestionIdx, followUpCount, completedAt);
+    }
+
+    public boolean isCompleted() {
+        return this.sessionStatus == SessionStatus.COMPLETED;
     }
 }

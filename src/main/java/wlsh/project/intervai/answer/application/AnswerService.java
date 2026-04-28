@@ -33,10 +33,10 @@ public class AnswerService {
         Answer answer = answerManager.create(userId, questionId, command.content());
         AnswerResultDto answerResultDto = answerHandler.submit(questionId, answer);
 
-        feedbackManager.create(answer.getId(), answerResultDto.feedback());
+        feedbackManager.create(answer.getId(), answerResultDto.feedback(), answerResultDto.score());
         decideNextQuestion(answer, answerResultDto.followUpQuestion());
 
-        return AnswerResult.of(answerResultDto.feedback());
+        return AnswerResult.of(answerResultDto.feedback(), answerResultDto.score());
     }
 
     private void decideNextQuestion(Answer answer, String followUpQuestion) {

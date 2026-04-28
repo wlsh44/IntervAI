@@ -53,9 +53,11 @@ public enum ErrorCode {
     ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "답변을 찾을 수 없습니다."),
 
     // Feedback
+    INVALID_FEEDBACK_SCORE(HttpStatus.BAD_REQUEST, "피드백 점수는 0점 이상 100점 이하여야 합니다."),
     FOLLOW_UP_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "꼬리 질문은 최대 3개까지 가능합니다."),
 
     // Report
+    REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "리포트를 찾을 수 없습니다."),
     REPORT_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 리포트가 존재합니다."),
     SESSION_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "종료되지 않은 세션입니다."),
     ;

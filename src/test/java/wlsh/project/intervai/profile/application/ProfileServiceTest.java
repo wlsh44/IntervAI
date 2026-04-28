@@ -9,7 +9,7 @@ import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
 import wlsh.project.intervai.profile.domain.CareerLevel;
 import wlsh.project.intervai.profile.domain.CreateProfileCommand;
-import wlsh.project.intervai.profile.domain.JobCategory;
+import wlsh.project.intervai.common.domain.JobCategory;
 import wlsh.project.intervai.profile.domain.Profile;
 import wlsh.project.intervai.profile.domain.UpdateProfileCommand;
 

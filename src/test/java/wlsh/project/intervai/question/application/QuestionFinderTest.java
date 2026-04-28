@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import wlsh.project.intervai.common.IntegrationTest;
+import wlsh.project.intervai.common.domain.JobCategory;
 import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
 import wlsh.project.intervai.interview.application.InterviewManager;
@@ -164,7 +165,7 @@ class QuestionFinderTest extends IntegrationTest {
 
     private Interview createInterview(Long userId, int questionCount) {
         CreateInterviewCommand command = new CreateInterviewCommand(
-                InterviewType.CS, Difficulty.JUNIOR, questionCount, InterviewerTone.FRIENDLY,
+                JobCategory.BACKEND, InterviewType.CS, Difficulty.JUNIOR, questionCount, InterviewerTone.FRIENDLY,
                 List.of(CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map"))), List.of(), List.of());
         return interviewManager.create(userId, command);
     }
