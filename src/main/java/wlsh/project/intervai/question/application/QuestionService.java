@@ -26,7 +26,7 @@ public class QuestionService {
         interviewSessionValidator.validateInterviewSession(interviewId, userId);
         Interview interview = interviewFinder.find(interviewId);
         InterviewSession session = interviewSessionFinder.findByInterviewId(interviewId);
-        List<String> contents = questionGenerator.generateAll(interview);
+        List<String> contents = questionGenerator.generateAll(interview, session);
         return questionManager.createAll(interviewId, session.getId(), contents);
     }
 

@@ -4,8 +4,8 @@ import java.util.List;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import wlsh.project.intervai.common.domain.JobCategory;
 import wlsh.project.intervai.profile.domain.CareerLevel;
-import wlsh.project.intervai.profile.domain.JobCategory;
 import wlsh.project.intervai.profile.domain.UpdateProfileCommand;
 
 public record UpdateProfileRequest(

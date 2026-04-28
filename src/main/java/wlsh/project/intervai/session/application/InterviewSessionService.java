@@ -2,6 +2,7 @@ package wlsh.project.intervai.session.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import wlsh.project.intervai.report.application.InterviewReportService;
 import wlsh.project.intervai.session.domain.InterviewSession;
 import wlsh.project.intervai.session.domain.SessionHistory;
 
@@ -14,6 +15,7 @@ public class InterviewSessionService {
     private final InterviewSessionValidator interviewSessionValidator;
     private final InterviewSessionManager interviewSessionManager;
     private final SessionHistoryFinder sessionHistoryFinder;
+    private final InterviewReportService interviewReportService;
 
     public InterviewSession create(Long userId, Long interviewId) {
         interviewSessionValidator.validateInterviewOwner(interviewId, userId);
@@ -23,6 +25,7 @@ public class InterviewSessionService {
     public void finish(Long userId, Long interviewId) {
         interviewSessionValidator.validateInterviewSession(interviewId, userId);
         interviewSessionManager.complete(interviewId);
+        interviewReportService.requestGeneration(interviewId);
     }
 
     public List<SessionHistory> findSessionHistory(Long userId, Long interviewId) {

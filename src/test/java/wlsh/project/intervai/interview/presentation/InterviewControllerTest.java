@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import wlsh.project.intervai.common.AcceptanceTest;
+import wlsh.project.intervai.common.domain.JobCategory;
 import wlsh.project.intervai.common.exception.CustomException;
 import wlsh.project.intervai.common.exception.ErrorCode;
 import wlsh.project.intervai.interview.application.InterviewService;
@@ -52,7 +53,7 @@ class InterviewControllerTest extends AcceptanceTest {
         List<CsSubject> csSubjects = List.of(
                 CsSubject.of(CsCategory.DATA_STRUCTURE, List.of("Map", "List")),
                 CsSubject.of(CsCategory.ALGORITHM, List.of("정렬", "dfs/bfs")));
-        Interview interview = Interview.of(1L, userId, InterviewType.CS, Difficulty.JUNIOR,
+        Interview interview = Interview.of(1L, userId, JobCategory.BACKEND, InterviewType.CS, Difficulty.JUNIOR,
                 7, 3, InterviewerTone.FRIENDLY, csSubjects, List.of(), List.of());
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
@@ -60,7 +61,7 @@ class InterviewControllerTest extends AcceptanceTest {
                 .willReturn(interview);
 
         CreateInterviewRequest request = new CreateInterviewRequest(
-                InterviewType.CS, Difficulty.JUNIOR, 7, InterviewerTone.FRIENDLY,
+                JobCategory.BACKEND, InterviewType.CS, Difficulty.JUNIOR, 7, InterviewerTone.FRIENDLY,
                 List.of(
                         new CsSubjectRequest(CsCategory.DATA_STRUCTURE, List.of("Map", "List")),
                         new CsSubjectRequest(CsCategory.ALGORITHM, List.of("정렬", "dfs/bfs"))),
@@ -92,7 +93,7 @@ class InterviewControllerTest extends AcceptanceTest {
     void createPortfolioInterview() throws Exception {
         Long userId = 1L;
         List<String> portfolioLinks = List.of("https://github.com/user/project");
-        Interview interview = Interview.of(2L, userId, InterviewType.PORTFOLIO, Difficulty.SENIOR,
+        Interview interview = Interview.of(2L, userId, JobCategory.FRONTEND, InterviewType.PORTFOLIO, Difficulty.SENIOR,
                 5, 3, InterviewerTone.AGGRESSIVE, List.of(), portfolioLinks, List.of());
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
@@ -100,7 +101,7 @@ class InterviewControllerTest extends AcceptanceTest {
                 .willReturn(interview);
 
         CreateInterviewRequest request = new CreateInterviewRequest(
-                InterviewType.PORTFOLIO, Difficulty.SENIOR, 5, InterviewerTone.AGGRESSIVE,
+                JobCategory.FRONTEND, InterviewType.PORTFOLIO, Difficulty.SENIOR, 5, InterviewerTone.AGGRESSIVE,
                 null, List.of("https://github.com/user/project"), null);
 
         RestAssuredMockMvc.given()
@@ -126,7 +127,7 @@ class InterviewControllerTest extends AcceptanceTest {
         Long userId = 1L;
         List<CsSubject> csSubjects = List.of(CsSubject.of(CsCategory.NETWORK, List.of("http/https")));
         List<String> portfolioLinks = List.of("https://github.com/user/project");
-        Interview interview = Interview.of(3L, userId, InterviewType.ALL, Difficulty.ENTRY,
+        Interview interview = Interview.of(3L, userId, JobCategory.FULLSTACK, InterviewType.ALL, Difficulty.ENTRY,
                 10, 3, InterviewerTone.NORMAL, csSubjects, portfolioLinks, List.of());
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
@@ -134,7 +135,7 @@ class InterviewControllerTest extends AcceptanceTest {
                 .willReturn(interview);
 
         CreateInterviewRequest request = new CreateInterviewRequest(
-                InterviewType.ALL, Difficulty.ENTRY, 10, InterviewerTone.NORMAL,
+                JobCategory.FULLSTACK, InterviewType.ALL, Difficulty.ENTRY, 10, InterviewerTone.NORMAL,
                 List.of(new CsSubjectRequest(CsCategory.NETWORK, List.of("http/https"))),
                 List.of("https://github.com/user/project"),
                 null);
@@ -253,7 +254,7 @@ class InterviewControllerTest extends AcceptanceTest {
     @DisplayName("인증 없이 면접 생성 시 403이 반환된다")
     void createInterviewWithoutAuth() throws Exception {
         CreateInterviewRequest request = new CreateInterviewRequest(
-                InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
+                JobCategory.BACKEND, InterviewType.CS, Difficulty.JUNIOR, 5, InterviewerTone.FRIENDLY,
                 List.of(new CsSubjectRequest(CsCategory.DATA_STRUCTURE, List.of("Map"))),
                 null,
                 null);

@@ -1,5 +1,7 @@
 spring:
   ai:
+    model:
+      chat: none
     anthropic:
       api-key: ${ANTHROPIC_API_KEY:}
       chat:
@@ -9,7 +11,7 @@ spring:
   data:
     redis:
       host: localhost
-      port: 6379
+      port: 6378
   datasource:
     url: jdbc:h2:mem:intervai
     driver-class-name: org.h2.Driver
@@ -25,8 +27,8 @@ spring:
 
 jwt:
   access:
-    secret: ${JWT_ACCESS_SECRET:defaultAccessSecretKeyForLocalDevelopmentOnlyDoNotUse1234567890}
+    secret: ${JWT_ACCESS_SECRET:testAccessSecretKeyForTestingOnlyDoNotUseInProduction12345}
     expiration: 86400000
   refresh:
-    secret: ${JWT_REFRESH_SECRET:defaultRefreshSecretKeyForLocalDevelopmentOnlyDoNotUse123456789}
+    secret: ${JWT_REFRESH_SECRET:testRefreshSecretKeyForTestingOnlyDoNotUseInProduction1234}
     expiration: 604800000

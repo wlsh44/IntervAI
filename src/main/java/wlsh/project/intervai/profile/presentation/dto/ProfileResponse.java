@@ -2,8 +2,8 @@ package wlsh.project.intervai.profile.presentation.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import wlsh.project.intervai.common.domain.JobCategory;
 import wlsh.project.intervai.profile.domain.CareerLevel;
-import wlsh.project.intervai.profile.domain.JobCategory;
 import wlsh.project.intervai.profile.domain.Profile;
 
 public record ProfileResponse(

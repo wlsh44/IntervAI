@@ -18,6 +18,7 @@ import wlsh.project.intervai.answer.infra.AnswerRepository;
 import wlsh.project.intervai.answer.presentation.dto.CreateAnswerResponse;
 import wlsh.project.intervai.common.ApiIntegrationTest;
 import wlsh.project.intervai.feedback.infra.FeedbackRepository;
+import wlsh.project.intervai.report.infra.InterviewReportRepository;
 import wlsh.project.intervai.interview.infra.InterviewCsSubjectRepository;
 import wlsh.project.intervai.interview.infra.InterviewPortfolioLinkRepository;
 import wlsh.project.intervai.interview.infra.InterviewRepository;
@@ -81,8 +82,12 @@ class InterviewSequenceIntegrationTest extends ApiIntegrationTest {
     @Autowired
     private FeedbackRepository feedbackRepository;
 
+    @Autowired
+    private InterviewReportRepository interviewReportRepository;
+
     @AfterEach
     void tearDown() {
+        interviewReportRepository.deleteAllInBatch();
         feedbackRepository.deleteAllInBatch();
         answerRepository.deleteAllInBatch();
         questionRepository.deleteAllInBatch();
@@ -148,7 +153,7 @@ class InterviewSequenceIntegrationTest extends ApiIntegrationTest {
 
         assertThat(askedQuestions).hasSizeLessThanOrEqualTo(MAX_SEQUENCE_ROUNDS);
         assertThat(askedQuestions).isNotEmpty();
-        assertThat(askedQuestions.getLast().questionType()).isEqualTo(QuestionType.QUESTION);
+        assertThat(askedQuestions.getLast().questionType()).isEqualTo(QuestionType.FOLLOW_UP);
         assertThat(askedQuestions.getLast().hasNext()).isFalse();
         assertThat(answers).allSatisfy(answer -> assertThat(answer.feedback()).isNotBlank());
         return askedQuestions;
@@ -165,7 +170,7 @@ class InterviewSequenceIntegrationTest extends ApiIntegrationTest {
                 .count();
 
         assertThat(mainQuestionCount).isEqualTo(5);
-        assertThat(followUpQuestionCount).isEqualTo(4);
+        assertThat(followUpQuestionCount).isEqualTo(15);
 
         var savedSession = interviewSessionRepository.findByInterviewIdAndStatus(interview.id(), ACTIVE)
                 .orElseThrow();
@@ -179,9 +184,9 @@ class InterviewSequenceIntegrationTest extends ApiIntegrationTest {
                 .filter(question -> question.getInterviewId().equals(interview.id()))
                 .count();
 
-        assertThat(savedQuestionCount).isEqualTo(9);
-        assertThat(answerRepository.findAll()).hasSize(9);
-        assertThat(feedbackRepository.findAll()).hasSize(9);
+        assertThat(savedQuestionCount).isEqualTo(20);
+        assertThat(answerRepository.findAll()).hasSize(20);
+        assertThat(feedbackRepository.findAll()).hasSize(20);
     }
 
     private String uniqueNickname() {
@@ -194,7 +199,7 @@ class InterviewSequenceIntegrationTest extends ApiIntegrationTest {
         @Bean
         @Primary
         QuestionGenerator questionGenerator() {
-            return interview -> java.util.stream.IntStream.range(0, interview.getQuestionCount())
+            return (interview, session) -> java.util.stream.IntStream.range(0, interview.getQuestionCount())
                     .mapToObj(index -> "[Test] main question " + (index + 1))
                     .toList();
         }
@@ -202,19 +207,11 @@ class InterviewSequenceIntegrationTest extends ApiIntegrationTest {
         @Bean
         @Primary
         AnswerResultGenerator answerResultGenerator() {
-            return (conversationId, interview, question, answer) -> {
-                boolean shouldCreateFollowUp = question.getQuestionType() == QuestionType.QUESTION
-                        && question.getQuestionIndex() < interview.getQuestionCount() - 1;
-
-                String followUpQuestion = shouldCreateFollowUp
-                        ? "[Test] follow-up for main question " + (question.getQuestionIndex() + 1)
-                        : "";
-
-                return new AnswerResultDto(
-                        "[Test] feedback for " + question.getContent(),
-                        followUpQuestion
-                );
-            };
+            return (conversationId, interview, question, answer) -> new AnswerResultDto(
+                    "[Test] feedback for " + question.getContent(),
+                    80,
+                    "[Test] follow-up for " + question.getContent()
+            );
         }
     }
 }

@@ -12,8 +12,8 @@ public class FeedbackManager {
 
     private final FeedbackRepository feedbackRepository;
 
-    public Feedback create(Long answerId, String feedbackContent) {
-        Feedback feedback = Feedback.create(answerId, feedbackContent);
+    public Feedback create(Long answerId, String feedbackContent, int score) {
+        Feedback feedback = Feedback.create(answerId, feedbackContent, score);
         FeedbackEntity entity = feedbackRepository.save(FeedbackEntity.from(feedback));
         return entity.toDomain();
     }

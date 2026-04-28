@@ -1,7 +1,8 @@
-import type { InterviewType, Difficulty, InterviewerTone } from '../../../shared/types/enums'
+import type { InterviewType, Difficulty, InterviewerTone, JobCategory } from '../../../shared/types/enums'
 import type { CsSubjectRequest } from '../api/interviewApi'
 
 interface FormValues {
+  jobCategory: JobCategory | null
   interviewType: InterviewType | null
   difficulty: Difficulty | null
   questionCount: number
@@ -13,6 +14,17 @@ interface FormValues {
 
 interface InterviewSetupSummaryProps {
   formValues: FormValues
+}
+
+const JOB_CATEGORY_LABELS: Record<JobCategory, string> = {
+  FRONTEND: 'Frontend',
+  BACKEND: 'Backend',
+  FULLSTACK: 'Fullstack',
+  ANDROID: 'Android',
+  IOS: 'iOS',
+  DEVOPS: 'DevOps',
+  DATA_ENGINEER: 'Data Engineer',
+  ML_ENGINEER: 'ML Engineer',
 }
 
 const INTERVIEW_TYPE_LABELS: Record<InterviewType, string> = {
@@ -34,13 +46,14 @@ const TONE_LABELS: Record<InterviewerTone, string> = {
 }
 
 const InterviewSetupSummary = ({ formValues }: InterviewSetupSummaryProps) => {
-  const { interviewType, difficulty, questionCount, interviewerTone, csSubjects, portfolioLinks, techStacks } = formValues
+  const { jobCategory, interviewType, difficulty, questionCount, interviewerTone, csSubjects, portfolioLinks, techStacks } = formValues
 
   const totalCsTopics = csSubjects.reduce((sum, s) => sum + s.topics.length, 0)
   const showCsSection = interviewType === 'CS' || interviewType === 'ALL'
   const showPortfolioSection = interviewType === 'PORTFOLIO' || interviewType === 'ALL'
 
   const rows: { label: string; value: string }[] = [
+    { label: '직군', value: jobCategory ? JOB_CATEGORY_LABELS[jobCategory] : '-' },
     { label: '면접 유형', value: interviewType ? INTERVIEW_TYPE_LABELS[interviewType] : '-' },
     { label: '난이도', value: difficulty ? DIFFICULTY_LABELS[difficulty] : '-' },
     { label: '질문 수', value: `${questionCount}문제` },

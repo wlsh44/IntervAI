@@ -3,6 +3,7 @@ package wlsh.project.intervai.profile.domain;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
+import wlsh.project.intervai.common.domain.JobCategory;
 
 @Getter
 public class Profile {

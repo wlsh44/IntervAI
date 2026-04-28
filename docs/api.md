@@ -366,6 +366,7 @@ POST /api/interviews
 
 | 필드 | 타입 | 필수 | 제약 |
 |------|------|------|------|
+| `jobCategory` | JobCategory | O | Enum 값 |
 | `interviewType` | InterviewType | O | `CS` / `PORTFOLIO` / `ALL` |
 | `difficulty` | Difficulty | O | `ENTRY` / `JUNIOR` / `SENIOR` |
 | `questionCount` | Integer | O | 5~10 |
@@ -386,6 +387,7 @@ POST /api/interviews
 | 필드 | 타입 | 설명 |
 |------|------|------|
 | `id` | Long | 면접 ID |
+| `jobCategory` | JobCategory | 직군 |
 | `interviewType` | InterviewType | 면접 유형 |
 | `difficulty` | Difficulty | 난이도 |
 | `questionCount` | Integer | 질문 수 |
@@ -678,6 +680,97 @@ POST /api/interviews/{interviewId}/sessions/finish
 
 ---
 
+### 종합 리포트 조회
+
+```
+GET /api/interviews/{interviewId}/report
+```
+
+**인증**: 필요 (본인 면접만 가능)
+
+세션이 COMPLETED 상태인 면접의 AI 종합 평가 리포트를 반환한다.
+
+**Path Parameters**
+
+| 파라미터 | 타입 | 설명 |
+|---------|------|------|
+| `interviewId` | Long | 면접 ID |
+
+**Response** `200 OK`
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `interviewId` | Long | 면접 ID |
+| `interviewType` | InterviewType | 면접 유형 |
+| `jobCategory` | String | 직군 |
+| `difficulty` | Difficulty | 난이도 |
+| `questionCount` | Integer | 본 질문 수 |
+| `completedAt` | LocalDateTime | 세션 종료 시각 |
+| `totalScore` | Integer | 종합 점수 (0~100) |
+| `overallComment` | String | 종합 코멘트 |
+| `questions` | ReportQuestionItem[] | 질문별 Q&A 요약 목록 |
+
+**ReportQuestionItem 구조**
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `questionId` | Long | 질문 ID |
+| `questionIndex` | Integer | 본 질문 순서 |
+| `questionContent` | String | 질문 내용 |
+| `answerContent` | String \| null | 답변 내용 |
+| `feedbackContent` | String \| null | 피드백 내용 |
+| `score` | Integer \| null | 답변 점수 |
+| `keywords` | String[] | 핵심 키워드 |
+| `followUps` | FollowUpQuestionItem[] | 꼬리질문 목록 |
+
+**FollowUpQuestionItem 구조**
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `questionId` | Long | 꼬리질문 ID |
+| `questionContent` | String | 꼬리질문 내용 |
+| `answerContent` | String \| null | 답변 내용 |
+| `feedbackContent` | String \| null | 피드백 내용 |
+
+**에러**
+
+| ErrorCode | HTTP | 설명 |
+|-----------|------|------|
+| `INTERVIEW_NOT_FOUND` | 404 | 면접 없음 |
+| `INTERVIEW_ACCESS_DENIED` | 403 | 타인 면접 접근 |
+| `SESSION_NOT_FOUND` | 404 | 세션 없음 |
+| `SESSION_NOT_COMPLETED` | 400 | 미완료 세션 (COMPLETED 상태만 조회 가능) |
+
+**예시**
+
+```json
+// Response 200
+{
+  "interviewId": 10,
+  "interviewType": "CS",
+  "jobCategory": "BACKEND",
+  "difficulty": "JUNIOR",
+  "questionCount": 5,
+  "completedAt": "2026-04-20T10:30:00",
+  "totalScore": 82,
+  "overallComment": "전반적으로 기본기가 탄탄하며 논리적인 답변을 잘 구성했습니다.",
+  "questions": [
+    {
+      "questionId": 1,
+      "questionIndex": 0,
+      "questionContent": "Java의 GC 동작 방식을 설명해주세요.",
+      "answerContent": "GC는 힙 메모리에서 사용되지 않는 객체를 자동으로 제거합니다.",
+      "feedbackContent": "기본 개념은 맞지만 GC 알고리즘 종류도 언급하면 좋겠습니다.",
+      "score": 80,
+      "keywords": ["GC", "Heap"],
+      "followUps": []
+    }
+  ]
+}
+```
+
+---
+
 ### 세션 히스토리 조회
 
 ```
@@ -703,6 +796,7 @@ GET /api/interviews/{interviewId}/sessions/history
 | `questionContent` | String | 질문 내용 |
 | `answerContent` | String \| null | 답변 내용 (미답변 시 null) |
 | `feedbackContent` | String \| null | 피드백 내용 (피드백 없는 경우 null) |
+| `score` | Integer \| null | 피드백 점수 (피드백 없는 경우 null) |
 | `questionType` | QuestionType | QUESTION / FOLLOW_UP |
 | `questionIndex` | Integer | 본 질문 순서 (꼬리 질문은 -1) |
 
@@ -723,6 +817,7 @@ GET /api/interviews/{interviewId}/sessions/history
     "questionContent": "Java의 GC 동작 방식을 설명해주세요.",
     "answerContent": "GC는 힙 메모리에서 사용되지 않는 객체를 자동으로 제거합니다.",
     "feedbackContent": "기본 개념은 맞지만 GC 알고리즘 종류(G1, ZGC 등)도 언급하면 좋겠습니다.",
+    "score": 80,
     "questionType": "QUESTION",
     "questionIndex": 0
   },
@@ -732,6 +827,7 @@ GET /api/interviews/{interviewId}/sessions/history
     "questionContent": "Minor GC와 Major GC의 차이점은 무엇인가요?",
     "answerContent": null,
     "feedbackContent": null,
+    "score": null,
     "questionType": "FOLLOW_UP",
     "questionIndex": -1
   }
@@ -845,6 +941,12 @@ GET /api/interviews
 | `SESSION_ALREADY_COMPLETED` | 400 | 종료된 세션 |
 | `SESSION_ACCESS_DENIED` | 401 | 접근 불가 세션 |
 | `SESSION_NOT_COMPLETED` | 400 | 미완료 세션 (리포트 생성 시) |
+
+### 리포트
+
+| ErrorCode | HTTP | 설명 |
+|-----------|------|------|
+| `REPORT_NOT_FOUND` | 404 | 리포트 없음 (아직 생성되지 않음) |
 
 ### 질문 / 답변
 

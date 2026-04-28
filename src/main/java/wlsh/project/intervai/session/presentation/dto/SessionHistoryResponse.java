@@ -12,6 +12,7 @@ public record SessionHistoryResponse(
         String questionContent,
         String answerContent,
         String feedbackContent,
+        Integer score,
         QuestionType questionType,
         Integer questionIndex
 ) {
@@ -23,6 +24,7 @@ public record SessionHistoryResponse(
                 history.questionContent(),
                 history.answerContent(),
                 history.feedbackContent(),
+                history.score(),
                 history.questionType(),
                 history.questionIndex()
         );

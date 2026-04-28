@@ -4,12 +4,16 @@ import java.util.List;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import wlsh.project.intervai.common.domain.JobCategory;
 import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.Difficulty;
 import wlsh.project.intervai.interview.domain.InterviewType;
 import wlsh.project.intervai.interview.domain.InterviewerTone;
 
 public record CreateInterviewRequest(
+        @NotNull(message = "직군은 필수입니다.")
+        JobCategory jobCategory,
+
         @NotNull(message = "면접 유형은 필수입니다.")
         InterviewType interviewType,
 
@@ -30,6 +34,7 @@ public record CreateInterviewRequest(
 ) {
     public CreateInterviewCommand toCommand() {
         return new CreateInterviewCommand(
+                jobCategory,
                 interviewType,
                 difficulty,
                 questionCount,
