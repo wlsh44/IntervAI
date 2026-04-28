@@ -4,6 +4,7 @@ import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 import wlsh.project.intervai.interview.domain.CsSubject;
 import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewType;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class QuestionPromptBuilder {
 
@@ -23,13 +25,15 @@ public class QuestionPromptBuilder {
 
     public String build(Interview interview) {
         PromptTemplate template = new PromptTemplate(promptResource);
-        return template.render(Map.of(
+        String prompt = template.render(Map.of(
                 "count", interview.getQuestionCount(),
                 "interviewType", interview.getInterviewType().getKo(),
                 "level", interview.getDifficulty().getKo(),
                 "interviewerTone", interview.getInterviewerTone().getKo(),
                 "topic", buildTopic(interview)
         ));
+        log.debug("[QuestionPromptBuilder.build] 생성된 프롬프트:\n{}", prompt);
+        return prompt;
     }
 
     private String buildTopic(Interview interview) {
