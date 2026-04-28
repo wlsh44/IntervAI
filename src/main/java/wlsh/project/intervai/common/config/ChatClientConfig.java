@@ -10,6 +10,7 @@ import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaChatOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
@@ -17,6 +18,7 @@ public class ChatClientConfig {
 
     @Bean
     @Profile("prod")
+	@Primary
     public ChatClient geminiChatClient(ChatModel chatModel) {
         return ChatClient.builder(chatModel)
                 .defaultAdvisors(chatMemoryAdvisor())
