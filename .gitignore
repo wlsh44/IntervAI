@@ -41,4 +41,4 @@ tools/httpie/**/tmp/
 tools/httpie/**/.env
 
 ### Prod config (contains secrets) ###
-src/main/resources/application-prod.yml
+src/main/resources/application*.yml
