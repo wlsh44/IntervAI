@@ -20,24 +20,28 @@ public class ChatClientAiCaller implements AiChatCaller {
 
     @Override
     public String call(String prompt) {
-        log.debug("[ChatClientAiCaller.call] 프롬프트:\n{}", prompt);
+        log.debug("[ChatClientAiCaller.call] 프롬프트 전송 - promptLength={}",
+                prompt == null ? 0 : prompt.length());
         String response = chatClient.prompt()
                 .user(prompt)
                 .call()
                 .content();
-        log.debug("[ChatClientAiCaller.call] 응답:\n{}", response);
+        log.debug("[ChatClientAiCaller.call] 응답 수신 - responseLength={}",
+                response == null ? 0 : response.length());
         return response;
     }
 
     @Override
     public String callWithSession(String sessionId, String prompt) {
-        log.debug("[ChatClientAiCaller.callWithSession] sessionId={}, 프롬프트:\n{}", sessionId, prompt);
+        log.debug("[ChatClientAiCaller.callWithSession] sessionId={}, 프롬프트 전송 - promptLength={}",
+                sessionId, prompt == null ? 0 : prompt.length());
         String response = chatClient.prompt()
                 .advisors(advisor -> advisor.param(ChatMemory.CONVERSATION_ID, sessionId))
                 .user(prompt)
                 .call()
                 .content();
-        log.debug("[ChatClientAiCaller.callWithSession] sessionId={}, 응답:\n{}", sessionId, response);
+        log.debug("[ChatClientAiCaller.callWithSession] sessionId={}, 응답 수신 - responseLength={}",
+                sessionId, response == null ? 0 : response.length());
         return response;
     }
 }
