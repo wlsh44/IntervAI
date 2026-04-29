@@ -22,5 +22,6 @@ export const API_PATHS = {
     currentQuestion: (interviewId: number) => `/api/interviews/${interviewId}/questions/current`,
     answers: (interviewId: number) => `/api/interviews/${interviewId}/answers`,
     report: (interviewId: number) => `/api/interviews/${interviewId}/report`,
+    delete: (interviewId: number) => `/api/interviews/${interviewId}`,
   },
 } as const

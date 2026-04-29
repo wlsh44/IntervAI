@@ -1,4 +1,226 @@
-# 면접 진행(채팅) 화면 구현 플랜
+# 히스토리 페이지 구현 계획 — fe/feat/history (Issue #21)
+
+## 브랜치
+`fe/feat/history`
+
+## 요구사항
+
+- 면접 히스토리 목록 조회 (서버 페이지네이션: page, size)
+- 인터뷰 타입 필터: CS / PORTFOLIO / ALL (서버 파라미터)
+- 세션 상태 필터: COMPLETED / IN_PROGRESS (서버 파라미터)
+- 키워드 검색 (클라이언트 사이드 — 백엔드 파라미터 미제공)
+- 히스토리 카드: 인터뷰 타입 뱃지, 난이도 뱃지, 날짜, 문항 수, AI 스코어, 상태 뱃지
+- AI SCORE: 백엔드 미지원 → "-- /100" 고정 표시 (향후 별도 이슈)
+- 완료 세션: "결과 보기 >" 버튼 → `/interviews/:id/result` 이동
+- 진행중 세션: "이어하기" 버튼 (disabled, 별도 이슈)
+- 삭제: 모든 세션 삭제 가능 (DELETE /api/interviews/:id, 확인 다이얼로그 포함)
+- 페이지네이션 UI (◁ 1 2 3 ... N ▷)
+
+## 디자인 (history.png 기준)
+
+레이아웃:
+- 상단: "면접 히스토리" 타이틀 + 설명 텍스트
+- 검색/필터 바: 검색 Input + 인터뷰 타입 Select + 상태 Select
+- 카드 목록
+- 하단 페이지네이션
+
+색상 토큰:
+- `CS` 뱃지: `bg-blue-100 text-blue-700` (레이블: "CS INTERVIEW")
+- `PORTFOLIO` 뱃지: `bg-purple-100 text-purple-700` (레이블: "PORTFOLIO")
+- `ALL` 뱃지: `bg-green-100 text-green-700` (레이블: "ALL ROUNDER")
+- COMPLETED 상태: `text-green-600` (● 완료)
+- IN_PROGRESS 상태: `text-orange-500` (● 진행중)
+- "이어하기" 버튼: `bg-blue-600 text-white` (disabled)
+- "결과 보기 >" 버튼: shadcn `variant="outline"`
+- 삭제 아이콘: `text-gray-400 hover:text-red-500`
+
+난이도 뱃지: ENTRY / JUNIOR / SENIOR
+
+## 현재 구현 상태
+
+- `front/src/shared/pages/HistoryPage.tsx` — 플레이스홀더만 존재
+- `front/src/app/router.tsx` — `/history` 라우트 이미 등록됨
+- `front/src/features/` — auth, dashboard, interview, profile 피처 존재
+- `front/src/shared/api/httpClient.ts` — axios 인스턴스 재사용
+- `front/src/shared/components/ui/` — shadcn/ui 프리미티브 재사용
+
+## 백엔드 API (docs/api.md)
+
+### GET /api/interviews
+- Query: `page` (default 0), `size` (default 10), `interviewType` (선택: CS/PORTFOLIO/ALL), `sessionStatus` (선택: IN_PROGRESS/COMPLETED)
+- Response: `{ content: InterviewSummary[], totalElements, totalPages, last }`
+- InterviewSummary: `{ id, interviewType, difficulty, questionCount, sessionStatus, createdAt }`
+
+### DELETE /api/interviews/{interviewId}
+- 204 No Content
+- 403: INTERVIEW_ACCESS_DENIED
+
+## 파일 목록
+
+| 파일 | 작업 | 설명 |
+|------|------|------|
+| `front/src/features/history/types/index.ts` | 생성 | 타입 정의 |
+| `front/src/shared/types/queryKeys.ts` | 수정 | history 키 그룹 추가 |
+| `front/src/features/history/api/historyApi.ts` | 생성 | API 함수 |
+| `front/src/features/history/hooks/useInterviewHistory.ts` | 생성 | useQuery 훅 |
+| `front/src/features/history/hooks/useDeleteInterview.ts` | 생성 | useMutation 훅 |
+| `front/src/features/history/utils/formatDate.ts` | 생성 | 날짜 포맷 유틸 |
+| `front/src/shared/components/ui/PaginationBar.tsx` | 생성 | 공유 페이지네이션 |
+| `front/src/features/history/components/InterviewHistoryCard.tsx` | 생성 | 히스토리 카드 |
+| `front/src/features/history/components/HistoryFilterBar.tsx` | 생성 | 검색+필터 바 |
+| `front/src/features/history/components/DeleteConfirmDialog.tsx` | 생성 | 삭제 확인 다이얼로그 |
+| `front/src/features/history/pages/HistoryPage.tsx` | 생성 | 히스토리 페이지 구현 |
+| `front/src/shared/pages/HistoryPage.tsx` | 수정 | features/history re-export로 교체 |
+
+## 개발 계획
+
+### Step 1: 타입 정의
+파일: `front/src/features/history/types/index.ts`
+
+```ts
+export type InterviewType = 'CS' | 'PORTFOLIO' | 'ALL';
+export type SessionStatus = 'COMPLETED' | 'IN_PROGRESS';
+export type Difficulty = 'ENTRY' | 'JUNIOR' | 'SENIOR';
+
+export interface InterviewSummary {
+  id: number;
+  interviewType: InterviewType;
+  difficulty: Difficulty;
+  questionCount: number;
+  sessionStatus: SessionStatus;
+  createdAt: string; // ISO 8601
+}
+
+export interface InterviewListResponse {
+  content: InterviewSummary[];
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+}
+
+export interface InterviewListParams {
+  page?: number;
+  size?: number;
+  interviewType?: InterviewType;
+  sessionStatus?: SessionStatus;
+}
+
+export interface HistoryFilterState {
+  keyword: string;
+  interviewType: InterviewType | '';
+  sessionStatus: SessionStatus | '';
+}
+```
+
+### Step 2: Query Key 등록
+파일: `front/src/shared/types/queryKeys.ts` (수정)
+
+기존 queryKeys 객체에 history 그룹 추가:
+```ts
+history: {
+  all: ['history'] as const,
+  list: (params?: InterviewListParams) => ['history', 'list', params] as const,
+},
+```
+
+### Step 3: API 클라이언트
+파일: `front/src/features/history/api/historyApi.ts`
+
+```ts
+import { httpClient } from '@/shared/api/httpClient';
+import type { InterviewListParams, InterviewListResponse } from '../types';
+
+export const getInterviewList = (params: InterviewListParams): Promise<InterviewListResponse> =>
+  httpClient.get('/api/interviews', { params }).then((res) => res.data);
+
+export const deleteInterview = (interviewId: number): Promise<void> =>
+  httpClient.delete(`/api/interviews/${interviewId}`).then(() => undefined);
+```
+
+### Step 4: TanStack Query 훅
+
+파일: `front/src/features/history/hooks/useInterviewHistory.ts`
+- `useQuery` + `placeholderData: (prev) => prev` (TanStack Query v5 방식)
+- queryKey: `queryKeys.history.list(params)`
+
+파일: `front/src/features/history/hooks/useDeleteInterview.ts`
+- `useMutation`
+- onSuccess: `queryClient.invalidateQueries({ queryKey: queryKeys.history.all })`
+
+### Step 5: UI 컴포넌트
+
+#### PaginationBar (공유)
+파일: `front/src/shared/components/ui/PaginationBar.tsx`
+- Props: `currentPage: number` (0-based), `totalPages: number`, `onPageChange: (page: number) => void`
+- 1-based 페이지 번호 표시, 최대 5개 + 말줄임표
+- 이전/다음 버튼 경계에서 disabled
+- shadcn/ui Button 재사용
+
+#### InterviewHistoryCard
+파일: `front/src/features/history/components/InterviewHistoryCard.tsx`
+- Props: `interview: InterviewSummary`, `onDelete: (id: number) => void`
+- 인터뷰 타입 뱃지 색상 매핑 (CS→blue, PORTFOLIO→purple, ALL→green)
+- 날짜: `createdAt` → `YYYY.MM.DD` 포맷
+- AI SCORE: 항상 "-- /100"
+- 상태 뱃지: COMPLETED="● 완료"(green), IN_PROGRESS="● 진행중"(orange)
+- 완료: "결과 보기 >" 버튼 → navigate('/interviews/{id}/result')
+- 진행중: "이어하기" 버튼 (disabled)
+- 삭제 아이콘 (lucide-react Trash2) → onDelete(id) — 모든 상태에 표시
+
+#### HistoryFilterBar
+파일: `front/src/features/history/components/HistoryFilterBar.tsx`
+- Props: `filters: HistoryFilterState`, `onFilterChange: (filters: HistoryFilterState) => void`
+- 검색 Input (placeholder: "면접 키워드 검색...")
+- 인터뷰 타입 Select: "전체 면접" / "CS INTERVIEW" / "PORTFOLIO" / "ALL ROUNDER"
+- 상태 Select: "전체 상태" / "완료" / "진행중"
+
+#### DeleteConfirmDialog
+파일: `front/src/features/history/components/DeleteConfirmDialog.tsx`
+- shadcn/ui Dialog 재사용
+- 확인: variant="destructive", isPending 시 "삭제 중..."
+
+### Step 6: 페이지 컴포넌트
+
+파일: `front/src/features/history/pages/HistoryPage.tsx`
+- `useSearchParams`로 page URL 파라미터 관리 (기본값 0)
+- 서버: interviewType, sessionStatus 필터 파라미터로 전달
+- 클라이언트: keyword로 content 배열 필터링
+- 로딩: Skeleton 카드 표시
+- 에러: 에러 메시지 표시
+- 빈 목록: "면접 기록이 없습니다." 안내
+- 삭제 플로우: 아이콘 → Dialog → 확인 → mutate → invalidate → Dialog 닫기
+- 필터 변경 시 page=0으로 리셋
+
+파일: `front/src/shared/pages/HistoryPage.tsx` (수정)
+```tsx
+export { default } from '@/features/history/pages/HistoryPage';
+```
+
+### Step 7: 검증
+```bash
+cd /tmp/intervai-fe/front && npm run typecheck
+cd /tmp/intervai-fe/front && npm run build
+```
+
+## 주의사항
+
+1. **InterviewType enum**: API는 `CS`, `PORTFOLIO`, `ALL` — `CS_INTERVIEW`, `ALL_ROUNDER` 아님
+2. **크로스 피처 임포트 금지**: features/history에서 다른 features 직접 임포트 불가
+3. **서버 상태 Zustand 저장 금지**: TanStack Query로만 관리
+4. **TanStack Query v5**: `keepPreviousData` 없음, `placeholderData: (prev) => prev`
+5. **AI SCORE 고정**: "-- /100" 하드코딩
+6. **"이어하기" 버튼**: disabled + cursor-not-allowed
+7. **삭제는 모든 상태 허용**: COMPLETED, IN_PROGRESS 모두 삭제 가능 (디자인 기준)
+8. **queryKeys.history** 타입 임포트: InterviewListParams를 queryKeys.ts에서 임포트할 때 순환 참조 주의 — 필요시 params를 unknown으로 타입 완화
+
+---
+
+# [구 플랜 — 면접 진행(채팅) 화면 구현 플랜]
+<!-- 아래는 이전 이슈(면접 세션 채팅 화면)의 플랜입니다. 참고용으로 유지합니다. -->
+
+## 요구사항 (구 플랜)
+
+- phase='chat' 진입 시 채팅 형식의 면접 진행 화면을 표시한다
 
 ## 요구사항
 
