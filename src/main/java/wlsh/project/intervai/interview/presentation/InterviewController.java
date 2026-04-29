@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,10 +19,12 @@ import wlsh.project.intervai.common.auth.domain.UserInfo;
 import wlsh.project.intervai.interview.application.InterviewService;
 import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewSummary;
+import wlsh.project.intervai.interview.domain.InterviewType;
 import wlsh.project.intervai.interview.presentation.dto.CreateInterviewRequest;
 import wlsh.project.intervai.interview.presentation.dto.CreateInterviewResponse;
 import wlsh.project.intervai.interview.presentation.dto.InterviewListResponse;
 import wlsh.project.intervai.session.application.InterviewSessionService;
+import wlsh.project.intervai.session.domain.SessionStatus;
 
 @RestController
 @RequestMapping("/api/interviews")
@@ -34,9 +37,12 @@ public class InterviewController {
     @GetMapping
     public ResponseEntity<InterviewListResponse> getList(
             @AuthenticationPrincipal UserInfo userInfo,
+            @RequestParam(required = false) InterviewType interviewType,
+            @RequestParam(required = false) SessionStatus sessionStatus,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<InterviewSummary> summaries = interviewService.getList(userInfo.userId(), PageRequest.of(page, size));
+        Page<InterviewSummary> summaries = interviewService.getList(
+                userInfo.userId(), interviewType, sessionStatus, PageRequest.of(page, size));
         return ResponseEntity.ok(InterviewListResponse.of(summaries));
     }
 
@@ -47,6 +53,14 @@ public class InterviewController {
         Interview interview = interviewService.create(userInfo.userId(), request.toCommand());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CreateInterviewResponse.of(interview));
+    }
+
+    @DeleteMapping("/{interviewId}")
+    public ResponseEntity<Void> delete(
+            @AuthenticationPrincipal UserInfo userInfo,
+            @PathVariable Long interviewId) {
+        interviewService.delete(userInfo.userId(), interviewId);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{interviewId}/finish")

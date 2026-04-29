@@ -6,6 +6,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import wlsh.project.intervai.common.entity.EntityStatus;
 import wlsh.project.intervai.question.domain.Question;
 import wlsh.project.intervai.question.domain.QuestionType;
 import wlsh.project.intervai.question.infra.QuestionEntity;
@@ -46,5 +47,11 @@ public class QuestionManager {
         return questionRepository.saveAll(entities).stream()
                 .map(QuestionEntity::toDomain)
                 .toList();
+    }
+
+    @Transactional
+    public void deleteByInterviewId(Long interviewId) {
+        questionRepository.findByInterviewIdAndStatus(interviewId, EntityStatus.ACTIVE)
+                .forEach(QuestionEntity::delete);
     }
 }

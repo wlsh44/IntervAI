@@ -852,6 +852,8 @@ GET /api/interviews
 |---------|------|--------|------|
 | `page` | Integer | 0 | 페이지 번호 (0부터 시작) |
 | `size` | Integer | 10 | 페이지 크기 |
+| `interviewType` | InterviewType | — | 면접 유형 필터 (선택, 미지정 시 전체) |
+| `sessionStatus` | SessionStatus | — | 세션 상태 필터 (선택, 미지정 시 전체) |
 
 **Response** `200 OK`
 
@@ -895,6 +897,31 @@ GET /api/interviews
   "last": true
 }
 ```
+
+---
+
+### 면접 삭제
+
+```
+DELETE /api/interviews/{interviewId}
+```
+
+**인증**: 필요
+
+**Path Parameters**
+
+| 파라미터 | 타입 | 설명 |
+|---------|------|------|
+| `interviewId` | Long | 면접 ID |
+
+**Response** `204 No Content`
+
+**에러**
+
+| ErrorCode | HTTP | 설명 |
+|-----------|------|------|
+| `INTERVIEW_NOT_FOUND` | 404 | 면접 없음 |
+| `INTERVIEW_ACCESS_DENIED` | 403 | 타인 면접 접근 |
 
 ---
 

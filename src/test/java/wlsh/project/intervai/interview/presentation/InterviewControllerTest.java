@@ -343,7 +343,7 @@ class InterviewControllerTest extends AcceptanceTest {
         Page<InterviewSummary> page = new PageImpl<>(summaries, PageRequest.of(0, 10), 2);
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
-        given(interviewService.getList(eq(userId), any())).willReturn(page);
+        given(interviewService.getList(eq(userId), any(), any(), any())).willReturn(page);
 
         RestAssuredMockMvc.given()
                 .header("Authorization", "Bearer valid-token")
@@ -365,13 +365,59 @@ class InterviewControllerTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("interviewType 필터 적용 시 200이 반환된다")
+    void getInterviewListWithInterviewTypeFilter() {
+        Long userId = 1L;
+        LocalDateTime createdAt = LocalDateTime.of(2024, 1, 15, 10, 0, 0);
+        Page<InterviewSummary> page = new PageImpl<>(
+                List.of(InterviewSummary.of(1L, InterviewType.CS, Difficulty.JUNIOR, 7, SessionStatus.COMPLETED, createdAt)),
+                PageRequest.of(0, 10), 1);
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        given(interviewService.getList(eq(userId), eq(InterviewType.CS), any(), any())).willReturn(page);
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+                .queryParam("interviewType", "CS")
+        .when()
+                .get("/api/interviews")
+        .then()
+                .statusCode(200)
+                .body("content", hasSize(1))
+                .body("content[0].interviewType", equalTo("CS"));
+    }
+
+    @Test
+    @DisplayName("sessionStatus 필터 적용 시 200이 반환된다")
+    void getInterviewListWithSessionStatusFilter() {
+        Long userId = 1L;
+        LocalDateTime createdAt = LocalDateTime.of(2024, 1, 15, 10, 0, 0);
+        Page<InterviewSummary> page = new PageImpl<>(
+                List.of(InterviewSummary.of(1L, InterviewType.CS, Difficulty.JUNIOR, 7, SessionStatus.COMPLETED, createdAt)),
+                PageRequest.of(0, 10), 1);
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        given(interviewService.getList(eq(userId), any(), eq(SessionStatus.COMPLETED), any())).willReturn(page);
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+                .queryParam("sessionStatus", "COMPLETED")
+        .when()
+                .get("/api/interviews")
+        .then()
+                .statusCode(200)
+                .body("content", hasSize(1))
+                .body("content[0].sessionStatus", equalTo("COMPLETED"));
+    }
+
+    @Test
     @DisplayName("면접이 없을 때 빈 목록이 반환된다")
     void getInterviewListEmpty() {
         Long userId = 1L;
         Page<InterviewSummary> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 10), 0);
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
-        given(interviewService.getList(eq(userId), any())).willReturn(emptyPage);
+        given(interviewService.getList(eq(userId), any(), any(), any())).willReturn(emptyPage);
 
         RestAssuredMockMvc.given()
                 .header("Authorization", "Bearer valid-token")
@@ -391,6 +437,69 @@ class InterviewControllerTest extends AcceptanceTest {
         RestAssuredMockMvc.given()
         .when()
                 .get("/api/interviews")
+        .then()
+                .statusCode(403);
+    }
+
+    @Test
+    @DisplayName("면접 삭제 성공 시 204가 반환된다")
+    void deleteInterview() {
+        Long userId = 1L;
+        Long interviewId = 1L;
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        willDoNothing().given(interviewService).delete(userId, interviewId);
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+        .when()
+                .delete("/api/interviews/{interviewId}", interviewId)
+        .then()
+                .statusCode(204);
+    }
+
+    @Test
+    @DisplayName("타인 면접 삭제 시도 시 403이 반환된다")
+    void deleteInterviewWhenNotOwner() {
+        Long userId = 1L;
+        Long interviewId = 1L;
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        willThrow(new CustomException(ErrorCode.INTERVIEW_ACCESS_DENIED))
+                .given(interviewService).delete(userId, interviewId);
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+        .when()
+                .delete("/api/interviews/{interviewId}", interviewId)
+        .then()
+                .statusCode(403);
+    }
+
+    @Test
+    @DisplayName("없는 면접 삭제 시도 시 404가 반환된다")
+    void deleteInterviewNotFound() {
+        Long userId = 1L;
+        Long interviewId = 99L;
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        willThrow(new CustomException(ErrorCode.INTERVIEW_NOT_FOUND))
+                .given(interviewService).delete(userId, interviewId);
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+        .when()
+                .delete("/api/interviews/{interviewId}", interviewId)
+        .then()
+                .statusCode(404);
+    }
+
+    @Test
+    @DisplayName("인증 없이 면접 삭제 시 403이 반환된다")
+    void deleteInterviewWithoutAuth() {
+        RestAssuredMockMvc.given()
+        .when()
+                .delete("/api/interviews/1")
         .then()
                 .statusCode(403);
     }

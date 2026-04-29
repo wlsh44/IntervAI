@@ -13,4 +13,6 @@ public interface AnswerRepository extends JpaRepository<AnswerEntity, Long> {
     Optional<AnswerEntity> findByIdAndStatus(Long id, EntityStatus status);
 
     List<AnswerEntity> findBySessionIdAndStatus(Long sessionId, EntityStatus status);
+
+    List<AnswerEntity> findByInterviewIdAndStatus(Long interviewId, EntityStatus status);
 }

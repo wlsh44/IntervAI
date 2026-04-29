@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewSummary;
+import wlsh.project.intervai.interview.domain.InterviewType;
+import wlsh.project.intervai.session.domain.SessionStatus;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +23,12 @@ public class InterviewService {
         return interviewManager.create(userId, command);
     }
 
-    public Page<InterviewSummary> getList(Long userId, Pageable pageable) {
-        return interviewFinder.findSummaries(userId, pageable);
+    public Page<InterviewSummary> getList(Long userId, InterviewType interviewType, SessionStatus sessionStatus, Pageable pageable) {
+        return interviewFinder.findSummaries(userId, interviewType, sessionStatus, pageable);
+    }
+
+    public void delete(Long userId, Long interviewId) {
+        interviewValidator.validateOwner(interviewId, userId);
+        interviewManager.delete(interviewId);
     }
 }

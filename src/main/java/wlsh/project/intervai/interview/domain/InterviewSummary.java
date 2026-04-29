@@ -1,20 +1,20 @@
 package wlsh.project.intervai.interview.domain;
 
 import java.time.LocalDateTime;
-import wlsh.project.intervai.interview.infra.InterviewEntity;
+import wlsh.project.intervai.interview.infra.InterviewSummaryProjection;
 import wlsh.project.intervai.session.domain.SessionStatus;
 
 public record InterviewSummary(Long id, InterviewType interviewType, Difficulty difficulty, int questionCount,
                                SessionStatus sessionStatus, LocalDateTime createdAt) {
 
-    public static InterviewSummary of(InterviewEntity entity, SessionStatus sessionStatus) {
+    public static InterviewSummary of(InterviewSummaryProjection projection) {
         return new InterviewSummary(
-                entity.getId(),
-                entity.getInterviewType(),
-                entity.getDifficulty(),
-                entity.getQuestionCount(),
-                sessionStatus,
-                entity.getCreatedAt()
+                projection.getId(),
+                projection.getInterviewType(),
+                projection.getDifficulty(),
+                projection.getQuestionCount(),
+                projection.getSessionStatus(),
+                projection.getCreatedAt()
         );
     }
 
