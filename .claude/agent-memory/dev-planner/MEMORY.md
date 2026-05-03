@@ -1,3 +1,4 @@
 - [InterviewSession 도메인 구현 현황](project_session_domain.md) — Finder/Manager/Validator 역할 분리, complete()/isInProgress() Entity 메서드 기구현
 - [Controller 테스트 패턴](project_test_pattern.md) — WebMvcTest + AcceptanceTest + RestAssuredMockMvc 패턴, void/예외 mock 방법
 - [Enum 패키지 위치 패턴](project_enum_location.md) — 다중 도메인 공유 Enum은 common.domain으로 이동, profile.domain.JobCategory가 interview로 확장될 때 발견
+- [InterviewSummary 아키텍처 위반](project_interview_summary_violation.md) — domain 객체가 InterviewEntity(infra) import, feat/history 작업 시 Projection 기반으로 수정 필요
