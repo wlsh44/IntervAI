@@ -30,18 +30,59 @@ Use this skill when changing backend code or backend-facing contracts.
 - Use transaction boundaries consistent with neighboring code.
 - Avoid changing frontend files unless an API contract changed and the frontend must compile against the new contract.
 
+## Implementation Order
+
+`Domain → Service → Repository(Entity) → Controller → 단위 테스트`
+
+Reason: domain and service logic must be stable before the controller exposes them. Do not skip ahead.
+
+## Commit Units
+
+Split commits by layer or logical unit. Do not mix layers in one commit.
+
+- `feat: add {Domain} domain/entity`
+- `feat: add {Domain}Service`
+- `feat: add {Domain}Repository`
+- `feat: add {Domain}Controller {method} {path}`
+- `test: add {Domain}Service unit tests`
+
+Convention: `feat / fix / refactor / test / docs / chore`. No WIP or temp messages.
+
+## Compact Checkpoints
+
+Run `/compact` at these points to prevent hallucination from context bloat:
+
+- Before starting implementation (after Plan is approved)
+- When switching layers (e.g., Service → Controller)
+- After 3+ consecutive test fix cycles
+- When context usage exceeds 50%
+
+**Before each compact, verify:**
+- [ ] `docs/api.md` reflects current state
+- [ ] All completed work is committed and pushed
+- [ ] Incomplete work has TODO comments
+
+## Hard Stop Conditions
+
+Stop immediately and report to user if any of the following occur:
+
+- A file outside the original plan needs editing
+- Estimated commits exceed 5
+- The same test failure recurs with 3 different fixes attempted → stop + re-enter Plan Mode
+- Implementation reveals the initial design needs structural change → stop + report (do not redesign alone)
+
 ## Workflow
 
-1. Read the relevant docs first: `docs/api.md`, `docs/architecture.md`, and domain docs under `docs/` when they apply.
+1. Read `docs/api.md`, `docs/architecture.md`, and relevant domain docs under `docs/`.
 2. Locate existing code with `rg` before introducing new classes or helpers.
 3. Make the smallest coherent backend change that fits the current design.
-4. Add or update focused tests for behavioral changes.
-5. Run a targeted Gradle test when possible, then `./gradlew test` for shared behavior or broad changes.
-6. If an API shape changed, update `docs/api.md` in the same change.
+4. Follow Implementation Order above.
+5. Add or update focused tests for behavioral changes.
+6. Run a targeted Gradle test when possible, then `./gradlew test` for shared behavior or broad changes.
+7. If an API shape changed, update `docs/api.md` in the same change (user approval required).
+8. On completion, hand off to `intervai-ship` skill.
 
 ## Checks
-
-Use these commands from the repository root:
 
 ```bash
 ./gradlew test

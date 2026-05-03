@@ -18,26 +18,79 @@ Always read `.github/ISSUE_TEMPLATE/` before creating an issue. The issue body m
 
 Do not invent a different issue structure. Keep the template headings and checklist style.
 
+## Pre-Work Mandatory Read
+
+Before doing anything else, read these files and output a 1–2 line summary of each.
+Do not proceed until this step is complete.
+
+1. `CLAUDE.md` — Agent Traps 표 확인
+2. `docs/agent-traps.md` — Agent Traps 표에 항목이 있을 때만
+3. `docs/api.md` — API 변경·추가가 포함된 작업일 때만
+4. `docs/architecture.md` — 새 도메인·엔티티 추가 작업일 때만
+5. `docs/notes/issue-{관련 이슈 번호}.md` — 연관 이슈가 명시된 경우만
+
+출력 형식:
+```
+[필독 완료]
+- Agent Traps: {확인한 패턴 수}개 확인
+- api.md: {읽었으면 핵심 변경 영향 1줄 / 스킵이면 "해당 없음"}
+- architecture.md: {읽었으면 관련 도메인 1줄 / 스킵이면 "해당 없음"}
+```
+
+## Plan Mode Trigger
+
+After reading required files, judge whether Plan Mode is required.
+Enter Plan Mode if **any** of the following apply:
+
+- 수정 예상 파일 3개 이상
+- 새 엔티티 또는 DB 테이블 추가
+- `docs/api.md` 스펙 변경 필요
+- 백엔드 + 프론트엔드 동시 작업
+- 처음 접하는 도메인 또는 모듈
+
+**Plan Mode output** (read-only exploration, no edits):
+- 영향 받는 파일 목록
+- 작업 단계 순서 (의존성 포함)
+- 예상 커밋 단위
+
+For complex plans, suggest: "별도 Claude 세션에서 스태프 엔지니어 역할로 이 계획을 검토하세요."
+
+→ **Wait for user approval before any implementation.**
+
+## Task Decomposition Trigger
+
+Propose decomposition if **any** of the following apply. Do not auto-create issues.
+
+- 예상 커밋 5개 초과
+- 계획에 없던 파일 수정 필요
+- 단일 PR에 백엔드·프론트엔드 변경 혼재
+
+→ Output decomposition proposal and **wait for user approval.**
+
 ## Workflow
 
-1. Summarize the user's prompt into a short Korean issue title.
-2. Classify the work as feature, fix, refactor, or docs and select the matching template.
-3. Check whether a matching issue already exists. Search open issues first, then all issues if needed:
+1. Run Pre-Work Mandatory Read above.
+2. Summarize the user's prompt into a short Korean issue title.
+3. Classify the work as feature, fix, refactor, or docs and select the matching template.
+4. Check whether a matching issue already exists:
 
 ```bash
 gh issue list --state open --search "{keywords}" --json number,title,labels,url
 gh issue list --state all --search "{keywords}" --json number,title,state,labels,url
 ```
 
-4. If a matching issue exists, use it and report the issue number and URL.
-5. If a matching closed issue exists, only reuse it when the work is clearly a continuation; otherwise create a new issue and reference the closed one under `## 참고 사항(선택)`.
-6. If no matching issue exists, create one with the selected template:
+5. If a matching issue exists, use it and report the issue number and URL.
+6. If a matching closed issue exists, only reuse it when the work is clearly a continuation; otherwise create a new issue and reference the closed one under `## 참고 사항(선택)`.
+7. If no matching issue exists, create one with the selected template:
 
 ```bash
 gh issue create --title "{Korean title}" --label "{template label}" --body-file "{prepared issue body file}"
 ```
 
-7. Mention the issue number in the work plan and branch name when useful.
+8. Run Plan Mode trigger judgment.
+9. If `docs/api.md` change is needed, modify and commit before branching:
+   `docs: update api spec for #{n}`
+   → **사용자 승인 없이 `docs/api.md` 변경 금지**
 
 ## Issue Body Rules
 
@@ -52,3 +105,6 @@ gh issue create --title "{Korean title}" --label "{template label}" --body-file 
 - For backend implementation, use `.agent/skills/intervai-be/SKILL.md`.
 - For frontend implementation, use `.agent/skills/intervai-fe/SKILL.md`.
 - For mixed work, split the plan by backend and frontend, but keep one issue if the user prompt describes one coherent task.
+- Branch naming: backend `feature/issue-{n}-backend` / frontend `feature/issue-{n}-frontend`
+- Use `claude --worktree` flag for isolated worktree per branch.
+
