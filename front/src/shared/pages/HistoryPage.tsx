@@ -11,15 +11,25 @@ const HistoryPage = () => {
   const [filters, setFilters] = useState<Filters>({})
   const [page, setPage] = useState(0)
 
-  const { data, isLoading } = useInterviewHistory(filters, page)
+  const { data, isLoading, isError } = useInterviewHistory(filters, page)
   const { mutate: deleteInterview, isPending: isDeleting } = useDeleteInterview()
+
+  const totalPages = data?.totalPages ?? 0
 
   const handleFiltersChange = (newFilters: Filters) => {
     setFilters(newFilters)
     setPage(0)
   }
 
-  const totalPages = data?.totalPages ?? 0
+  const handleDelete = (id: number) => {
+    deleteInterview(id, {
+      onSuccess: () => {
+        if (data && data.content.length === 1 && page > 0) {
+          setPage((p) => p - 1)
+        }
+      },
+    })
+  }
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
@@ -29,6 +39,8 @@ const HistoryPage = () => {
 
       {isLoading ? (
         <p className="text-[#131b2e]/40 text-center py-12">불러오는 중...</p>
+      ) : isError ? (
+        <p className="text-red-400 text-center py-12">데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.</p>
       ) : !data || data.content.length === 0 ? (
         <p className="text-[#131b2e]/40 text-center py-12">면접 기록이 없습니다</p>
       ) : (
@@ -37,7 +49,7 @@ const HistoryPage = () => {
             <HistoryCard
               key={item.id}
               item={item}
-              onDelete={deleteInterview}
+              onDelete={handleDelete}
               isDeleting={isDeleting}
             />
           ))}
