@@ -337,13 +337,13 @@ class InterviewControllerTest extends AcceptanceTest {
         Long userId = 1L;
         LocalDateTime createdAt = LocalDateTime.of(2024, 1, 15, 10, 0, 0);
         List<InterviewSummary> summaries = List.of(
-                InterviewSummary.of(1L, InterviewType.CS, Difficulty.JUNIOR, 7, SessionStatus.COMPLETED, createdAt),
-                InterviewSummary.of(2L, InterviewType.PORTFOLIO, Difficulty.SENIOR, 5, SessionStatus.IN_PROGRESS, createdAt)
+                InterviewSummary.of(1L, InterviewType.CS, Difficulty.JUNIOR, 7, SessionStatus.COMPLETED, 85, createdAt),
+                InterviewSummary.of(2L, InterviewType.PORTFOLIO, Difficulty.SENIOR, 5, SessionStatus.IN_PROGRESS, null, createdAt)
         );
-        Page<InterviewSummary> page = new PageImpl<>(summaries, PageRequest.of(0, 10), 2);
+        Page<InterviewSummary> page = new PageImpl<>(summaries, PageRequest.of(0, 5), 2);
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
-        given(interviewService.getList(eq(userId), any())).willReturn(page);
+        given(interviewService.getList(eq(userId), any(), any())).willReturn(page);
 
         RestAssuredMockMvc.given()
                 .header("Authorization", "Bearer valid-token")
@@ -357,8 +357,10 @@ class InterviewControllerTest extends AcceptanceTest {
                 .body("content[0].difficulty", equalTo("JUNIOR"))
                 .body("content[0].questionCount", equalTo(7))
                 .body("content[0].sessionStatus", equalTo("COMPLETED"))
+                .body("content[0].totalScore", equalTo(85))
                 .body("content[1].id", equalTo(2))
                 .body("content[1].sessionStatus", equalTo("IN_PROGRESS"))
+                .body("content[1].totalScore", equalTo(null))
                 .body("totalElements", equalTo(2))
                 .body("totalPages", equalTo(1))
                 .body("last", equalTo(true));
@@ -368,10 +370,10 @@ class InterviewControllerTest extends AcceptanceTest {
     @DisplayName("면접이 없을 때 빈 목록이 반환된다")
     void getInterviewListEmpty() {
         Long userId = 1L;
-        Page<InterviewSummary> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 10), 0);
+        Page<InterviewSummary> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 5), 0);
 
         given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
-        given(interviewService.getList(eq(userId), any())).willReturn(emptyPage);
+        given(interviewService.getList(eq(userId), any(), any())).willReturn(emptyPage);
 
         RestAssuredMockMvc.given()
                 .header("Authorization", "Bearer valid-token")
@@ -391,6 +393,95 @@ class InterviewControllerTest extends AcceptanceTest {
         RestAssuredMockMvc.given()
         .when()
                 .get("/api/interviews")
+        .then()
+                .statusCode(403);
+    }
+
+    @Test
+    @DisplayName("면접 유형 필터로 목록 조회 시 200이 반환된다")
+    void getInterviewListWithFilter() {
+        Long userId = 1L;
+        LocalDateTime createdAt = LocalDateTime.of(2024, 1, 15, 10, 0, 0);
+        List<InterviewSummary> summaries = List.of(
+                InterviewSummary.of(1L, InterviewType.CS, Difficulty.JUNIOR, 5, SessionStatus.COMPLETED, 90, createdAt)
+        );
+        Page<InterviewSummary> page = new PageImpl<>(summaries, PageRequest.of(0, 5), 1);
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        given(interviewService.getList(eq(userId), any(), any())).willReturn(page);
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+                .queryParam("interviewType", "CS")
+                .queryParam("status", "COMPLETED")
+        .when()
+                .get("/api/interviews")
+        .then()
+                .statusCode(200)
+                .body("content", hasSize(1))
+                .body("content[0].interviewType", equalTo("CS"))
+                .body("content[0].totalScore", equalTo(90));
+    }
+
+    @Test
+    @DisplayName("면접 삭제 성공 시 204가 반환된다")
+    void deleteInterview() {
+        Long userId = 1L;
+        Long interviewId = 1L;
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        willDoNothing().given(interviewService).delete(userId, interviewId);
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+        .when()
+                .delete("/api/interviews/{interviewId}", interviewId)
+        .then()
+                .statusCode(204);
+    }
+
+    @Test
+    @DisplayName("타인의 면접 삭제 시도 시 403이 반환된다")
+    void deleteInterviewWhenNotOwner() {
+        Long userId = 1L;
+        Long interviewId = 1L;
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        willThrow(new CustomException(ErrorCode.INTERVIEW_ACCESS_DENIED))
+                .given(interviewService).delete(userId, interviewId);
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+        .when()
+                .delete("/api/interviews/{interviewId}", interviewId)
+        .then()
+                .statusCode(403);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 면접 삭제 시도 시 404가 반환된다")
+    void deleteInterviewNotFound() {
+        Long userId = 1L;
+        Long interviewId = 999L;
+
+        given(accessTokenProvider.parseUserId("valid-token")).willReturn(userId);
+        willThrow(new CustomException(ErrorCode.INTERVIEW_NOT_FOUND))
+                .given(interviewService).delete(userId, interviewId);
+
+        RestAssuredMockMvc.given()
+                .header("Authorization", "Bearer valid-token")
+        .when()
+                .delete("/api/interviews/{interviewId}", interviewId)
+        .then()
+                .statusCode(404);
+    }
+
+    @Test
+    @DisplayName("인증 없이 면접 삭제 시 403이 반환된다")
+    void deleteInterviewWithoutAuth() {
+        RestAssuredMockMvc.given()
+        .when()
+                .delete("/api/interviews/1")
         .then()
                 .statusCode(403);
     }

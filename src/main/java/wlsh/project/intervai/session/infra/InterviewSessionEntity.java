@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name = "interview_sessions")
+@Table(name = "interview_sessions", uniqueConstraints = @UniqueConstraint(columnNames = "interview_id"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InterviewSessionEntity extends BaseEntity {
 
