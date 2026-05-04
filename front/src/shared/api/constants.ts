@@ -14,6 +14,7 @@ export const API_PATHS = {
   interviews: {
     list: '/api/interviews',
     create: '/api/interviews',
+    delete: (interviewId: number) => `/api/interviews/${interviewId}`,
     finish: (interviewId: number) => `/api/interviews/${interviewId}/finish`,
     sessions: (interviewId: number) => `/api/interviews/${interviewId}/sessions`,
     finishSession: (interviewId: number) => `/api/interviews/${interviewId}/sessions/finish`,

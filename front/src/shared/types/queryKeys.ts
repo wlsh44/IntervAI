@@ -12,6 +12,6 @@ export const queryKeys = {
   },
   interviews: {
     all: ['interviews'] as const,
-    list: () => ['interviews', 'list'] as const,
+    list: (params?: Record<string, unknown>) => ['interviews', 'list', params] as const,
   },
 } as const

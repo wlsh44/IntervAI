@@ -8,6 +8,7 @@ export interface InterviewSummary {
   difficulty: Difficulty
   questionCount: number
   sessionStatus: SessionStatus
+  totalScore: number | null
   createdAt: string
 }
 
