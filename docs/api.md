@@ -851,7 +851,12 @@ GET /api/interviews
 | 파라미터 | 타입 | 기본값 | 설명 |
 |---------|------|--------|------|
 | `page` | Integer | 0 | 페이지 번호 (0부터 시작) |
-| `size` | Integer | 10 | 페이지 크기 |
+| `size` | Integer | 5 | 페이지 크기 |
+| `keyword` | String | — | 키워드 검색 (선택) |
+| `startDate` | LocalDate (yyyy-MM-dd) | — | 날짜 범위 시작 (선택) |
+| `endDate` | LocalDate (yyyy-MM-dd) | — | 날짜 범위 종료 (선택) |
+| `interviewType` | InterviewType | — | 면접 유형 필터 (선택) |
+| `status` | SessionStatus | — | 세션 상태 필터 (선택) |
 
 **Response** `200 OK`
 
@@ -871,6 +876,7 @@ GET /api/interviews
 | `difficulty` | Difficulty | 난이도 |
 | `questionCount` | Integer | 질문 수 |
 | `sessionStatus` | SessionStatus | 세션 상태 (`IN_PROGRESS` / `COMPLETED`) |
+| `totalScore` | Integer \| null | AI 종합 점수 (미완료 또는 리포트 미생성 시 null) |
 | `createdAt` | String (ISO 8601) | 면접 생성 시각 |
 
 **에러**: 없음 (인증된 사용자의 면접이 없으면 빈 목록 반환)
@@ -887,6 +893,7 @@ GET /api/interviews
       "difficulty": "JUNIOR",
       "questionCount": 5,
       "sessionStatus": "COMPLETED",
+      "totalScore": 82,
       "createdAt": "2026-04-10T12:34:56"
     }
   ],
@@ -894,6 +901,37 @@ GET /api/interviews
   "totalPages": 1,
   "last": true
 }
+```
+
+---
+
+### 면접 삭제
+
+```
+DELETE /api/interviews/{interviewId}
+```
+
+**인증**: 필요 (본인 면접만 가능)
+
+**Path Parameters**
+
+| 파라미터 | 타입 | 설명 |
+|---------|------|------|
+| `interviewId` | Long | 면접 ID |
+
+**Response** `204 No Content`
+
+**에러**
+
+| ErrorCode | HTTP | 설명 |
+|-----------|------|------|
+| `INTERVIEW_NOT_FOUND` | 404 | 면접 없음 |
+| `INTERVIEW_ACCESS_DENIED` | 403 | 타인 면접 접근 |
+
+**예시**
+
+```
+// Response 204 (body 없음)
 ```
 
 ---
