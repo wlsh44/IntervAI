@@ -12,6 +12,7 @@ public record InterviewSummaryResponse(
         Difficulty difficulty,
         int questionCount,
         SessionStatus sessionStatus,
+        Integer totalScore,
         LocalDateTime createdAt
 ) {
 
@@ -22,6 +23,7 @@ public record InterviewSummaryResponse(
                 summary.difficulty(),
                 summary.questionCount(),
                 summary.sessionStatus(),
+                summary.totalScore(),
                 summary.createdAt()
         );
     }

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.Interview;
+import wlsh.project.intervai.interview.domain.InterviewListQuery;
 import wlsh.project.intervai.interview.domain.InterviewSummary;
 
 @Service
@@ -21,7 +22,11 @@ public class InterviewService {
         return interviewManager.create(userId, command);
     }
 
-    public Page<InterviewSummary> getList(Long userId, Pageable pageable) {
-        return interviewFinder.findSummaries(userId, pageable);
+    public Page<InterviewSummary> getList(Long userId, InterviewListQuery query, Pageable pageable) {
+        return interviewFinder.findSummaries(userId, query, pageable);
+    }
+
+    public void delete(Long userId, Long interviewId) {
+        interviewManager.delete(userId, interviewId);
     }
 }
