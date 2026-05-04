@@ -11,6 +11,7 @@ import wlsh.project.intervai.common.exception.ErrorCode;
 import wlsh.project.intervai.interview.domain.CsCategory;
 import wlsh.project.intervai.interview.domain.CsSubject;
 import wlsh.project.intervai.interview.domain.Interview;
+import wlsh.project.intervai.interview.domain.InterviewListQuery;
 import wlsh.project.intervai.interview.domain.InterviewSummary;
 import wlsh.project.intervai.interview.infra.InterviewCsSubjectEntity;
 import wlsh.project.intervai.interview.infra.InterviewCsSubjectRepository;
@@ -18,6 +19,9 @@ import wlsh.project.intervai.interview.infra.InterviewEntity;
 import wlsh.project.intervai.interview.infra.InterviewPortfolioLinkEntity;
 import wlsh.project.intervai.interview.infra.InterviewPortfolioLinkRepository;
 import wlsh.project.intervai.interview.infra.InterviewRepository;
+import wlsh.project.intervai.interview.infra.InterviewSpecification;
+import wlsh.project.intervai.report.infra.InterviewReportEntity;
+import wlsh.project.intervai.report.infra.InterviewReportRepository;
 import wlsh.project.intervai.session.domain.SessionStatus;
 import wlsh.project.intervai.session.infra.InterviewSessionEntity;
 import wlsh.project.intervai.session.infra.InterviewSessionRepository;
@@ -35,6 +39,7 @@ public class InterviewFinder {
     private final InterviewCsSubjectRepository interviewCsSubjectRepository;
     private final InterviewPortfolioLinkRepository interviewPortfolioLinkRepository;
     private final InterviewSessionRepository interviewSessionRepository;
+    private final InterviewReportRepository interviewReportRepository;
 
     public Interview find(Long interviewId) {
         InterviewEntity interview = interviewRepository.findByIdAndStatus(interviewId, EntityStatus.ACTIVE)
@@ -65,23 +70,28 @@ public class InterviewFinder {
     }
 
     @Transactional(readOnly = true)
-    public Page<InterviewSummary> findSummaries(Long userId, Pageable pageable) {
+    public Page<InterviewSummary> findSummaries(Long userId, InterviewListQuery query, Pageable pageable) {
         Page<InterviewEntity> interviewPage = interviewRepository
-                .findByUserIdAndStatusOrderByCreatedAtDesc(userId, EntityStatus.ACTIVE, pageable);
+                .findAll(InterviewSpecification.of(userId, query), pageable);
 
         List<Long> interviewIds = interviewPage.getContent().stream()
                 .map(InterviewEntity::getId)
                 .toList();
 
-        Map<Long, InterviewSessionEntity> sessionMap = interviewSessionRepository
+        Map<Long, SessionStatus> sessionStatusMap = interviewSessionRepository
                 .findByInterviewIdInAndStatus(interviewIds, EntityStatus.ACTIVE)
                 .stream()
-                .collect(Collectors.toMap(InterviewSessionEntity::getInterviewId, s -> s));
+                .collect(Collectors.toMap(InterviewSessionEntity::getInterviewId, InterviewSessionEntity::getSessionStatus));
+
+        Map<Long, Integer> totalScoreMap = interviewReportRepository
+                .findByInterviewIdInAndStatus(interviewIds, EntityStatus.ACTIVE)
+                .stream()
+                .collect(Collectors.toMap(InterviewReportEntity::getInterviewId, InterviewReportEntity::getTotalScore));
 
         return interviewPage.map(entity -> {
-            InterviewSessionEntity session = sessionMap.get(entity.getId());
-            SessionStatus sessionStatus = session.getSessionStatus();
-            return InterviewSummary.of(entity, sessionStatus);
+            SessionStatus sessionStatus = sessionStatusMap.get(entity.getId());
+            Integer totalScore = totalScoreMap.get(entity.getId());
+            return InterviewSummary.of(entity, sessionStatus, totalScore);
         });
     }
 }

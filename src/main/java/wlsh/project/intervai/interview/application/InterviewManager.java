@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import wlsh.project.intervai.common.entity.EntityStatus;
+import wlsh.project.intervai.common.exception.CustomException;
+import wlsh.project.intervai.common.exception.ErrorCode;
 import wlsh.project.intervai.interview.domain.CreateInterviewCommand;
 import wlsh.project.intervai.interview.domain.CsSubject;
 import wlsh.project.intervai.interview.domain.Interview;
@@ -62,5 +65,15 @@ public class InterviewManager {
                 .map(url -> InterviewPortfolioLinkEntity.of(interviewId, url))
                 .toList();
         interviewPortfolioLinkRepository.saveAll(entities);
+    }
+
+    @Transactional
+    public void delete(Long userId, Long interviewId) {
+        InterviewEntity entity = interviewRepository.findByIdAndStatus(interviewId, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
+        if (!entity.isOwner(userId)) {
+            throw new CustomException(ErrorCode.INTERVIEW_ACCESS_DENIED);
+        }
+        entity.delete();
     }
 }
