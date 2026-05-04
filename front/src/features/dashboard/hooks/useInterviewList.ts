@@ -4,7 +4,7 @@ import { getInterviewList } from '../api/dashboardApi'
 
 const useInterviewList = () => {
   return useQuery({
-    queryKey: queryKeys.interviews.list(),
+    queryKey: queryKeys.interviews.list({ size: 3 }),
     queryFn: () => getInterviewList({ size: 3 }),
     staleTime: 60_000,
     retry: false,
