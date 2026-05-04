@@ -25,6 +25,10 @@
 - 대시보드(size:3)와 히스토리(필터+페이지) 쿼리가 별도 캐시 키를 갖도록 분리
 - `list()` → `['interviews', 'list', undefined]` / `list({...})` → `['interviews', 'list', {...}]`
 
+### BE→FE 순차 작업 시 브랜치 전략 (프론트엔드)
+- FE 브랜치를 BE 브랜치에서 분기하는 것은 백엔드 API를 로컬에서 테스트하기 위해 정상적인 흐름
+- PR 생성 전 `git rebase --onto main feature/issue-{n}-backend` 로 BE 커밋을 제거한 뒤 생성
+
 ### 삭제 후 invalidateQueries 범위: interviews.all (프론트엔드)
 - `interviews.all`로 상위 키 무효화 → 대시보드 recent history도 자동 갱신됨
 
