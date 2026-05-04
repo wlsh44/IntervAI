@@ -38,7 +38,12 @@ public class InterviewSpecification {
                         .where(cb.and(
                                 cb.equal(topicRoot.get("interviewId"), root.get("id")),
                                 cb.equal(topicRoot.get("status"), EntityStatus.ACTIVE),
-                                cb.like(cb.lower(topicRoot.get("topic")), "%" + query.keyword().toLowerCase() + "%")
+                                cb.like(cb.lower(topicRoot.get("topic")),
+                                "%" + query.keyword().toLowerCase()
+                                        .replace("\\", "\\\\")
+                                        .replace("%", "\\%")
+                                        .replace("_", "\\_") + "%",
+                                '\\')
                         ));
                 predicates.add(cb.exists(topicSubquery));
             }

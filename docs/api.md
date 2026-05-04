@@ -907,7 +907,7 @@ GET /api/interviews
 
 ### 면접 삭제
 
-```
+```http
 DELETE /api/interviews/{interviewId}
 ```
 
@@ -930,7 +930,7 @@ DELETE /api/interviews/{interviewId}
 
 **예시**
 
-```
+```text
 // Response 204 (body 없음)
 ```
 

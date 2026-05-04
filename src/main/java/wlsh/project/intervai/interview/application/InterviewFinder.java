@@ -81,16 +81,24 @@ public class InterviewFinder {
         Map<Long, SessionStatus> sessionStatusMap = interviewSessionRepository
                 .findByInterviewIdInAndStatus(interviewIds, EntityStatus.ACTIVE)
                 .stream()
-                .collect(Collectors.toMap(InterviewSessionEntity::getInterviewId, InterviewSessionEntity::getSessionStatus));
+                .collect(Collectors.toMap(
+                        InterviewSessionEntity::getInterviewId,
+                        InterviewSessionEntity::getSessionStatus,
+                        (existing, replacement) -> replacement));
 
         Map<Long, Integer> totalScoreMap = interviewReportRepository
                 .findByInterviewIdInAndStatus(interviewIds, EntityStatus.ACTIVE)
                 .stream()
-                .collect(Collectors.toMap(InterviewReportEntity::getInterviewId, InterviewReportEntity::getTotalScore));
+                .collect(Collectors.toMap(
+                        InterviewReportEntity::getInterviewId,
+                        InterviewReportEntity::getTotalScore,
+                        (existing, replacement) -> replacement));
 
         return interviewPage.map(entity -> {
             SessionStatus sessionStatus = sessionStatusMap.get(entity.getId());
-            Integer totalScore = totalScoreMap.get(entity.getId());
+            Integer totalScore = SessionStatus.COMPLETED.equals(sessionStatus)
+                    ? totalScoreMap.get(entity.getId())
+                    : null;
             return InterviewSummary.of(entity, sessionStatus, totalScore);
         });
     }
