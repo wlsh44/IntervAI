@@ -32,10 +32,6 @@
 ### 삭제 후 invalidateQueries 범위: interviews.all (프론트엔드)
 - `interviews.all`로 상위 키 무효화 → 대시보드 recent history도 자동 갱신됨
 
-### BE→FE 순차 작업 시 브랜치 전략 (프론트엔드)
-- FE 브랜치를 BE 브랜치에서 분기하는 것은 백엔드 API를 로컬에서 테스트하기 위해 정상적인 흐름
-- PR 생성 전 `git rebase --onto main feature/issue-{n}-backend` 로 BE 커밋을 제거한 뒤 생성
-
 ## 포기한 접근법
 
 - **@Query JPQL 동적 쿼리**: 선택적 파라미터를 NULL 체크로 처리하는 방식 고려했으나 가독성이 떨어지고 Specification이 더 확장 가능
