@@ -39,6 +39,7 @@ out/
 ### Local dev tools ###
 tools/httpie/**/tmp/
 tools/httpie/**/.env
+.env
 
 ### Prod config (contains secrets) ###
 src/main/resources/application*.yml
