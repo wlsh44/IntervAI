@@ -1,0 +1,9 @@
+.git
+.github
+.gradle
+build
+front/node_modules
+front/dist
+docs
+tools
+*.log
