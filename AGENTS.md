@@ -1,17 +1,17 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Codex Code (Codex.ai/code) when working with code in this repository.
 
 > **200줄 이하 유지 원칙**: 세부 지침은 각 skill 파일에 위임한다. 이 파일에는 흐름(what & when)과 공통 원칙만 유지한다.
 
 ## Project Overview
 
-IntervAI — AI 면접 연습 웹 애플리케이션. Claude API(SpringAI)를 활용하여 포트폴리오 기반 맞춤형 면접 질문 생성, 답변 피드백, 꼬리 질문을 제공하는 서비스.
+IntervAI — AI 면접 연습 웹 애플리케이션. LLM API(SpringAI)를 활용하여 포트폴리오 기반 맞춤형 면접 질문 생성, 답변 피드백, 꼬리 질문을 제공하는 서비스.
 
 ## Tech Stack
 
 - **Backend**: Spring Boot 3.5, Java 21, Gradle 8.14
-- **LLM**: SpringAI + Anthropic Claude API
+- **LLM**: SpringAI + LLM API
 - **DB**: MySQL (영구 저장), Redis (캐시/임시 저장)
 - **File Storage**: AWS S3
 - **Frontend** (별도): React + TypeScript + Vite, Zustand, TanStack Query, Tailwind CSS + shadcn/ui
@@ -43,7 +43,7 @@ IntervAI — AI 면접 연습 웹 애플리케이션. Claude API(SpringAI)를 �
 - 계획에 없던 파일 발견 시 즉시 중단 + 보고
 - 예상 커밋 5개 초과 시 즉시 중단 + 작업 분해 제안
 - Compact는 skill 간 전환 시 기본 실행
-- CLAUDE.md는 200줄 이하 유지. 초과 시 `docs/`로 분리 후 링크
+- AGENTS.md는 200줄 이하 유지. 초과 시 `docs/`로 분리 후 링크
 
 ---
 
@@ -65,7 +65,7 @@ IntervAI — AI 면접 연습 웹 애플리케이션. Claude API(SpringAI)를 �
 ### [2] 브랜치 및 Worktree 설정
 
 - 백엔드: `feature/issue-{n}-backend` / 프론트엔드: `feature/issue-{n}-frontend`
-- `claude --worktree` 플래그로 격리된 worktree 생성
+- `codex --worktree` 플래그로 격리된 worktree 생성
 - 각 worktree에서 개발 환경 초기화
 
 ### [3] 구현 — `intervai-be` / `intervai-fe`
