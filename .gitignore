@@ -43,6 +43,7 @@ tools/httpie/**/.env
 
 ### Prod config (contains secrets) ###
 src/main/resources/application*.yml
+!src/main/resources/application-prod.yml
 docs/screen/
 
 ssh*
