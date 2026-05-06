@@ -50,7 +50,7 @@
 ### 비기능 요구사항
 - [x] 질문 목록은 세션 생성 후 별도 API 호출로 전체 생성 후 DB 저장, 프론트에는 1개씩 노출
 - [x] 면접 소유자 검증은 `InterviewSessionValidator.validateInterviewOwner()`로 통일
-- [ ] 포트폴리오 데이터를 시스템 프롬프트에 주입 (portfolioLinks는 현재 URL 텍스트로 주입, GitHub 분석 고도화는 Stage 6)
+- [x] 포트폴리오 데이터를 시스템 프롬프트에 주입 (portfolioLinks URL + GitHub 저장소 메타데이터/언어 구성/README 일부)
 - [ ] 본 질문 변경 시 conversationId 재발급으로 꼬리 질문 컨텍스트 분리 (미구현)
 
 ## 사용자 스토리
@@ -171,7 +171,7 @@
 ## 미결 사항 (Open Questions)
 - 질문 생성 실패 시 재시도 정책 및 사용자 안내 방법
 - 꼬리 질문 최대 수를 면접 설정 시 사용자가 지정 가능하게 할지 (현재 고정값 3)
-- 포트폴리오 기반 유형에서 GitHub 레포지토리 분석 실패 시 처리 방식
+- GitHub private repository 인증 연동 방식
 - LLM 응답 지연 시 타임아웃 처리 방법
 - 프로필 기본값 자동 적용 구현 방법 (프론트엔드 vs 백엔드)
 - 세션 만료 정책: 방치된 `IN_PROGRESS` 세션 처리 방식 (TTL 기반 자동 만료 / 재접속 시 강제 종료 / 방치 허용) — Stage 5 기획 시 결정

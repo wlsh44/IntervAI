@@ -11,7 +11,7 @@
 |------|------|------|
 | Stage 3 — LLM 연동 기본 채팅 | ✅ 완료 | |
 | Stage 4 — 꼬리 질문 + 피드백 | 🔧 진행 중 | 피드백 구조화 미구현, conversationId 분리 미구현 |
-| Stage 6 — 포트폴리오 기반 질문 고도화 | ⬜ 예정 | |
+| Stage 6 — 포트폴리오 기반 질문 고도화 | 🔧 진행 중 | GitHub 저장소 메타데이터, 언어 구성, README 프롬프트 주입 완료 |
 
 ## 요구사항
 ### 기능 요구사항
@@ -24,7 +24,8 @@
   - CS 면접 생성의 페이지에서 '프로필 불러오기'를 눌렀을 경우: 난이도 설정
   - 포트폴리오 면접 생성 페이지 또는 종합 면접 생성 페이지에서 '프로필 불러오기'를 눌렀을 경우: 포트폴리오 링크, 기술 스택, 난이도 설정
 - [x] 세션 생성 후 별도 API 호출로 질문 일괄 생성하여 DB에 저장 (`POST /api/interviews/{interviewId}/questions`)
-- [ ] GitHub 레포지토리의 기술 스택, 커밋 패턴, README 분석을 통한 고도화된 포트폴리오 질문 (Stage 6)
+- [x] GitHub 레포지토리의 기술 스택/README 분석을 통한 고도화된 포트폴리오 질문 (Stage 6)
+- [ ] GitHub 커밋 패턴 분석을 통한 포트폴리오 질문 고도화
 
 #### 꼬리 질문 (Follow-up)
 - [x] 사용자의 답변 내용을 분석하여 연계된 추가 질문 생성
@@ -45,7 +46,7 @@
 - [x] `AiChatCaller` 기반 LLM 호출, `conversationId`로 세션 단위 대화 히스토리 관리
 - [x] sessionId를 conversationId로 사용하여 세션 전체 대화 컨텍스트 유지
 - [ ] 본 질문 변경 시 conversationId 재발급으로 꼬리 질문 컨텍스트 분리 (미구현)
-- [ ] GitHub 분석 결과를 시스템 프롬프트에 주입 (Stage 6)
+- [x] GitHub 분석 결과를 시스템 프롬프트에 주입 (Stage 6)
 
 ### 비기능 요구사항
 - [x] LLM 프롬프트 파일은 외부 `.st` 파일로 분리 관리
@@ -103,7 +104,7 @@
 - 스트리밍(SSE) 응답
 
 ## 미결 사항 (Open Questions)
-- 포트폴리오 기반 질문에서 GitHub 레포지토리 분석 깊이 결정 (README만 vs 커밋 메시지 포함)
+- GitHub 레포지토리 커밋 메시지 분석 포함 여부
 - LLM 호출 실패 시 재시도 횟수 및 fallback 처리 방법
 - 꼬리 질문 생성 여부를 LLM이 자율 판단할지 항상 생성할지 결정
 - 본 질문 이동 시 conversationId 재발급 구현 방법 (Redis 기반 ChatMemory 전환 여부)
@@ -127,4 +128,5 @@
 - `QuestionGenerator` 인터페이스 — `ApiQuestionGenerator`(prod), `MockQuestionGenerator`(!prod)
 - `AnswerResultGenerator` 인터페이스 — `OllamaAnswerResultGenerator`(prod), `MockAnswerResultGenerator`(!prod)
 - `QuestionPromptBuilder` — `Interview` 도메인으로부터 질문 생성 프롬프트 조립
+- `GithubRepositoryReader` / `GithubRestRepositoryClient` — GitHub 링크를 저장소 컨텍스트로 요약
 - `AnswerPromptBuilder` — `Question`, `Answer`, `Interview` 도메인으로부터 피드백 프롬프트 조립

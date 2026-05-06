@@ -21,7 +21,7 @@
 - 수동 LLM 테스트는 아래처럼 실행한다.
 
 ```bash
-API_KEY=your_gemini_api_key RUN_LLM_API_TESTS=true ./gradlew test --tests "wlsh.project.intervai.question.infra.QuestionGeneratorLlmApiManualTest"
+API_KEY=your_llm_api_key RUN_LLM_API_TESTS=true ./gradlew test --tests "wlsh.project.intervai.question.infra.QuestionGeneratorLlmApiManualTest"
 ```
 
 - `.env`를 사용할 경우 `set -a; source .env; set +a` 후 동일한 Gradle 명령을 실행하면 된다.

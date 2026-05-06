@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import wlsh.project.intervai.interview.domain.CsSubject;
 import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewType;
+import wlsh.project.intervai.question.domain.GithubRepositorySummary;
 
 import java.util.List;
 import java.util.Map;
@@ -24,19 +25,23 @@ public class QuestionPromptBuilder {
     }
 
     public String build(Interview interview) {
+        return build(interview, List.of());
+    }
+
+    public String build(Interview interview, List<GithubRepositorySummary> githubRepositorySummaries) {
         PromptTemplate template = new PromptTemplate(promptResource);
         String prompt = template.render(Map.of(
                 "count", interview.getQuestionCount(),
                 "interviewType", interview.getInterviewType().getKo(),
                 "level", interview.getDifficulty().getKo(),
                 "interviewerTone", interview.getInterviewerTone().getKo(),
-                "topic", buildTopic(interview)
+                "topic", buildTopic(interview, githubRepositorySummaries)
         ));
         log.debug("[QuestionPromptBuilder.build] 생성된 프롬프트:\n{}", prompt);
         return prompt;
     }
 
-    private String buildTopic(Interview interview) {
+    private String buildTopic(Interview interview, List<GithubRepositorySummary> githubRepositorySummaries) {
         InterviewType type = interview.getInterviewType();
         StringBuilder topic = new StringBuilder();
 
@@ -52,9 +57,21 @@ public class QuestionPromptBuilder {
             for (String link : interview.getPortfolioLinks()) {
                 topic.append("- ").append(link).append("\n");
             }
+            appendGithubRepositorySummaries(topic, githubRepositorySummaries);
         }
 
         return topic.toString();
+    }
+
+    private void appendGithubRepositorySummaries(StringBuilder topic,
+                                                 List<GithubRepositorySummary> githubRepositorySummaries) {
+        if (githubRepositorySummaries == null || githubRepositorySummaries.isEmpty()) {
+            return;
+        }
+        topic.append("\nGitHub 저장소 분석:\n");
+        for (GithubRepositorySummary summary : githubRepositorySummaries) {
+            topic.append(summary.toPromptText());
+        }
     }
 
     private String formatCsSubjects(List<CsSubject> csSubjects) {

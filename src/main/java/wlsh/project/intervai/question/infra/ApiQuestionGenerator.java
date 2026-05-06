@@ -8,7 +8,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import wlsh.project.intervai.common.ai.AiChatCaller;
 import wlsh.project.intervai.interview.domain.Interview;
+import wlsh.project.intervai.question.application.GithubRepositoryReader;
 import wlsh.project.intervai.question.application.QuestionGenerator;
+import wlsh.project.intervai.question.domain.GithubRepositorySummary;
 import wlsh.project.intervai.session.domain.InterviewSession;
 
 import java.util.List;
@@ -20,13 +22,16 @@ public class ApiQuestionGenerator implements QuestionGenerator {
 
     private final AiChatCaller aiChatCaller;
     private final QuestionPromptBuilder promptBuilder;
+    private final GithubRepositoryReader githubRepositoryReader;
     private final ObjectMapper objectMapper;
 
     public ApiQuestionGenerator(AiChatCaller aiChatCaller,
                                 QuestionPromptBuilder promptBuilder,
+                                GithubRepositoryReader githubRepositoryReader,
                                 ObjectMapper objectMapper) {
         this.aiChatCaller = aiChatCaller;
         this.promptBuilder = promptBuilder;
+        this.githubRepositoryReader = githubRepositoryReader;
         this.objectMapper = objectMapper;
     }
 
@@ -34,7 +39,9 @@ public class ApiQuestionGenerator implements QuestionGenerator {
     public List<String> generateAll(Interview interview, InterviewSession session) {
         log.info("[ApiQuestionGenerator.generateAll] 질문 생성 시작 - interviewType={}, difficulty={}, count={}",
                 interview.getInterviewType(), interview.getDifficulty(), interview.getQuestionCount());
-        String prompt = promptBuilder.build(interview);
+        List<GithubRepositorySummary> githubRepositorySummaries =
+                githubRepositoryReader.read(interview.getPortfolioLinks());
+        String prompt = promptBuilder.build(interview, githubRepositorySummaries);
         String response = aiChatCaller.callWithSession(String.valueOf(session.getId()), prompt);
         List<String> questions = parseQuestions(response);
         log.info("[ApiQuestionGenerator.generateAll] 질문 {}개 생성 완료", questions.size());
