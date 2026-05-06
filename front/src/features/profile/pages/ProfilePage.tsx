@@ -78,7 +78,7 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-[#faf8ff] p-8">
       <div className="max-w-2xl mx-auto">
-        <div className="mb-6">
+        <div className="mb-6 rounded-xl bg-white/70 border border-[#e2e7ff] px-5 py-4">
           <h1 className="text-xl font-semibold text-[#131b2e]">프로필 설정</h1>
           {profile?.updatedAt && (
             <p className="text-sm text-[#767586] mt-1">

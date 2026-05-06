@@ -5,7 +5,7 @@ const WelcomeSection = () => {
   const nickname = useAuthStore((s) => s.nickname)
 
   return (
-    <div className="bg-[#eaedff] rounded-xl p-6">
+    <div className="bg-[#eaedff] rounded-xl p-7">
       <h1 className="text-[#131b2e] text-xl font-semibold">{nickname}님, 반갑습니다!</h1>
       <p className="text-sm text-[#131b2e]/70 mt-1.5">꾸준한 연습이 합격을 만듭니다. 오늘도 함께해요.</p>
       <Link

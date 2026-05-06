@@ -125,7 +125,7 @@ const InterviewSetupForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl mx-auto p-8 space-y-7">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-4 rounded-xl bg-white/70 border border-[#e2e7ff] px-5 py-4">
         <div>
           <h1 className="text-xl font-semibold text-[#131b2e] mb-1.5">면접 설정</h1>
           <p className="text-sm text-[#767586]">맞춤형 AI 면접을 시작하기 위해 설정을 선택해주세요.</p>
