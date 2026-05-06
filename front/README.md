@@ -1,73 +1,64 @@
-# React + TypeScript + Vite
+# IntervAI Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+IntervAI의 프론트엔드 애플리케이션입니다.  
+사용자 인증, 프로필 관리, 면접 설정, AI 면접 진행, 히스토리와 결과 리포트 화면을 제공합니다.
 
-Currently, two official plugins are available:
+> 이미지 추가 추천: 이 위치에 대시보드, 면접 진행 화면, 결과 리포트 화면 스크린샷을 배치하면 좋습니다.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 주요 기능
 
-## React Compiler
+- 회원가입 및 로그인
+- 대시보드와 최근 면접 기록 조회
+- 프로필, 기술 스택, 포트폴리오 링크 관리
+- 면접 유형, 난이도, 질문 수, 면접관 톤 설정
+- 채팅형 면접 진행 및 답변 제출
+- 답변 피드백, 세션 종료, 결과 리포트 확인
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 기술 스택
 
-## Expanding the ESLint configuration
+- React
+- TypeScript
+- Vite
+- React Router
+- Zustand
+- TanStack Query
+- Axios
+- React Hook Form
+- Zod
+- Tailwind CSS
+- lucide-react
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 프로젝트 구조
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```text
+front
+├── src
+│   ├── app              # 앱 엔트리와 라우터
+│   ├── features
+│   │   ├── auth         # 인증
+│   │   ├── dashboard    # 대시보드
+│   │   ├── history      # 면접 히스토리
+│   │   ├── interview    # 면접 설정 및 진행
+│   │   └── profile      # 프로필 관리
+│   └── shared           # 공통 API, 레이아웃, UI, 타입
+└── package.json
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+> 다이어그램 추가 추천: 로그인 → 프로필 입력 → 면접 설정 → 채팅 진행 → 결과 리포트 흐름은 간단한 화면 플로우 다이어그램으로 정리하기 좋습니다.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 로컬 실행
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
+```
+
+기본 개발 서버는 Vite 설정을 따릅니다.
+
+## 테스트 및 빌드
+
+```bash
+npm run typecheck
+npm run lint
+npm run build
 ```
