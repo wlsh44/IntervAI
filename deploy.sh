@@ -10,13 +10,13 @@ if [ ! -f "$ENV_FILE" ]; then
 fi
 
 echo "[1/4] Pull latest image..."
-docker compose --env-file "$ENV_FILE" pull "$APP_SERVICE"
+sudo docker compose --env-file "$ENV_FILE" pull "$APP_SERVICE"
 
 echo "[2/4] Recreate container..."
-docker compose --env-file "$ENV_FILE" up -d --force-recreate "$APP_SERVICE"
+sudo docker compose --env-file "$ENV_FILE" up -d --force-recreate "$APP_SERVICE"
 
 echo "[3/4] Remove dangling images..."
-docker image prune -f
+sudo docker image prune -f
 
 echo "[4/4] Service status..."
-docker compose --env-file "$ENV_FILE" ps
+sudo docker compose --env-file "$ENV_FILE" ps
