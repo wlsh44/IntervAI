@@ -1,9 +1,6 @@
 services:
   spring-app:
     image: ${APP_IMAGE:-wlsh44/intervai-spring:latest}
-    build:
-      context: .
-      dockerfile: Dockerfile
     container_name: intervai-spring
     restart: unless-stopped
     ports:
