@@ -25,6 +25,7 @@ const ChatMessageList = ({ messages, onToggleFeedback }: ChatMessageListProps) =
             key={message.id}
             content={message.content}
             questionType={message.questionType}
+            isLoading={message.isLoading}
           />
         ) : (
           <CandidateMessageBubble

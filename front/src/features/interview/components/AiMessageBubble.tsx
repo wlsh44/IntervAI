@@ -1,12 +1,14 @@
+import { Loader2 } from 'lucide-react'
 import { QuestionType } from '../../../shared/types/enums'
 import type { QuestionType as QuestionTypeValue } from '../../../shared/types/enums'
 
 interface AiMessageBubbleProps {
   content: string
   questionType?: QuestionTypeValue
+  isLoading?: boolean
 }
 
-const AiMessageBubble = ({ content, questionType }: AiMessageBubbleProps) => {
+const AiMessageBubble = ({ content, questionType, isLoading = false }: AiMessageBubbleProps) => {
   const isFollowUp = questionType === QuestionType.FOLLOW_UP
 
   return (
@@ -20,7 +22,11 @@ const AiMessageBubble = ({ content, questionType }: AiMessageBubbleProps) => {
         )}
       </div>
       <div className="bg-[#eaedff] text-[#131b2e] rounded-lg rounded-tl-none px-4 py-3 text-sm leading-relaxed">
-        {content}
+        {isLoading ? (
+          <Loader2 size={18} className="animate-spin text-[#4648d4]" aria-label="답변 처리 중" />
+        ) : (
+          content
+        )}
       </div>
     </div>
   )
