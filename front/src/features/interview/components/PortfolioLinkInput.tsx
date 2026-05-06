@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import { X, Plus, Loader2 } from 'lucide-react'
 import { checkPublicGithubRepository, parseGithubRepositoryUrl } from '../utils/githubRepository'
 
@@ -13,7 +14,10 @@ interface PortfolioLinkInputProps {
 const PortfolioLinkInput = ({ value, onChange, error }: PortfolioLinkInputProps) => {
   const [inputValue, setInputValue] = useState('')
   const [urlError, setUrlError] = useState('')
-  const [isChecking, setIsChecking] = useState(false)
+  const { mutateAsync: validateRepository, isPending: isChecking } = useMutation({
+    mutationFn: checkPublicGithubRepository,
+    retry: false,
+  })
 
   const addLink = async () => {
     const trimmed = inputValue.trim()
@@ -31,9 +35,7 @@ const PortfolioLinkInput = ({ value, onChange, error }: PortfolioLinkInputProps)
       return
     }
 
-    setIsChecking(true)
-    const isPublicRepository = await checkPublicGithubRepository(repository).catch(() => false)
-    setIsChecking(false)
+    const isPublicRepository = await validateRepository(repository)
 
     if (!isPublicRepository) {
       setUrlError('접근 가능한 public GitHub 저장소만 등록할 수 있습니다.')

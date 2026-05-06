@@ -1,9 +1,16 @@
+import axios from 'axios'
+
 const GITHUB_HOST = 'github.com'
+const GITHUB_API_TIMEOUT_MS = 5000
 
 export interface GithubRepositoryPath {
   owner: string
   repo: string
   normalizedUrl: string
+}
+
+interface GithubRepositoryResponse {
+  private?: boolean
 }
 
 export const parseGithubRepositoryUrl = (rawUrl: string): GithubRepositoryPath | null => {
@@ -14,7 +21,8 @@ export const parseGithubRepositoryUrl = (rawUrl: string): GithubRepositoryPath |
     return null
   }
 
-  if (url.protocol !== 'https:' || url.hostname.toLowerCase() !== GITHUB_HOST) {
+  const hostname = url.hostname.toLowerCase()
+  if (url.protocol !== 'https:' || (hostname !== GITHUB_HOST && hostname !== `www.${GITHUB_HOST}`)) {
     return null
   }
 
@@ -36,16 +44,19 @@ export const parseGithubRepositoryUrl = (rawUrl: string): GithubRepositoryPath |
 }
 
 export const checkPublicGithubRepository = async (repository: GithubRepositoryPath): Promise<boolean> => {
-  const response = await fetch(`https://api.github.com/repos/${repository.owner}/${repository.repo}`, {
-    headers: {
-      Accept: 'application/vnd.github+json',
-    },
-  })
+  try {
+    const response = await axios.get<GithubRepositoryResponse>(
+      `https://api.github.com/repos/${repository.owner}/${repository.repo}`,
+      {
+        headers: {
+          Accept: 'application/vnd.github+json',
+        },
+        timeout: GITHUB_API_TIMEOUT_MS,
+      },
+    )
 
-  if (!response.ok) {
+    return response.data.private === false
+  } catch {
     return false
   }
-
-  const body = (await response.json()) as { private?: boolean }
-  return body.private === false
 }
