@@ -19,9 +19,13 @@ class GithubRestRepositoryClientTest {
     @Test
     @DisplayName("GitHub access token이 있으면 API 요청에 Bearer 인증 헤더를 포함한다")
     void summarize_withAccessToken_sendsAuthorizationHeader() {
-        RestClient.Builder builder = RestClient.builder();
+        RestClient.Builder builder = RestClient.builder()
+                .defaultHeader("Accept", "application/vnd.github+json")
+                .defaultHeader("X-GitHub-Api-Version", "2022-11-28")
+                .defaultHeader("Authorization", "Bearer github-token");
         MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
-        GithubRestRepositoryClient client = new GithubRestRepositoryClient(builder, "github-token");
+        RestClient restClient = builder.build();
+        GithubRestRepositoryClient client = new GithubRestRepositoryClient(restClient);
 
         server.expect(requestTo("https://api.github.com/repos/user/repo"))
                 .andExpect(method(HttpMethod.GET))

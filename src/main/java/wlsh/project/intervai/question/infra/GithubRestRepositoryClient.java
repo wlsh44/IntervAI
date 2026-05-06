@@ -2,13 +2,16 @@ package wlsh.project.intervai.question.infra;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import wlsh.project.intervai.question.application.GithubRepositoryClient;
@@ -22,18 +25,26 @@ public class GithubRestRepositoryClient implements GithubRepositoryClient {
     private static final int README_SNIPPET_LIMIT = 2_000;
     private static final int LANGUAGE_LIMIT = 5;
     private static final String BEARER_PREFIX = "Bearer ";
+    private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(3);
+    private static final Duration READ_TIMEOUT = Duration.ofSeconds(5);
 
     private final RestClient restClient;
 
+    @Autowired
     public GithubRestRepositoryClient(RestClient.Builder restClientBuilder,
                                       @Value("${github.access-token:}") String githubAccessToken) {
         RestClient.Builder builder = restClientBuilder
+                .requestFactory(requestFactory())
                 .defaultHeader("Accept", "application/vnd.github+json")
                 .defaultHeader("X-GitHub-Api-Version", "2022-11-28");
         if (StringUtils.hasText(githubAccessToken)) {
             builder.defaultHeader("Authorization", BEARER_PREFIX + githubAccessToken);
         }
         this.restClient = builder.build();
+    }
+
+    GithubRestRepositoryClient(RestClient restClient) {
+        this.restClient = restClient;
     }
 
     @Override
@@ -73,7 +84,14 @@ public class GithubRestRepositoryClient implements GithubRepositoryClient {
             throw new IllegalArgumentException("GitHub 저장소 경로를 찾을 수 없습니다.");
         }
 
-        return new RepositoryPath(paths[1], paths[2].replace(".git", ""));
+        return new RepositoryPath(paths[1], paths[2].replaceAll("\\.git$", ""));
+    }
+
+    private SimpleClientHttpRequestFactory requestFactory() {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(CONNECT_TIMEOUT);
+        requestFactory.setReadTimeout(READ_TIMEOUT);
+        return requestFactory;
     }
 
     @SuppressWarnings("unchecked")

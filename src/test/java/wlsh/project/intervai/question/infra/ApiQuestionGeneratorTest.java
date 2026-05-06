@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wlsh.project.intervai.common.ai.AiChatCaller;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -101,9 +103,10 @@ class ApiQuestionGeneratorTest {
 
         generator.generateAll(interview, session);
 
-        verify(githubRepositoryReader).read(interview.getPortfolioLinks());
-        verify(promptBuilder).build(interview, List.of());
-        verify(aiChatCaller).callWithSession("10", "built prompt");
+        InOrder inOrder = inOrder(githubRepositoryReader, promptBuilder, aiChatCaller);
+        inOrder.verify(githubRepositoryReader).read(interview.getPortfolioLinks());
+        inOrder.verify(promptBuilder).build(interview, List.of());
+        inOrder.verify(aiChatCaller).callWithSession("10", "built prompt");
     }
 
     @Test

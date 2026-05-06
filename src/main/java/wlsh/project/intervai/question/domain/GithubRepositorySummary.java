@@ -18,7 +18,7 @@ public record GithubRepositorySummary(
                                                     String defaultBranch, String primaryLanguage,
                                                     List<String> languages, String readmeSnippet) {
         return new GithubRepositorySummary(url, fullName, description, defaultBranch, primaryLanguage,
-                languages == null ? List.of() : languages, readmeSnippet, true, null);
+                languages == null ? List.of() : List.copyOf(languages), readmeSnippet, true, null);
     }
 
     public static GithubRepositorySummary unavailable(String url, String failureReason) {
