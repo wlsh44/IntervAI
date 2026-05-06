@@ -8,4 +8,5 @@ export interface ChatMessage {
   feedback?: string
   isFeedbackOpen?: boolean
   questionId?: number
+  isLoading?: boolean
 }

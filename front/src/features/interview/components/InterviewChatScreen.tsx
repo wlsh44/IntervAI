@@ -40,6 +40,7 @@ const InterviewChatScreen = () => {
   const appendedQuestionIds = useRef(new Set<number>())
   // hasNext: false인 질문(마지막 질문)에 답변하면 /questions/current 대신 /sessions/finish 호출
   const isLastQuestion = useRef(false)
+  const optimisticAnswerId = useRef<string | null>(null)
 
   const appendAiQuestion = useCallback(
     (currentInterviewId: number) => {
@@ -63,7 +64,7 @@ const InterviewChatScreen = () => {
             questionType: question.questionType,
             questionId: question.questionId,
           }
-          setMessages((prev) => [...prev, aiMsg])
+          setMessages((prev) => [...prev.filter((msg) => !msg.isLoading), aiMsg])
           setPendingQuestionId(question.questionId)
           // 본 질문일 때만 카운터 증가 (꼬리 질문은 questionCount에 포함되지 않음)
           if (question.questionType === QuestionType.QUESTION) {
@@ -73,6 +74,7 @@ const InterviewChatScreen = () => {
           isLastQuestion.current = !question.hasNext
         })
         .catch((err: unknown) => {
+          setMessages((prev) => prev.filter((msg) => !msg.isLoading))
           const apiError = extractApiError(err)
           if (apiError.code === ApiErrorCode.SESSION_ALREADY_COMPLETED) {
             setPhase('finished')
@@ -99,12 +101,16 @@ const InterviewChatScreen = () => {
     let cancelled = false
 
     // interviewId 변경 시 상태 초기화
-    setMessages([])
-    setAllCompleted(false)
-    setNextQuestionFetchFailed(false)
+    queueMicrotask(() => {
+      if (cancelled) return
+      setMessages([])
+      setAllCompleted(false)
+      setNextQuestionFetchFailed(false)
+      setIsLoadingHistory(true)
+    })
     appendedQuestionIds.current.clear()
     isLastQuestion.current = false
-    setIsLoadingHistory(true)
+    optimisticAnswerId.current = null
 
     getSessionHistory(interviewId)
       .then((history) => {
@@ -163,25 +169,34 @@ const InterviewChatScreen = () => {
 
   const { mutate: submit, isPending: isSubmitting } = useSubmitAnswer({
     interviewId,
-    onSuccess: (data, content) => {
-      const candidateMsg: ChatMessage = {
-        id: crypto.randomUUID?.() ?? `candidate-${Date.now()}`,
-        role: 'candidate',
-        content,
-        feedback: data.feedback,
-        isFeedbackOpen: false,
-      }
-      setMessages((prev) => [...prev, candidateMsg])
-      setPendingQuestionId(null)
+    onSuccess: (data) => {
+      const currentOptimisticAnswerId = optimisticAnswerId.current
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === currentOptimisticAnswerId
+            ? { ...msg, feedback: data.feedback, isFeedbackOpen: false }
+            : msg,
+        ),
+      )
+      optimisticAnswerId.current = null
 
       if (interviewId !== null) {
         if (isLastQuestion.current) {
           // 마지막 질문 답변 완료 → 완료 배너 표시 (피드백 확인 후 사용자가 종료)
+          setMessages((prev) => prev.filter((msg) => !msg.isLoading))
           setAllCompleted(true)
         } else {
           appendAiQuestion(interviewId)
         }
       }
+    },
+    onError: (_content, questionId) => {
+      const currentOptimisticAnswerId = optimisticAnswerId.current
+      setMessages((prev) =>
+        prev.filter((msg) => !msg.isLoading && msg.id !== currentOptimisticAnswerId),
+      )
+      optimisticAnswerId.current = null
+      setPendingQuestionId(questionId)
     },
   })
 
@@ -195,7 +210,24 @@ const InterviewChatScreen = () => {
 
   const handleSubmit = (content: string) => {
     if (pendingQuestionId === null) return
-    submit({ questionId: pendingQuestionId, content })
+    const questionId = pendingQuestionId
+    const candidateMsg: ChatMessage = {
+      id: crypto.randomUUID?.() ?? `candidate-${Date.now()}`,
+      role: 'candidate',
+      content,
+      isFeedbackOpen: false,
+    }
+    const loadingMsg: ChatMessage = {
+      id: `ai-loading-${questionId}`,
+      role: 'ai',
+      content: '',
+      isLoading: true,
+    }
+
+    optimisticAnswerId.current = candidateMsg.id
+    setMessages((prev) => [...prev, candidateMsg, loadingMsg])
+    setPendingQuestionId(null)
+    submit({ questionId, content })
   }
 
   const handleConfirmFinish = () => {

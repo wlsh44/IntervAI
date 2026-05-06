@@ -7,9 +7,10 @@ import { useToast } from '../../../shared/components/ui/toastStore'
 interface UseSubmitAnswerOptions {
   interviewId: number | null
   onSuccess: (data: SubmitAnswerResponse, content: string) => void
+  onError?: (content: string, questionId: number) => void
 }
 
-export const useSubmitAnswer = ({ interviewId, onSuccess }: UseSubmitAnswerOptions) => {
+export const useSubmitAnswer = ({ interviewId, onSuccess, onError }: UseSubmitAnswerOptions) => {
   const { toast } = useToast()
 
   const { mutate, isPending } = useMutation({
@@ -36,14 +37,17 @@ export const useSubmitAnswer = ({ interviewId, onSuccess }: UseSubmitAnswerOptio
               return
             }
             toast('답변 점수를 불러오지 못했습니다. 페이지를 새로고침해주세요.', 'error')
+            onError?.(variables.content, variables.questionId)
           })
           .catch(() => {
             toast('답변 상태를 불러오지 못했습니다. 페이지를 새로고침해주세요.', 'error')
+            onError?.(variables.content, variables.questionId)
           })
         return
       }
 
       toast(getErrorMessage(apiError.code), 'error')
+      onError?.(variables.content, variables.questionId)
     },
   })
 
