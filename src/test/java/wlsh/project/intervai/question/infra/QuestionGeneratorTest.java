@@ -18,6 +18,8 @@ import wlsh.project.intervai.interview.domain.Difficulty;
 import wlsh.project.intervai.interview.domain.Interview;
 import wlsh.project.intervai.interview.domain.InterviewType;
 import wlsh.project.intervai.interview.domain.InterviewerTone;
+import wlsh.project.intervai.question.application.GithubRepositoryReader;
+import wlsh.project.intervai.question.domain.GithubRepositorySummary;
 import wlsh.project.intervai.session.domain.InterviewSession;
 
 import java.util.List;
@@ -43,7 +45,9 @@ class QuestionGeneratorTest {
         AiChatCaller aiChatCaller = new ChatClientAiCaller(chatClient);
         QuestionPromptBuilder promptBuilder = new QuestionPromptBuilder(
                 new ClassPathResource("prompts/question-generator.st"));
-        generator = new ApiQuestionGenerator(aiChatCaller, promptBuilder, new ObjectMapper());
+        GithubRepositoryReader githubRepositoryReader =
+                new GithubRepositoryReader(url -> GithubRepositorySummary.unavailable(url, "테스트"));
+        generator = new ApiQuestionGenerator(aiChatCaller, promptBuilder, githubRepositoryReader, new ObjectMapper());
     }
 
     @Test
