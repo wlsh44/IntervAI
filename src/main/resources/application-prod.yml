@@ -32,6 +32,9 @@ app:
   cors:
     prod-allowed-origins: ${APP_CORS_PROD_ALLOWED_ORIGINS:http://localhost:5173}
 
+github:
+  access-token: ${GITHUB_ACCESS_TOKEN:}
+
 jwt:
   access:
     secret: ${JWT_ACCESS_SECRET:defaultAccessSecretKeyForLocalDevelopmentOnlyDoNotUse1234567890}

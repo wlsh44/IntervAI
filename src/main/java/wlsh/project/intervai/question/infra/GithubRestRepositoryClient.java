@@ -6,7 +6,9 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import wlsh.project.intervai.question.application.GithubRepositoryClient;
@@ -19,14 +21,19 @@ public class GithubRestRepositoryClient implements GithubRepositoryClient {
     private static final String GITHUB_HOST = "github.com";
     private static final int README_SNIPPET_LIMIT = 2_000;
     private static final int LANGUAGE_LIMIT = 5;
+    private static final String BEARER_PREFIX = "Bearer ";
 
     private final RestClient restClient;
 
-    public GithubRestRepositoryClient(RestClient.Builder restClientBuilder) {
-        this.restClient = restClientBuilder
+    public GithubRestRepositoryClient(RestClient.Builder restClientBuilder,
+                                      @Value("${github.access-token:}") String githubAccessToken) {
+        RestClient.Builder builder = restClientBuilder
                 .defaultHeader("Accept", "application/vnd.github+json")
-                .defaultHeader("X-GitHub-Api-Version", "2022-11-28")
-                .build();
+                .defaultHeader("X-GitHub-Api-Version", "2022-11-28");
+        if (StringUtils.hasText(githubAccessToken)) {
+            builder.defaultHeader("Authorization", BEARER_PREFIX + githubAccessToken);
+        }
+        this.restClient = builder.build();
     }
 
     @Override
