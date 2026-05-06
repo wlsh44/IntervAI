@@ -27,7 +27,7 @@ const RecentHistorySection = ({ items }: RecentHistorySectionProps) => {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-[#131b2e] font-bold text-lg">최근 면접 기록</h2>
+        <h2 className="text-[#131b2e] font-semibold text-base">최근 면접 기록</h2>
         <Link to="/history" className="text-sm text-[#4648d4] hover:underline">
           더보기
         </Link>

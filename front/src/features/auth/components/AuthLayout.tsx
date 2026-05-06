@@ -9,7 +9,6 @@ const AuthLayout = ({ title, subtitle, footer, children }: AuthLayoutProps) => {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center bg-auth-bg px-6 py-12"
-      style={{ fontFamily: 'Inter, sans-serif' }}
     >
       {/* 배경 그라데이션 블러 */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
@@ -44,7 +43,7 @@ const AuthLayout = ({ title, subtitle, footer, children }: AuthLayoutProps) => {
       >
         {/* 카드 헤더 */}
         <div className="mb-6">
-          <h2 className="text-xl font-semibold text-auth-text">{title}</h2>
+          <h2 className="text-lg font-semibold text-auth-text">{title}</h2>
           <p className="mt-1 text-sm text-auth-muted">{subtitle}</p>
         </div>
 

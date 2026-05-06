@@ -33,7 +33,7 @@ const HistoryPage = () => {
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
-      <h1 className="text-[#131b2e] font-bold text-2xl mb-6">면접 기록</h1>
+      <h1 className="text-[#131b2e] font-semibold text-xl mb-5">면접 기록</h1>
 
       <HistoryFilterBar filters={filters} onChange={handleFiltersChange} />
 

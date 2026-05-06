@@ -10,7 +10,7 @@ const DashboardPage = () => {
   if (isLoading) {
     return (
       <div className="bg-[#faf8ff] p-8 space-y-6 min-h-full animate-pulse">
-        <div className="bg-[#eaedff] rounded-2xl p-8 h-40" />
+        <div className="bg-[#eaedff] rounded-xl p-6 h-32" />
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-[#dae2fd] rounded-xl p-5 h-24" />
           <div className="bg-[#dae2fd] rounded-xl p-5 h-24" />
