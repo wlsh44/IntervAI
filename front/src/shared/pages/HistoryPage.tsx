@@ -33,7 +33,7 @@ const HistoryPage = () => {
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
-      <div className="mb-5 rounded-xl bg-white/70 border border-[#e2e7ff] px-5 py-4">
+      <div className="mb-5 rounded-xl bg-white/70 border border-[#e2e7ff] px-12 py-10">
         <h1 className="text-[#131b2e] font-semibold text-xl">면접 기록</h1>
       </div>
 
