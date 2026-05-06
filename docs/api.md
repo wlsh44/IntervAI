@@ -40,6 +40,32 @@ Bean Validation 실패 시 아래 형식으로 반환됩니다.
 
 ---
 
+## 운영
+
+### Healthcheck
+
+```
+GET /api/health
+```
+
+**인증**: 불필요
+
+**Response** `200 OK`
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `status` | String | 서버 상태 (`UP`) |
+
+**예시**
+
+```json
+{
+  "status": "UP"
+}
+```
+
+---
+
 ## Enum 타입 정의
 
 ### InterviewType
