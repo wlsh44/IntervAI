@@ -42,7 +42,7 @@ const PortfolioLinkInput = ({ value, onChange }: PortfolioLinkInputProps) => {
           onKeyDown={handleKeyDown}
           disabled={isMaxReached}
           placeholder="https://github.com/your-project"
-          className="flex-1 px-3 py-2 border border-[#767586] rounded-lg text-sm text-[#131b2e] placeholder:text-[#767586] outline-none focus:border-[#4648d4] disabled:bg-gray-50 disabled:cursor-not-allowed"
+          className="flex-1 px-3 py-2 border border-[#c8c5d4] rounded-lg text-sm text-[#131b2e] placeholder:text-[#767586] outline-none focus:border-[#4648d4] disabled:bg-gray-50 disabled:cursor-not-allowed"
         />
         <button
           type="button"

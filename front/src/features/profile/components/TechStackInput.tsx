@@ -50,7 +50,7 @@ const TechStackInput = ({ value, onChange }: TechStackInputProps) => {
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap gap-2 min-h-10 p-3 border border-[#767586] rounded-lg bg-white">
+      <div className="flex flex-wrap gap-2 min-h-10 p-3 border border-[#c8c5d4] rounded-lg bg-white focus-within:border-[#4648d4] transition-colors">
         {value.map((stack) => (
           <span
             key={stack}
@@ -92,7 +92,7 @@ const TechStackInput = ({ value, onChange }: TechStackInputProps) => {
                 className={`px-3 py-1 rounded-full text-xs border transition-colors ${
                   isAdded
                     ? 'border-[#4648d4] text-[#4648d4] bg-[#eaedff] cursor-default'
-                    : 'border-[#767586] text-[#767586] hover:border-[#4648d4] hover:text-[#4648d4] disabled:opacity-40 disabled:cursor-not-allowed'
+                    : 'bg-white border-[#c8c5d4] text-[#767586] hover:border-[#4648d4] hover:text-[#4648d4] disabled:opacity-40 disabled:cursor-not-allowed'
                 }`}
               >
                 {stack}

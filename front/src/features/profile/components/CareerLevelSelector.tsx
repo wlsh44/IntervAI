@@ -44,10 +44,10 @@ const CareerLevelSelector = ({ value, onChange }: CareerLevelSelectorProps) => {
             key={optionValue}
             type="button"
             onClick={() => onChange(optionValue)}
-            className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-colors ${
+            className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-xl transition-colors ${
               isSelected
-                ? 'border-[#4648d4] bg-[#eaedff] text-[#4648d4]'
-                : 'border-[#767586] bg-white text-[#767586] hover:border-[#4648d4] hover:text-[#4648d4]'
+                ? 'border-2 border-[#4648d4] bg-[#eaedff] text-[#4648d4]'
+                : 'border border-[#c8c5d4] bg-white text-[#767586] hover:border-[#4648d4] hover:text-[#4648d4]'
             }`}
           >
             <Icon size={24} />

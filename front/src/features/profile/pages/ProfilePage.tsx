@@ -77,8 +77,8 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-[#faf8ff] p-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-6 rounded-xl bg-white/70 border border-[#e2e7ff] px-5 py-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-6 rounded-xl bg-white/70 border border-[#e2e7ff] px-12 py-10">
           <h1 className="text-xl font-semibold text-[#131b2e]">프로필 설정</h1>
           {profile?.updatedAt && (
             <p className="text-sm text-[#767586] mt-1">
@@ -88,7 +88,7 @@ const ProfilePage = () => {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          <div className="bg-[#eaedff] rounded-2xl p-6 space-y-2">
+          <div className="bg-white rounded-xl border border-[#e2e7ff] p-6 space-y-2">
             <label className="text-sm font-semibold text-[#131b2e]">
               희망 직군 <span className="text-[#ba1a1a]">*</span>
             </label>
@@ -107,7 +107,7 @@ const ProfilePage = () => {
             )}
           </div>
 
-          <div className="bg-[#eaedff] rounded-2xl p-6 space-y-2">
+          <div className="bg-white rounded-xl border border-[#e2e7ff] p-6 space-y-2">
             <label className="text-sm font-semibold text-[#131b2e]">경력 수준</label>
             <Controller
               name="careerLevel"
@@ -124,7 +124,7 @@ const ProfilePage = () => {
             )}
           </div>
 
-          <div className="bg-[#eaedff] rounded-2xl p-6 space-y-2">
+          <div className="bg-white rounded-xl border border-[#e2e7ff] p-6 space-y-2">
             <label className="text-sm font-semibold text-[#131b2e]">기술 스택</label>
             <Controller
               name="techStacks"
@@ -138,7 +138,7 @@ const ProfilePage = () => {
             )}
           </div>
 
-          <div className="bg-[#eaedff] rounded-2xl p-6 space-y-2">
+          <div className="bg-white rounded-xl border border-[#e2e7ff] p-6 space-y-2">
             <label className="text-sm font-semibold text-[#131b2e]">포트폴리오</label>
             <Controller
               name="portfolioLinks"
