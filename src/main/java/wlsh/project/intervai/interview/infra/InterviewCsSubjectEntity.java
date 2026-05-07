@@ -20,8 +20,6 @@ import wlsh.project.intervai.interview.domain.CsCategory;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InterviewCsSubjectEntity extends BaseEntity {
 
-    private static final String ALL_TOPICS_MARKER = "__INTERVAI_ALL_TOPICS__";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,17 +42,5 @@ public class InterviewCsSubjectEntity extends BaseEntity {
 
     public static InterviewCsSubjectEntity of(Long interviewId, CsCategory category, String topic) {
         return new InterviewCsSubjectEntity(interviewId, category, topic);
-    }
-
-    public static InterviewCsSubjectEntity ofAllTopics(Long interviewId, CsCategory category) {
-        return new InterviewCsSubjectEntity(interviewId, category, ALL_TOPICS_MARKER);
-    }
-
-    public boolean isAllTopics() {
-        return ALL_TOPICS_MARKER.equals(topic);
-    }
-
-    public static boolean isAllTopicsMarker(String topic) {
-        return ALL_TOPICS_MARKER.equals(topic);
     }
 }
