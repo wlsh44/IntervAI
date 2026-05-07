@@ -66,7 +66,7 @@ class InterviewFinderTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("빈 토픽 목록으로 생성한 CS 카테고리는 전체 토픽 목록으로 복원한다")
+    @DisplayName("ALL 토픽으로 생성한 CS 카테고리는 ALL 토픽으로 복원한다")
     void findRestoresAllCategoryTopic() {
         Interview saved = interviewManager.create(1L, new CreateInterviewCommand(
                 JobCategory.BACKEND,
@@ -74,7 +74,7 @@ class InterviewFinderTest extends IntegrationTest {
                 Difficulty.ENTRY,
                 5,
                 InterviewerTone.NORMAL,
-                List.of(CsSubject.of(CsCategory.NETWORK, List.of())),
+                List.of(CsSubject.of(CsCategory.NETWORK, List.of(CsSubject.ALL_TOPICS))),
                 List.of(),
                 List.of()
         ));
@@ -84,14 +84,12 @@ class InterviewFinderTest extends IntegrationTest {
         assertThat(found.getCsSubjects()).hasSize(1);
         assertThat(found.getCsSubjects().getFirst().getCategory()).isEqualTo(CsCategory.NETWORK);
         assertThat(found.getCsSubjects().getFirst().getTopics())
-                .containsExactly("HTTP/HTTPS", "TCP/UDP", "DNS", "OSI 7 Layer");
+                .containsExactly(CsSubject.ALL_TOPICS);
 
         String prompt = questionPromptBuilder.build(found);
         assertThat(prompt)
                 .contains("NETWORK")
-                .contains("HTTP/HTTPS")
-                .contains("TCP/UDP")
-                .contains("DNS")
-                .contains("OSI 7 Layer");
+                .contains("네트워크 전체 범위에서 랜덤")
+                .doesNotContain(CsSubject.ALL_TOPICS);
     }
 }

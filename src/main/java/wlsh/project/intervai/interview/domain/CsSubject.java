@@ -6,25 +6,21 @@ import lombok.Getter;
 @Getter
 public class CsSubject {
 
+    public static final String ALL_TOPICS = "ALL";
+
     private final CsCategory category;
     private final List<String> topics;
 
     private CsSubject(CsCategory category, List<String> topics) {
         this.category = category;
-        this.topics = normalizeTopics(category, topics);
+        this.topics = topics == null ? List.of() : List.copyOf(topics);
     }
 
     public static CsSubject of(CsCategory category, List<String> topics) {
         return new CsSubject(category, topics);
     }
 
-    private static List<String> normalizeTopics(CsCategory category, List<String> topics) {
-        if (topics == null) {
-            return List.of();
-        }
-        if (topics.isEmpty() && category != null) {
-            return category.getDefaultTopics();
-        }
-        return List.copyOf(topics);
+    public boolean isAllTopics() {
+        return topics.size() == 1 && ALL_TOPICS.equals(topics.getFirst());
     }
 }

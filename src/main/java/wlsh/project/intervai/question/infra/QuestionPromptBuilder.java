@@ -64,6 +64,10 @@ public class QuestionPromptBuilder {
     }
 
     private String formatCsSubject(CsSubject csSubject) {
+        if (csSubject.isAllTopics()) {
+            return csSubject.getCategory().name() + "(" + csSubject.getCategory().getKo() + " 전체 범위에서 랜덤)";
+        }
+
         return csSubject.getCategory().name() + "(" + String.join(", ", csSubject.getTopics()) + ")";
     }
 }
