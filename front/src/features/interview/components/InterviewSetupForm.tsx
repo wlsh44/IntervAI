@@ -106,7 +106,7 @@ const InterviewSetupForm = () => {
   const onSubmit = (data: InterviewSetupFormValues) => {
     const csSubjects: CsSubjectRequest[] | undefined =
       showCsSection
-        ? data.csSubjects.filter((s) => s.topics.length > 0)
+        ? data.csSubjects
         : undefined
 
     mutate({
