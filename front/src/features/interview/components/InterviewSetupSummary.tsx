@@ -48,7 +48,7 @@ const TONE_LABELS: Record<InterviewerTone, string> = {
 const InterviewSetupSummary = ({ formValues }: InterviewSetupSummaryProps) => {
   const { jobCategory, interviewType, difficulty, questionCount, interviewerTone, csSubjects, portfolioLinks, techStacks } = formValues
 
-  const totalCsTopics = csSubjects.reduce((sum, s) => sum + s.topics.length, 0)
+  const totalCsSelections = csSubjects.reduce((sum, s) => sum + (s.topics.length === 1 && s.topics[0] === 'ALL' ? 1 : s.topics.length), 0)
   const showCsSection = interviewType === 'CS' || interviewType === 'ALL'
   const showPortfolioSection = interviewType === 'PORTFOLIO' || interviewType === 'ALL'
 
@@ -58,7 +58,7 @@ const InterviewSetupSummary = ({ formValues }: InterviewSetupSummaryProps) => {
     { label: '난이도', value: difficulty ? DIFFICULTY_LABELS[difficulty] : '-' },
     { label: '질문 수', value: `${questionCount}문제` },
     { label: '면접관 스타일', value: interviewerTone ? TONE_LABELS[interviewerTone] : '-' },
-    ...(showCsSection ? [{ label: 'CS 과목 수', value: `${totalCsTopics}개` }] : []),
+    ...(showCsSection ? [{ label: 'CS 선택 수', value: `${totalCsSelections}개` }] : []),
     ...(showPortfolioSection
       ? [
           { label: '기술 스택 수', value: `${techStacks.length}개` },
