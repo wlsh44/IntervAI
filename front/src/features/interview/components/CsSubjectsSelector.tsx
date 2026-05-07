@@ -131,17 +131,22 @@ const CsSubjectsSelector = ({ value, onChange, error }: CsSubjectsSelectorProps)
 
         return (
           <div key={category} className="bg-white rounded-xl p-4 border border-[#e2e7ff]">
-            <div className="flex items-center justify-between mb-3">
+            <div className="mb-3">
               <span className="font-medium text-sm text-[#131b2e]">{CATEGORY_LABELS[category]}</span>
-              <button
-                type="button"
-                onClick={() => toggleAll(category)}
-                className={`text-xs ${allSelected ? 'text-[#ba1a1a]' : 'text-[#4648d4]'} hover:underline`}
-              >
-                {allSelected ? '전체 해제' : '전체'}
-              </button>
             </div>
             <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                disabled={hasCustomTopics}
+                onClick={() => toggleAll(category)}
+                className={`px-3 py-1 rounded-full text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                  allSelected
+                    ? 'bg-[#4648d4] text-white'
+                    : 'border border-[#767586] text-[#767586] hover:border-[#4648d4]'
+                }`}
+              >
+                전체
+              </button>
               {CS_TOPICS[category].map((topic) => {
                 const isSelected = selectedTopics.includes(topic)
                 return (
