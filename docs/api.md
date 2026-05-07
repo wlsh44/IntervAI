@@ -406,7 +406,7 @@ POST /api/interviews
 | 필드 | 타입 | 필수 | 제약 |
 |------|------|------|------|
 | `category` | CsCategory | O | Enum 값 |
-| `topics` | String[] | O | 1개 이상, 각 항목 공백 불가 |
+| `topics` | String[] | O | 각 항목 공백 불가. 빈 배열이면 해당 카테고리 전체 범위에서 랜덤 질문 생성 |
 
 **Response** `201 Created`
 

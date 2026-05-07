@@ -1,6 +1,7 @@
 package wlsh.project.intervai.interview.application;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -51,10 +52,17 @@ public class InterviewManager {
             return;
         }
         List<InterviewCsSubjectEntity> entities = csSubjects.stream()
-                .flatMap(subject -> subject.getTopics().stream()
-                        .map(topic -> InterviewCsSubjectEntity.of(interviewId, subject.getCategory(), topic)))
+                .flatMap(subject -> toCsSubjectEntities(interviewId, subject))
                 .toList();
         interviewCsSubjectRepository.saveAll(entities);
+    }
+
+    private Stream<InterviewCsSubjectEntity> toCsSubjectEntities(Long interviewId, CsSubject subject) {
+        if (subject.getTopics().isEmpty()) {
+            return Stream.of(InterviewCsSubjectEntity.ofAllTopics(interviewId, subject.getCategory()));
+        }
+        return subject.getTopics().stream()
+                .map(topic -> InterviewCsSubjectEntity.of(interviewId, subject.getCategory(), topic));
     }
 
     private void savePortfolioLinks(Long interviewId, List<String> portfolioLinks) {

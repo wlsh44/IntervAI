@@ -58,8 +58,15 @@ public class InterviewFinder {
                 ));
 
         return topicsByCategory.entrySet().stream()
-                .map(entry -> CsSubject.of(entry.getKey(), entry.getValue()))
+                .map(entry -> CsSubject.of(entry.getKey(), restoreTopics(entry.getValue())))
                 .toList();
+    }
+
+    private List<String> restoreTopics(List<String> topics) {
+        if (topics.size() == 1 && InterviewCsSubjectEntity.isAllTopicsMarker(topics.getFirst())) {
+            return List.of();
+        }
+        return topics;
     }
 
     private List<String> findPortfolioLinks(Long interviewId) {

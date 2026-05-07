@@ -55,7 +55,7 @@ class QuestionGeneratorTest {
                 Difficulty.ENTRY,
                 5,
                 InterviewerTone.NORMAL,
-                List.of(CsSubject.of(CsCategory.NETWORK, List.of("전체"))),
+                List.of(CsSubject.of(CsCategory.NETWORK, List.of())),
                 null,
                 null));
         InterviewSession session = InterviewSession.create(interview.getId(), 1L);
