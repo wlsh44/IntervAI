@@ -48,7 +48,7 @@ const TONE_LABELS: Record<InterviewerTone, string> = {
 const InterviewSetupSummary = ({ formValues }: InterviewSetupSummaryProps) => {
   const { jobCategory, interviewType, difficulty, questionCount, interviewerTone, csSubjects, portfolioLinks, techStacks } = formValues
 
-  const totalCsSelections = csSubjects.reduce((sum, s) => sum + (s.topics.length === 0 ? 1 : s.topics.length), 0)
+  const totalCsSelections = csSubjects.reduce((sum, s) => sum + (s.topics.length === 1 && s.topics[0] === 'ALL' ? 1 : s.topics.length), 0)
   const showCsSection = interviewType === 'CS' || interviewType === 'ALL'
   const showPortfolioSection = interviewType === 'PORTFOLIO' || interviewType === 'ALL'
 

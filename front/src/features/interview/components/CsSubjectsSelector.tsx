@@ -20,6 +20,7 @@ const CATEGORY_LABELS: Record<CsCategory, string> = {
 }
 
 const CATEGORIES: CsCategory[] = ['DATA_STRUCTURE', 'ALGORITHM', 'NETWORK', 'LANGUAGE', 'DATABASE']
+const ALL_TOPICS = 'ALL'
 
 const splitCustomTopics = (text: string): string[] =>
   text
@@ -63,7 +64,7 @@ const CsSubjectsSelector = ({ value, onChange, error }: CsSubjectsSelectorProps)
   }
 
   const isAllSelected = (category: CsCategory): boolean => {
-    return value.some((s) => s.category === category && s.topics.length === 0)
+    return value.some((s) => s.category === category && s.topics.length === 1 && s.topics[0] === ALL_TOPICS)
   }
 
   const getCustomTopicsText = (category: CsCategory): string => {
@@ -73,6 +74,7 @@ const CsSubjectsSelector = ({ value, onChange, error }: CsSubjectsSelectorProps)
 
     const selected = getTopicsForCategory(category)
     if (selected.length === 0) return ''
+    if (selected.length === 1 && selected[0] === ALL_TOPICS) return ''
     if (selected.every((topic) => CS_TOPICS[category].includes(topic))) return ''
     return selected.join(', ')
   }
@@ -103,7 +105,7 @@ const CsSubjectsSelector = ({ value, onChange, error }: CsSubjectsSelectorProps)
     if (isAllSelected(category)) {
       removeCategory(category)
     } else {
-      updateCategory(category, [])
+      updateCategory(category, [ALL_TOPICS])
     }
   }
 
