@@ -76,7 +76,15 @@ public class QuestionPromptBuilder {
 
     private String formatCsSubjects(List<CsSubject> csSubjects) {
         return csSubjects.stream()
-                .map(s -> s.getCategory().name() + "(" + String.join(", ", s.getTopics()) + ")")
+                .map(this::formatCsSubject)
                 .collect(Collectors.joining(", "));
+    }
+
+    private String formatCsSubject(CsSubject csSubject) {
+        if (csSubject.isAllTopics()) {
+            return csSubject.getCategory().name() + "(" + csSubject.getCategory().getKo() + " 전체 범위에서 랜덤)";
+        }
+
+        return csSubject.getCategory().name() + "(" + String.join(", ", csSubject.getTopics()) + ")";
     }
 }

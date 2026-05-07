@@ -119,6 +119,27 @@ class QuestionPromptBuilderTest {
     }
 
     @Test
+    @DisplayName("토픽이 ALL이면 해당 CS 카테고리 전체 범위로 프롬프트에 반영된다")
+    void buildWithAllCategoryTopic() {
+        Interview interview = Interview.create(1L, new CreateInterviewCommand(
+                JobCategory.BACKEND,
+                InterviewType.CS,
+                Difficulty.ENTRY,
+                5,
+                InterviewerTone.NORMAL,
+                List.of(CsSubject.of(CsCategory.NETWORK, List.of(CsSubject.ALL_TOPICS))),
+                null,
+                null));
+
+        String prompt = builder.build(interview);
+
+        assertThat(prompt)
+                .contains("NETWORK")
+                .contains("네트워크 전체 범위에서 랜덤")
+                .doesNotContain(CsSubject.ALL_TOPICS);
+    }
+
+    @Test
     @DisplayName("면접 설정값이 프롬프트에 반영된다")
     void buildContainsInterviewSettings() {
         Interview interview = Interview.create(1L, new CreateInterviewCommand(
@@ -127,7 +148,7 @@ class QuestionPromptBuilderTest {
                 Difficulty.ENTRY,
                 5,
                 InterviewerTone.NORMAL,
-                List.of(CsSubject.of(CsCategory.NETWORK, List.of("전체"))),
+                List.of(CsSubject.of(CsCategory.NETWORK, List.of("HTTP"))),
                 null,
                 null));
 

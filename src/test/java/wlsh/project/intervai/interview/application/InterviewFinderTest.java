@@ -64,4 +64,32 @@ class InterviewFinderTest extends IntegrationTest {
                 .contains("INDEX")
                 .contains("https://github.com/user/repo");
     }
+
+    @Test
+    @DisplayName("ALL 토픽으로 생성한 CS 카테고리는 ALL 토픽으로 복원한다")
+    void findRestoresAllCategoryTopic() {
+        Interview saved = interviewManager.create(1L, new CreateInterviewCommand(
+                JobCategory.BACKEND,
+                InterviewType.CS,
+                Difficulty.ENTRY,
+                5,
+                InterviewerTone.NORMAL,
+                List.of(CsSubject.of(CsCategory.NETWORK, List.of(CsSubject.ALL_TOPICS))),
+                List.of(),
+                List.of()
+        ));
+
+        Interview found = interviewFinder.find(saved.getId());
+
+        assertThat(found.getCsSubjects()).hasSize(1);
+        assertThat(found.getCsSubjects().getFirst().getCategory()).isEqualTo(CsCategory.NETWORK);
+        assertThat(found.getCsSubjects().getFirst().getTopics())
+                .containsExactly(CsSubject.ALL_TOPICS);
+
+        String prompt = questionPromptBuilder.build(found);
+        assertThat(prompt)
+                .contains("NETWORK")
+                .contains("네트워크 전체 범위에서 랜덤")
+                .doesNotContain(CsSubject.ALL_TOPICS);
+    }
 }
